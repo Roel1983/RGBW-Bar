@@ -1,3 +1,3 @@
 (fp_lib_table
-  (lib (name AmbientLight)(type KiCad)(uri ${KIPRJMOD}/../../Shared/PCB/AmbientLight.pretty)(options "")(descr ""))
+  (lib (name RGBW-Bar)(type KiCad)(uri ${KIPRJMOD}/../../Shared/PCB/RGBW-Bar.pretty)(options "")(descr ""))
 )

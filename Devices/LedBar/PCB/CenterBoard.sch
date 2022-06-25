@@ -14,7 +14,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L AmbientLight:Conn_GRBW J?
+L RGBW-Bar:Conn_GRBW J?
 U 1 1 61892900
 P 7500 3700
 AR Path="/618804D0/61892900" Ref="J?"  Part="1" 
@@ -22,20 +22,20 @@ AR Path="/6188055C/61892900" Ref="J?"  Part="1"
 AR Path="/6188050F/61892900" Ref="J1203"  Part="1" 
 F 0 "J1203" H 7400 3300 50  0000 L CNN
 F 1 "Strip3_GRBW" H 7250 3400 50  0000 L CNN
-F 2 "AmbientLight:GRBW-wire-solder-pads-L" H 7500 3700 50  0001 C CNN
+F 2 "RGBW-Bar:GRBW-wire-solder-pads-L" H 7500 3700 50  0001 C CNN
 F 3 "~" H 7500 3700 50  0001 C CNN
 	1    7500 3700
 	1    0    0    1   
 $EndComp
 $Comp
-L AmbientLight:Conn_GRBW J?
+L RGBW-Bar:Conn_GRBW J?
 U 1 1 6189334E
 P 3500 3700
 AR Path="/618804D0/6189334E" Ref="J?"  Part="1" 
 AR Path="/6188050F/6189334E" Ref="J1201"  Part="1" 
 F 0 "J1201" H 3418 3275 50  0000 C CNN
 F 1 "strip2_GRBW" H 3418 3366 50  0000 C CNN
-F 2 "AmbientLight:GRBW-wire-solder-pads-R" H 3500 3700 50  0001 C CNN
+F 2 "RGBW-Bar:GRBW-wire-solder-pads-R" H 3500 3700 50  0001 C CNN
 F 3 "~" H 3500 3700 50  0001 C CNN
 	1    3500 3700
 	-1   0    0    1   
@@ -92,7 +92,7 @@ U 1 1 6189C762
 P 5500 3000
 F 0 "H1204" H 5400 3250 50  0000 L CNN
 F 1 "MountingHole" H 5250 3150 50  0000 L CNN
-F 2 "AmbientLight:MountingHole_3.2mm_Wall_0.8mm" H 5500 3000 50  0001 C CNN
+F 2 "RGBW-Bar:MountingHole_3.2mm_Wall_0.8mm" H 5500 3000 50  0001 C CNN
 F 3 "~" H 5500 3000 50  0001 C CNN
 	1    5500 3000
 	1    0    0    -1  
@@ -111,14 +111,14 @@ F 3 "~" H 5450 3800 50  0001 C CNN
 	1    0    0    1   
 $EndComp
 $Comp
-L AmbientLight:Conn_GRB J?
+L RGBW-Bar:Conn_GRB J?
 U 1 1 618A2D3B
 P 3500 4850
 AR Path="/618804D0/618A2D3B" Ref="J?"  Part="1" 
 AR Path="/6188050F/618A2D3B" Ref="J1204"  Part="1" 
 F 0 "J1204" H 3418 4425 50  0000 C CNN
 F 1 "Strip2_GRB" H 3418 4516 50  0000 C CNN
-F 2 "AmbientLight:GRB-wire-solder-pads-R" H 3500 4850 50  0001 C CNN
+F 2 "RGBW-Bar:GRB-wire-solder-pads-R" H 3500 4850 50  0001 C CNN
 F 3 "~" H 3500 4850 50  0001 C CNN
 	1    3500 4850
 	-1   0    0    1   
@@ -160,14 +160,14 @@ Connection ~ 4100 3600
 Wire Wire Line
 	4100 3600 5250 3600
 $Comp
-L AmbientLight:Conn_GRB J?
+L RGBW-Bar:Conn_GRB J?
 U 1 1 618AC9EE
 P 7500 4850
 AR Path="/618804D0/618AC9EE" Ref="J?"  Part="1" 
 AR Path="/6188050F/618AC9EE" Ref="J1205"  Part="1" 
 F 0 "J1205" H 7400 4450 50  0000 L CNN
 F 1 "Strip3_GRB" H 7300 4550 50  0000 L CNN
-F 2 "AmbientLight:GRB-wire-solder-pads-L" H 7500 4850 50  0001 C CNN
+F 2 "RGBW-Bar:GRB-wire-solder-pads-L" H 7500 4850 50  0001 C CNN
 F 3 "~" H 7500 4850 50  0001 C CNN
 	1    7500 4850
 	1    0    0    1   

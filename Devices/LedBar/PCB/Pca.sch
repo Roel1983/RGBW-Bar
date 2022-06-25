@@ -188,7 +188,7 @@ U 1 1 608BB8B6
 P 1500 2300
 F 0 "TP501" H 1442 2320 50  0000 R CNN
 F 1 "~pca_oe~" H 1442 2418 50  0000 R CNN
-F 2 "AmbientLight:TestPoint_Pad_D1.0mm" H 1700 2300 50  0001 C CNN
+F 2 "RGBW-Bar:TestPoint_Pad_D1.0mm" H 1700 2300 50  0001 C CNN
 F 3 "~" H 1700 2300 50  0001 C CNN
 	1    1500 2300
 	1    0    0    1   
@@ -292,7 +292,7 @@ U 1 1 608F02DE
 P 6050 5250
 F 0 "J502" H 6100 5767 50  0000 C CNN
 F 1 "Center" H 6100 5676 50  0000 C CNN
-F 2 "AmbientLight:perpendicular_pcb_1mm_female_2x6" H 6050 5250 50  0001 C CNN
+F 2 "RGBW-Bar:perpendicular_pcb_1mm_female_2x6" H 6050 5250 50  0001 C CNN
 F 3 "~" H 6050 5250 50  0001 C CNN
 	1    6050 5250
 	-1   0    0    -1  
@@ -973,7 +973,7 @@ AR Path="/608B2A01/60E72D62" Ref="TP?"  Part="1"
 AR Path="/617A8CB5/608B2A01/60E72D62" Ref="TP502"  Part="1" 
 F 0 "TP502" V 9150 1200 50  0000 R CNN
 F 1 "s1w" V 9300 1200 50  0000 R CNN
-F 2 "AmbientLight:TestPoint_Pad_D1.0mm" H 9450 1000 50  0001 C CNN
+F 2 "RGBW-Bar:TestPoint_Pad_D1.0mm" H 9450 1000 50  0001 C CNN
 F 3 "~" H 9450 1000 50  0001 C CNN
 	1    9250 1000
 	0    -1   -1   0   
@@ -987,7 +987,7 @@ AR Path="/608B2A01/60E8F95C" Ref="TP?"  Part="1"
 AR Path="/617A8CB5/608B2A01/60E8F95C" Ref="TP504"  Part="1" 
 F 0 "TP504" V 10400 1000 50  0000 R CNN
 F 1 "s1w_o" V 10500 1000 50  0000 L CNN
-F 2 "AmbientLight:TestPoint_Pad_D1.0mm" H 10700 800 50  0001 C CNN
+F 2 "RGBW-Bar:TestPoint_Pad_D1.0mm" H 10700 800 50  0001 C CNN
 F 3 "~" H 10700 800 50  0001 C CNN
 	1    10500 800 
 	0    1    1    0   
@@ -1001,7 +1001,7 @@ AR Path="/608B2A01/60EE1BB4" Ref="TP?"  Part="1"
 AR Path="/617A8CB5/608B2A01/60EE1BB4" Ref="TP503"  Part="1" 
 F 0 "TP503" V 9900 1650 50  0000 R CNN
 F 1 "gnd" V 10000 1600 50  0000 R CNN
-F 2 "AmbientLight:TestPoint_Pad_D1.0mm" H 10200 1300 50  0001 C CNN
+F 2 "RGBW-Bar:TestPoint_Pad_D1.0mm" H 10200 1300 50  0001 C CNN
 F 3 "~" H 10200 1300 50  0001 C CNN
 	1    10000 1300
 	0    1    1    0   

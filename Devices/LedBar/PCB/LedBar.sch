@@ -56,67 +56,67 @@ $EndSheet
 Wire Notes Line
 	3500 1500 3500 4750
 $Comp
-L AmbientLight:MouseBit MB101
+L RGBW-Bar:MouseBit MB101
 U 1 1 618FDB69
 P 1450 1000
 F 0 "MB101" H 1728 1046 50  0000 L CNN
 F 1 "MouseBit" H 1728 955 50  0000 L CNN
-F 2 "AmbientLight:MouseBit" H 1370 1420 50  0001 C CNN
+F 2 "RGBW-Bar:MouseBit" H 1370 1420 50  0001 C CNN
 F 3 "" H 1450 940 50  0001 C CNN
 	1    1450 1000
 	1    0    0    -1  
 $EndComp
 $Comp
-L AmbientLight:MouseBit MB102
+L RGBW-Bar:MouseBit MB102
 U 1 1 61901AE5
 P 1450 1300
 F 0 "MB102" H 1728 1346 50  0000 L CNN
 F 1 "MouseBit" H 1728 1255 50  0000 L CNN
-F 2 "AmbientLight:MouseBit" H 1370 1720 50  0001 C CNN
+F 2 "RGBW-Bar:MouseBit" H 1370 1720 50  0001 C CNN
 F 3 "" H 1450 1240 50  0001 C CNN
 	1    1450 1300
 	1    0    0    -1  
 $EndComp
 $Comp
-L AmbientLight:MouseBit MB103
+L RGBW-Bar:MouseBit MB103
 U 1 1 619021A7
 P 1450 1600
 F 0 "MB103" H 1728 1646 50  0000 L CNN
 F 1 "MouseBit" H 1728 1555 50  0000 L CNN
-F 2 "AmbientLight:MouseBit" H 1370 2020 50  0001 C CNN
+F 2 "RGBW-Bar:MouseBit" H 1370 2020 50  0001 C CNN
 F 3 "" H 1450 1540 50  0001 C CNN
 	1    1450 1600
 	1    0    0    -1  
 $EndComp
 $Comp
-L AmbientLight:MouseBit MB104
+L RGBW-Bar:MouseBit MB104
 U 1 1 61907DC7
 P 1450 1900
 F 0 "MB104" H 1728 1946 50  0000 L CNN
 F 1 "MouseBit" H 1728 1855 50  0000 L CNN
-F 2 "AmbientLight:MouseBit" H 1370 2320 50  0001 C CNN
+F 2 "RGBW-Bar:MouseBit" H 1370 2320 50  0001 C CNN
 F 3 "" H 1450 1840 50  0001 C CNN
 	1    1450 1900
 	1    0    0    -1  
 $EndComp
 $Comp
-L AmbientLight:MouseBit MB105
+L RGBW-Bar:MouseBit MB105
 U 1 1 619FF750
 P 1450 2200
 F 0 "MB105" H 1728 2246 50  0000 L CNN
 F 1 "MouseBit" H 1728 2155 50  0000 L CNN
-F 2 "AmbientLight:MouseBit_modified1" H 1370 2620 50  0001 C CNN
+F 2 "RGBW-Bar:MouseBit_modified1" H 1370 2620 50  0001 C CNN
 F 3 "" H 1450 2140 50  0001 C CNN
 	1    1450 2200
 	1    0    0    -1  
 $EndComp
 $Comp
-L AmbientLight:MouseBit MB106
+L RGBW-Bar:MouseBit MB106
 U 1 1 619FFB38
 P 1450 2500
 F 0 "MB106" H 1728 2546 50  0000 L CNN
 F 1 "MouseBit" H 1728 2455 50  0000 L CNN
-F 2 "AmbientLight:MouseBit" H 1370 2920 50  0001 C CNN
+F 2 "RGBW-Bar:MouseBit" H 1370 2920 50  0001 C CNN
 F 3 "" H 1450 2440 50  0001 C CNN
 	1    1450 2500
 	1    0    0    -1  

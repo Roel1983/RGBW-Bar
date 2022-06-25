@@ -40,6 +40,6 @@
   (fp_line (start 2.54 -7.6) (end -3.24 -7.6) (layer F.Fab) (width 0.12))
   (fp_line (start 2.54 -10.5) (end 2.54 -6.4) (layer F.Fab) (width 0.12))
   (fp_line (start 2.54 -6.4) (end 4.04 -6.4) (layer F.Fab) (width 0.12))
-  (pad 1 thru_hole circle (at 0 0) (size 3 3) (drill 1.6) (layers *.Cu *.Mask))
   (pad 2 thru_hole circle (at 5.08 0) (size 3 3) (drill 1.6) (layers *.Cu *.Mask))
+  (pad 1 thru_hole circle (at 0 0) (size 3 3) (drill 1.6) (layers *.Cu *.Mask))
 )

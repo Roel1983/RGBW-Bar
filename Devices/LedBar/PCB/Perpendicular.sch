@@ -19,7 +19,7 @@ U 1 1 61789538
 P 5950 2500
 F 0 "J1001" H 6000 2917 50  0000 C CNN
 F 1 "Conn_02x06_Odd_Even" H 6000 2826 50  0000 C CNN
-F 2 "AmbientLight:perpendicular_pcb_1mm_male_2x6" H 5950 2500 50  0001 C CNN
+F 2 "RGBW-Bar:perpendicular_pcb_1mm_male_2x6" H 5950 2500 50  0001 C CNN
 F 3 "~" H 5950 2500 50  0001 C CNN
 	1    5950 2500
 	1    0    0    -1  
@@ -30,7 +30,7 @@ U 1 1 6178A2F7
 P 5950 4450
 F 0 "J1002" H 6000 4867 50  0000 C CNN
 F 1 "Conn_02x06_Odd_Even" H 6000 4776 50  0000 C CNN
-F 2 "AmbientLight:PinHeader_2x06_P200mm_PCB_edge" H 5950 4450 50  0001 C CNN
+F 2 "RGBW-Bar:PinHeader_2x06_P200mm_PCB_edge" H 5950 4450 50  0001 C CNN
 F 3 "~" H 5950 4450 50  0001 C CNN
 	1    5950 4450
 	1    0    0    -1  
