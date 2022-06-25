@@ -1,0 +1,25 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP +5V_iso
+D Power symbol creates a global label with name "+5V_iso"
+K power-flag
+$ENDCMP
+#
+$CMP Conn_GRB
+D GRB Led strip connector
+K connector
+F ~
+$ENDCMP
+#
+$CMP Conn_GRBW
+D GRBW led strip connector
+K connector
+F ~
+$ENDCMP
+#
+$CMP GND_iso
+D Power symbol creates a global label with name "GND_iso" , ground
+K power-flag
+$ENDCMP
+#
+#End Doc Library
