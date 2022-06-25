@@ -21,6 +21,7 @@ F 0 "U901" H 6044 3546 50  0000 L CNN
 F 1 "DS1307Z+" H 6044 3455 50  0000 L CNN
 F 2 "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm" H 5500 3000 50  0001 C CNN
 F 3 "https://datasheets.maximintegrated.com/en/ds/DS1307.pdf" H 5500 3500 50  0001 C CNN
+F 4 "i2c: 0x68" H 5900 3150 50  0000 R CNN "I2C_Address"
 	1    5500 3500
 	1    0    0    -1  
 $EndComp

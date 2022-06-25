@@ -282,6 +282,7 @@ F 0 "U301" H 5900 2600 50  0000 R CNN
 F 1 "INA219AxD" H 6050 2600 50  0000 L CNN
 F 2 "Package_SO:SOIC-8_3.9x4.9mm_P1.27mm" H 6800 1900 50  0001 C CNN
 F 3 "http://www.ti.com/lit/ds/symlink/ina219.pdf" H 6350 2150 50  0001 C CNN
+F 4 "i2c: 0x44" H 6000 2250 50  0000 C CNN "I2C_Address"
 	1    6000 2250
 	1    0    0    -1  
 $EndComp

@@ -21,6 +21,7 @@ F 0 "U501" H 3000 3450 50  0000 R CNN
 F 1 "PCA9685PW" V 2500 2600 50  0000 C CNN
 F 2 "Package_SO:TSSOP-28_4.4x9.7mm_P0.65mm" H 2525 1625 50  0001 L CNN
 F 3 "http://www.nxp.com/documents/data_sheet/PCA9685.pdf" H 2100 3300 50  0001 C CNN
+F 4 "i2c: 0x40" H 2500 2150 50  0000 C CNN "I2C_Address"
 	1    2500 2600
 	1    0    0    -1  
 $EndComp

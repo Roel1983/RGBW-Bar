@@ -106,7 +106,7 @@ AR Path="/6188050F/6189EC18" Ref="H?"  Part="1"
 AR Path="/618804D0/6189EC18" Ref="H1102"  Part="1" 
 F 0 "H1102" H 6450 2750 50  0000 L CNN
 F 1 "MountingHole" H 6250 2650 50  0000 L CNN
-F 2 "MountingHole:MountingHole_3.2mm_M3" H 6500 2500 50  0001 C CNN
+F 2 "AmbientLight:MountingHole_3.2mm_Wall_0.8mm" H 6500 2500 50  0001 C CNN
 F 3 "~" H 6500 2500 50  0001 C CNN
 	1    6500 2500
 	1    0    0    -1  

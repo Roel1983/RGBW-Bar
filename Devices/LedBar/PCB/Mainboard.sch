@@ -118,7 +118,7 @@ U 1 1 617508E9
 P 9500 1500
 F 0 "H203" H 9600 1546 50  0000 L CNN
 F 1 "MountingHole" H 9600 1455 50  0000 L CNN
-F 2 "MountingHole:MountingHole_4.3mm_M4" H 9500 1500 50  0001 C CNN
+F 2 "AmbientLight:MountingHole_4.3mm_M4_modified1" H 9500 1500 50  0001 C CNN
 F 3 "~" H 9500 1500 50  0001 C CNN
 	1    9500 1500
 	1    0    0    -1  

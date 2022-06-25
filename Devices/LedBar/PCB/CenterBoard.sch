@@ -68,14 +68,6 @@ Wire Wire Line
 Connection ~ 5150 4000
 Wire Wire Line
 	5150 4000 5150 4150
-Wire Wire Line
-	5750 3500 5850 3500
-Wire Wire Line
-	5750 3600 5850 3600
-Wire Wire Line
-	5750 3700 5850 3700
-Wire Wire Line
-	5750 3800 5850 3800
 Text Label 6050 3500 0    50   ~ 0
 strip3_w_out
 Text Label 6050 3600 0    50   ~ 0
@@ -100,7 +92,7 @@ U 1 1 6189C762
 P 5500 3000
 F 0 "H1204" H 5400 3250 50  0000 L CNN
 F 1 "MountingHole" H 5250 3150 50  0000 L CNN
-F 2 "MountingHole:MountingHole_3.2mm_M3" H 5500 3000 50  0001 C CNN
+F 2 "AmbientLight:MountingHole_3.2mm_Wall_0.8mm" H 5500 3000 50  0001 C CNN
 F 3 "~" H 5500 3000 50  0001 C CNN
 	1    5500 3000
 	1    0    0    -1  
@@ -208,16 +200,12 @@ Wire Wire Line
 Connection ~ 6600 3900
 Wire Wire Line
 	6600 3900 7300 3900
-Connection ~ 5850 3600
 Wire Wire Line
-	5850 3600 6900 3600
-Connection ~ 5850 3500
+	5750 3500 7300 3500
 Wire Wire Line
-	5850 3500 7300 3500
-Connection ~ 5850 3800
+	5750 3600 6900 3600
 Wire Wire Line
-	5850 3800 6700 3800
-Connection ~ 5850 3700
+	5750 3700 6800 3700
 Wire Wire Line
-	5850 3700 6800 3700
+	5750 3800 6700 3800
 $EndSCHEMATC
