@@ -14,11 +14,11 @@ Comment3 "Arduino Atmega328 5V / 16MHz compatible controller with ISP."
 Comment4 "4 channel RGBW LED bar, Arduino compatible with isolated half duplex RS485."
 $EndDescr
 $Comp
-L RGBW-Bar:ATmega48PV-10AU-arduino U701
+L RGBW-Bar:ATmega328P-AU-arduino U701
 U 1 1 608B13AD
 P 2500 3000
 F 0 "U701" H 3000 4450 50  0000 R CNN
-F 1 "ATmega48PV-10AU-arduino" V 1900 3000 50  0000 C CNN
+F 1 "ATmega328P-AU" V 1900 3000 50  0000 C CNN
 F 2 "Package_QFP:TQFP-32_7x7mm_P0.8mm" H 2450 3000 50  0001 C CIN
 F 3 "" H 2500 3000 50  0001 C CNN
 	1    2500 3000

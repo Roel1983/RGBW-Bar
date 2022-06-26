@@ -16,11 +16,11 @@ X +5V_iso 1 0 0 0 U 50 50 1 1 W N
 ENDDRAW
 ENDDEF
 #
-# ATmega48PV-10AU-arduino
+# ATmega328P-AU-arduino
 #
-DEF ATmega48PV-10AU-arduino U 0 20 Y Y 1 F N
+DEF ATmega328P-AU-arduino U 0 20 Y Y 1 F N
 F0 "U" -500 1450 50 H V L BNN
-F1 "ATmega48PV-10AU-arduino" 100 -1450 50 H V L TNN
+F1 "ATmega328P-AU-arduino" 100 -1450 50 H V L TNN
 F2 "Package_QFP:TQFP-32_7x7mm_P0.8mm" -50 0 50 H I C CIN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
