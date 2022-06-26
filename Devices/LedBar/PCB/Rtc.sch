@@ -3,15 +3,15 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 9 13
+Sheet 6 13
 Title ""
 Date ""
 Rev ""
 Comp ""
-Comment1 ""
+Comment1 "GNU General Public License v3.0"
 Comment2 ""
-Comment3 ""
-Comment4 ""
+Comment3 "Battery backed up real time clock"
+Comment4 "4 channel RGBW LED bar, Arduino compatible with isolated half duplex RS485."
 $EndDescr
 $Comp
 L Timer_RTC:DS1307Z+ U901

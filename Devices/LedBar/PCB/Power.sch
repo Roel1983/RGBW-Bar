@@ -8,10 +8,10 @@ Title "LedBar - MainBoard"
 Date "2021-10-03"
 Rev "0.1"
 Comp "Roel Drost"
-Comment1 ""
+Comment1 "GNU General Public License v3.0"
 Comment2 ""
-Comment3 ""
-Comment4 ""
+Comment3 "Power circuit with current and voltage sensing and overvoltage protection."
+Comment4 "4 channel RGBW LED bar, Arduino compatible with isolated half duplex RS485."
 $EndDescr
 $Comp
 L Device:Fuse F301

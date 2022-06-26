@@ -3,15 +3,15 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 10 13
+Sheet 13 13
 Title ""
 Date ""
 Rev ""
 Comp ""
-Comment1 ""
+Comment1 "GNU General Public License v3.0"
 Comment2 ""
 Comment3 ""
-Comment4 ""
+Comment4 "4 channel RGBW LED bar, Arduino compatible with isolated half duplex RS485."
 $EndDescr
 $Comp
 L Connector_Generic:Conn_02x06_Odd_Even J1001

@@ -3,15 +3,15 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 5 13
+Sheet 8 13
 Title "LedBar - MainBoard"
 Date "2021-09-27"
 Rev "0.1"
 Comp "Roel Drost"
-Comment1 ""
+Comment1 "GNU General Public License v3.0"
 Comment2 ""
-Comment3 ""
-Comment4 ""
+Comment3 "I2C to 16 x PWM led driver."
+Comment4 "4 channel RGBW LED bar, Arduino compatible with isolated half duplex RS485."
 $EndDescr
 $Comp
 L Driver_LED:PCA9685PW U501

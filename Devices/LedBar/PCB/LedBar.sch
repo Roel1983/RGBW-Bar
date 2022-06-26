@@ -8,18 +8,16 @@ Title "LedBar - MainBoard"
 Date "2021-09-27"
 Rev "0.1"
 Comp "Roel Drost"
-Comment1 ""
+Comment1 "GNU General Public License v3.0"
 Comment2 ""
 Comment3 ""
-Comment4 ""
+Comment4 "4 channel RGBW LED bar, Arduino compatible with isolated half duplex RS485."
 $EndDescr
-Wire Notes Line
-	6000 2250 6000 2850
 $Sheet
 S 5000 1000 2000 1000
 U 617A8CB5
-F0 "Mainboard" 157
-F1 "Mainboard.sch" 157
+F0 "Mainboard" 118
+F1 "Mainboard.sch" 118
 $EndSheet
 Wire Notes Line
 	7100 1500 8500 1500
@@ -30,28 +28,22 @@ Wire Notes Line
 Wire Notes Line
 	6000 4250 6000 4750
 $Sheet
-S 5500 3000 1000 1000
-U 6187FE9B
-F0 "Perpendicular" 79
-F1 "Perpendicular.sch" 79
-$EndSheet
-$Sheet
-S 3000 5000 1000 1000
+S 2500 5000 2000 1000
 U 618804D0
-F0 "LeftBoard" 79
-F1 "LeftBoard.sch" 79
+F0 "LeftBoard" 118
+F1 "LeftBoard.sch" 118
 $EndSheet
 $Sheet
-S 5500 5000 1000 1000
+S 5000 5000 2000 1000
 U 6188050F
-F0 "CenterBoard" 79
-F1 "CenterBoard.sch" 79
+F0 "CenterBoard" 118
+F1 "CenterBoard.sch" 118
 $EndSheet
 $Sheet
-S 8000 5000 1000 1000
+S 7500 5000 2000 1000
 U 6188055C
-F0 "RightBoard" 79
-F1 "RightBoard.sch" 79
+F0 "RightBoard" 118
+F1 "RightBoard.sch" 118
 $EndSheet
 Wire Notes Line
 	3500 1500 3500 4750
@@ -121,4 +113,12 @@ F 3 "" H 1450 2440 50  0001 C CNN
 	1    1450 2500
 	1    0    0    -1  
 $EndComp
+$Sheet
+S 5000 3000 2000 1000
+U 6187FE9B
+F0 "Perpendicular" 118
+F1 "Perpendicular.sch" 118
+$EndSheet
+Wire Notes Line
+	6000 2250 6000 2750
 $EndSCHEMATC

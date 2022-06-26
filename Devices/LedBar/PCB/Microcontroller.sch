@@ -8,10 +8,10 @@ Title "LedBar - MainBoard"
 Date "2021-09-27"
 Rev "0.1"
 Comp "Roel Drost"
-Comment1 ""
+Comment1 "GNU General Public License v3.0"
 Comment2 ""
-Comment3 ""
-Comment4 ""
+Comment3 "Arduino Atmega328 5V / 16MHz compatible controller with ISP."
+Comment4 "4 channel RGBW LED bar, Arduino compatible with isolated half duplex RS485."
 $EndDescr
 $Comp
 L RGBW-Bar:ATmega48PV-10AU-arduino U701
