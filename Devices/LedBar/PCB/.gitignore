@@ -7,5 +7,4 @@ _autosave-*
 # Netlist files (exported from Eeschema)
 *.net
 *(copy).*
-old/
-gerber/
+
