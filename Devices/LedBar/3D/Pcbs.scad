@@ -15,11 +15,11 @@ module MainBoard(with_child_board=true) {
     MainBoard_At(C503_at)  CpRadialP2(d=mm(10.2), h=mm(20.7), pitch=mm(5.0));
     MainBoard_At(C505_at)  CpRadialP2(d=mm(10.2), h=mm(20.7), pitch=mm(5.0));
 
-    MainBoard_At(D701_at)  Led3mm(Color="Blue");
-    MainBoard_At(D702_at)  Led3mm(Color="Red");
-    MainBoard_At(D703_at)  Led3mm(Color="Orange");
-    MainBoard_At(D704_at)  Led3mm(Color="Yellow");
-    MainBoard_At(D705_at)  Led3mm(Color="Lime");
+    MainBoard_At(D701_at)  Led3mm(h=mm(3.0), color="Blue");
+    MainBoard_At(D702_at)  Led3mm(h=mm(3.0), color="Red");
+    MainBoard_At(D703_at)  Led3mm(h=mm(3.0), color="Orange");
+    MainBoard_At(D704_at)  Led3mm(h=mm(3.0), color="Yellow");
+    MainBoard_At(D705_at)  Led3mm(h=mm(3.0), color="Lime");
 
     MainBoard_At(F301_at)  FuseHolder5x20mm();
 
@@ -32,7 +32,7 @@ module MainBoard(with_child_board=true) {
     MainBoard_At(J503_at)  ConnPH(pins=5);
     MainBoard_At(J601_at)  Conn15EDGRC(pins=2, pitch = mm(3.5));
 
-    MainBoard_At(SW701_at) SwPuch6mm();
+    MainBoard_At(SW701_at) SwPuch6mm(mm(8.0));
     MainBoard_At(SW702_at) SmdSwitch();
     MainBoard_At(SW703_at) SwDip(channels=5);
 
@@ -356,7 +356,7 @@ module SwPuch6mm(h=mm(4.3)) {
     d2    = mm(1.3);
     l2    = mm(4.0);
     h2    = mm(0.5);
-    render() translate([pitch[0]/2, -pitch[1]/2]) {
+    translate([pitch[0]/2, -pitch[1]/2]) {
         linear_extrude(h1) hull() {
             $fn=16;
             mirror_copy(X_AXIS) mirror_copy(Y_AXIS) {
@@ -370,8 +370,10 @@ module SwPuch6mm(h=mm(4.3)) {
                 cylinder(d=d2,h=h2*2, center=true);
             }
         }
-        translate([0,0,h1-BIAS]) {
-            cylinder(d=d1, h=h-h1+BIAS);
+        Color([.2,.2,.2]) {
+            translate([0,0,h1-BIAS]) {
+                cylinder(d=d1, h=h-h1+BIAS);
+            }
         }
         mirror_copy(Y_AXIS) {
             translate([0,pitch[1]/2, mm(1)/2]) {

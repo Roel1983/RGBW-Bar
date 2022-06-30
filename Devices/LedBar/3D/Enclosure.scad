@@ -10,9 +10,9 @@ include<TransformIf.inc>
 include<Units.inc>
 
 MainBoard(with_child_board=true);
-*Profile();
-*CasePart("bottom");
-CasePart("top");
+Profile();
+color("white") CasePart("bottom");
+color("white") CasePart("top");
 
 pcb_bottom_clearance = mm(3.2);
 pcb_top_clearance    = mm(5.5);
@@ -28,6 +28,46 @@ module CaseModifications(bottom_or_top, add_or_remove) {
     PcbScrews(bottom_or_top, add_or_remove);
     SW701Support(bottom_or_top, add_or_remove);
     J502Support(bottom_or_top, add_or_remove);
+    StatusLeds(bottom_or_top, add_or_remove);
+    BackConnectors(bottom_or_top, add_or_remove);
+}
+module BackConnectors(bottom_or_top, add_or_remove) {
+    Conn15EDGRC(J401_at, pins=3, pitch = mm(3.5));
+    Conn15EDGRC(J601_at, pins=2, pitch = mm(3.5));
+    Conn15EDGRC(J301_at, pins=2, pitch = mm(3.81));
+    module Conn15EDGRC(component_position, pins, pitch) {
+        a     = (pins - 1) * pitch;
+        w     = a + mm(5.2) + 2 * case_thickness;
+        d     = mm(9.2);
+        h     = mm(7.25) + case_thickness;
+        front_to_pin = mm(8.0);
+        translate([component_position[COMPONENT_AT_LOCATION][X] - mainboard_pcb_center_at[X], 0]) {
+            if(bottom_or_top=="top" && add_or_remove == "add_outside") {
+                translate([(w-a)/2, 0, mainboard_pcb_thickness]) {
+                    rotate(180) cube([
+                        w,
+                        mainboard_pcb_center[Y] + pcb_xy_clearance + mainboard_pcb_thickness,
+                        h
+                    ]);
+                }
+            }
+        }
+    }
+}
+module StatusLeds(bottom_or_top, add_or_remove) {
+    module Hole() {
+        pitch = mill(10);
+        translate([pitch/4,0, mm(2.0)]) {
+            cylinder(d=mm(3.2), h=mm(10));
+        }
+    }
+    if(bottom_or_top=="top" && add_or_remove == "remove") {
+        MainBoard_At_2D(D701_at) Hole();
+        MainBoard_At_2D(D702_at) Hole();
+        MainBoard_At_2D(D703_at) Hole();
+        MainBoard_At_2D(D704_at) Hole();
+        MainBoard_At_2D(D705_at) Hole();
+    }
 }
 module J502Support(bottom_or_top, add_or_remove) {
     if(bottom_or_top=="bottom" && add_or_remove == "add_inside") {
@@ -216,12 +256,13 @@ module M4Screw(length, head) {
 
 module SW701Support(bottom_or_top, add_or_remove) {
     MainBoard_At_2D(SW701_at) {
-        if(bottom_or_top == "bottom" && add_or_remove == "add_inside") {
-            mirror(Z_AXIS) linear_extrude(mm(8.0)) {
-                w = mm(6.5);
-                d = mm(4.5);
-                pitch = mm([6.5, 4.5]);
-                translate([pitch[0]/2, -pitch[1]/2]) {
+        pitch = mm([6.5, 4.5]);
+        translate([pitch[0]/2, -pitch[1]/2]) {
+            if(bottom_or_top == "bottom" && add_or_remove == "add_inside") {
+                mirror(Z_AXIS) linear_extrude(mm(8.0)) {
+                    w = mm(6.5);
+                    d = mm(4.5);
+                    
                     difference() {
                         square(mm([w, d]), true);
                         mirror_copy(X_AXIS) mirror_copy(Y_AXIS) {
@@ -231,6 +272,9 @@ module SW701Support(bottom_or_top, add_or_remove) {
                         }
                     }
                 }
+            }
+            if(bottom_or_top == "top" && add_or_remove == "remove") {
+                cylinder(d=mm(3.7),h=mm(10));
             }
         }
     }
