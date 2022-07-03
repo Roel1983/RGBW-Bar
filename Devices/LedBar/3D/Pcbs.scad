@@ -1,4 +1,4 @@
-include<ComponentAt.inc>
+include<LedbarPcb.inc>
 include<Constants.inc>
 include<TransformCopy.inc>
 include<TransformIf.inc>
@@ -81,11 +81,10 @@ module PerpendicularBoard(with_child_board=true) {
             PerpendicularBoard_PCB();
             MainBoard_At(J1002_at) {
                 if (with_child_board) {
-                    rotate(-90, Y_AXIS) translate([-mm(1.5),0,mm(7.2)]) CenterBoard();
+                    rotate(180) rotate(90, Y_AXIS) translate([-mm(1.5),0,mm(7.2)]) CenterBoard();
                 }
-                rotate(90) rotate(-90, X_AXIS) translate(mm([0,-.5])) {
+                rotate(-90) rotate(90, X_AXIS) translate(mm([0,-.5])) {
                     Conn2mmFemale(2, 6);
-                    
                 }
             }
         }
