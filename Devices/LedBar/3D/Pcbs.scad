@@ -443,19 +443,23 @@ module MainBoard_At_Back(component_position) {
     }
 }
 
+function mainboard_at_xy(component_position) = mm([
+    component_position[COMPONENT_AT_LOCATION][X] - mainboard_pcb_center_at[X],
+    mainboard_pcb_center_at[Y] - component_position[COMPONENT_AT_LOCATION][Y]
+]);
+function mainboard_at_rotate(component_position) = (
+    (len(component_position) < COMPONENT_AT_ROTATION) ? (
+        0
+    ) : (
+        component_position[COMPONENT_AT_ROTATION]
+    )
+);
 module MainBoard_At_2D(component_position, rotate=true) {
     translate(
-        mm([
-            component_position[COMPONENT_AT_LOCATION][X] - mainboard_pcb_center_at[X],
-            mainboard_pcb_center_at[Y] - component_position[COMPONENT_AT_LOCATION][Y]
-        ])
+        mainboard_at_xy(component_position)
     ) rotate_if(
         rotate,
-        len(component_position) < COMPONENT_AT_ROTATION ? (
-            0
-        ) : (
-            component_position[COMPONENT_AT_ROTATION]
-        )
+        mainboard_at_rotate(component_position)
     ) {
             children();
     }
