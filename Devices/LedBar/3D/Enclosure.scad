@@ -4,7 +4,7 @@ include<LedbarPcb.inc>
 include<Constants.inc>
 include<Bar.inc>
 include<Pcbs.inc>
-include<Shapes.inc>
+include<HexNutCavity.inc>
 include<TransformCopy.inc>
 include<TransformIf.inc>
 include<Units.inc>
@@ -60,6 +60,9 @@ case_center_wall_size = [
     case_inner_size[X] + case_thickness,
     case_inner_size[Y] + case_thickness,
 ];
+case_inner_bottom       = -pcb_bottom_clearance;
+case_outer_bottom       = case_inner_bottom - case_thickness;
+case_center_wall_bottom = case_inner_bottom - case_thickness / 2;
 
 module BackConnectors(bottom_or_top, add_or_remove) {
     pin_pad_diameter  = mm(2.8);
@@ -316,16 +319,9 @@ module PcbScrews(bottom_or_top, add_or_remove) {
                     translate([
                         0,
                         0,
-                        max(
-                            -pcb_bottom_clearance - case_thickness + mm(2.5),
-                            mm(-1.5)
-                        )
-                    ]) {
-                        hull() {
-                            mirror(Z_AXIS) linear_extrude(mm(10)) Hex(d=mm(5.5));
-                            cylinder(d=mm(3.2),h=mm(0.5));
-                        }
-                    }
+                        case_outer_bottom
+                    ]) HexNutCavity(HEXNUT_SIZE_M3);
+                    
                 } else if (m3_or_m4 == "M4") {
                     cylinder(
                         d      = mm(4.3),
@@ -428,6 +424,7 @@ module IntersectionOrDifference(intersection_or_difference) {
 }
 
 module CasePart(top_or_bottom) {
+    echo("layer_height = 0.15mm");
     difference() {
         union() {
             difference() {
