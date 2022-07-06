@@ -304,7 +304,7 @@ module PcbScrews(bottom_or_top, add_or_remove) {
                     if (m3_or_m4 == "M3") {
                         BIAS = 0.1;
                         translate([0,0,-BIAS]) {
-                            cylinder(d=mm(3.2) + 2 * NOZZLE, h = BIAS + mainboard_pcb_thickness);
+                            cylinder(d=mm(4.15), h = BIAS + mainboard_pcb_thickness);
                         }
                     }
                 }
@@ -312,7 +312,7 @@ module PcbScrews(bottom_or_top, add_or_remove) {
             if(add_or_remove == "remove") {
                 if (m3_or_m4 == "M3") {
                     cylinder(
-                        d      = mm(3.2),
+                        d      = mm(3.15),
                         h      = 16,
                         center = true
                     );
@@ -425,6 +425,8 @@ module IntersectionOrDifference(intersection_or_difference) {
 
 module CasePart(top_or_bottom) {
     echo("layer_height = 0.15mm");
+    echo("Ensure vertical shell thickness = true");
+    echo("Detect thinwalls = true");
     difference() {
         union() {
             difference() {
