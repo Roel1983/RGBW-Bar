@@ -1,5 +1,18 @@
 $fn=64;
 
+// Command line arguments: -D val=val
+part     = undef;
+revision = undef;
+
+// Default argument values
+default_part     = "case-bottom.stl";
+default_revision = "#1234567";
+
+// Effective argument values
+effective_part     = part     != undef ? part     : default_part;
+effective_revision = revision != undef ? revision : default_revision;
+
+// Includes
 include<LedbarPcb.inc>
 include<Constants.inc>
 include<Bar.inc>
@@ -9,10 +22,37 @@ include<TransformCopy.inc>
 include<TransformIf.inc>
 include<Units.inc>
 
-MainBoard(with_child_board=true);
-Profile();
-!color("white") CasePart("bottom");
-color("white") CasePart("top");
+if (effective_part == "case-bottom.stl") {
+    echo("layer_height = 0.15mm");
+    echo("Ensure vertical shell thickness = true");
+    echo("Detect thinwalls = true");
+    CasePart("bottom");
+} else if (effective_part == "case-top.stl") {
+    echo("layer_height = 0.15mm");
+    echo("Ensure vertical shell thickness = true");
+    echo("Detect thinwalls = true");
+    CasePart("case");
+} else if (effective_part == "case") {
+    CasePart("bottom");
+    CasePart("case-top");
+} else if (effective_part == "profile") {
+    Profile();
+} else if (effective_part == "mainboard") {
+    MainBoard(with_child_board=false);
+} else if (effective_part == "perpendicular-board") {
+    PerpendicularBoard(with_child_board=false);
+} else if (effective_part == "center-board") {
+    CenterBoard();
+} else if (effective_part == "boards") {
+    MainBoard(with_child_board=true);
+} else {
+    MainBoard(with_child_board=true);
+    %render() Profile();
+    %render() {
+        CasePart("bottom");
+        CasePart("top");
+    }
+}
 
 pcb_bottom_clearance = mm(3.2);
 pcb_top_clearance    = mm(5.5);
@@ -31,6 +71,7 @@ module CaseModifications(bottom_or_top, add_or_remove) {
     StatusLeds(bottom_or_top, add_or_remove);
     BackConnectors(bottom_or_top, add_or_remove);
     SideConnectors(bottom_or_top, add_or_remove);
+    Revision(bottom_or_top, add_or_remove);
 }
 mainboard_pcb_back_left = [
     - mainboard_pcb_size[X] + mainboard_pcb_center[X],
@@ -424,9 +465,6 @@ module IntersectionOrDifference(intersection_or_difference) {
 }
 
 module CasePart(top_or_bottom) {
-    echo("layer_height = 0.15mm");
-    echo("Ensure vertical shell thickness = true");
-    echo("Detect thinwalls = true");
     difference() {
         union() {
             difference() {
@@ -522,5 +560,22 @@ module CaseBasicShape(inner_or_outer) {
         }
         offset(delta = case_thickness + offset) Inner();
         offset(delta = offset) Outer();
+    }
+}
+module Revision(bottom_or_top, add_or_remove) {
+    if (bottom_or_top == "bottom" && add_or_remove == "remove") {
+        BIAS         = 0.1;
+        LAYER_HEIGHT = mm(0.15);
+        depth        = LAYER_HEIGHT;
+        
+        translate([0,mm(-15),case_inner_bottom - depth]) {
+            linear_extrude(BIAS + depth) text(
+                text = effective_revision,
+                size = mm(7),
+                font = "Arial",
+                halign = "center",
+                valign = "center"
+            );
+        }
     }
 }
