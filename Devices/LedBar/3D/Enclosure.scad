@@ -5,7 +5,7 @@ part     = undef;
 revision = undef;
 
 // Default argument values
-default_part     = "case-bottom.stl";
+default_part     = "";
 default_revision = "#1234567";
 
 // Effective argument values
@@ -31,7 +31,7 @@ if (effective_part == "case-bottom.stl") {
     echo("layer_height = 0.15mm");
     echo("Ensure vertical shell thickness = true");
     echo("Detect thinwalls = true");
-    CasePart("case");
+    CasePart("top");
 } else if (effective_part == "case") {
     CasePart("bottom");
     CasePart("case-top");
