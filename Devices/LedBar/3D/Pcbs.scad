@@ -5,10 +5,10 @@ include<TransformIf.inc>
 include<Units.inc>
 
 $fn=32;
-MainBoard(with_child_board=true);
+MainBoard();
 
-module MainBoard(with_child_board=true) {
-    MainBoard_PCB();
+module MainBoard(with_child_board=true, parts_only=false) {
+    if(!parts_only) MainBoard_PCB();
 
     MainBoard_At(BT901_at) BattCr1225();
 
@@ -27,7 +27,7 @@ module MainBoard(with_child_board=true) {
     MainBoard_At(J401_at)  Conn15EDGRC(pins=3, pitch = mm(3.5));
     MainBoard_At(J501_at)  ConnPH(pins=5);
     if(with_child_board) {
-        MainBoard_At(J502_at)  PerpendicularBoard();
+        MainBoard_At(J502_at)  PerpendicularBoard(parts_only=parts_only);
     }
     MainBoard_At(J503_at)  ConnPH(pins=5);
     MainBoard_At(J601_at)  Conn15EDGRC(pins=2, pitch = mm(3.5));
@@ -71,20 +71,25 @@ module MainBoard_PCB() {
 
 
 
-module PerpendicularBoard(with_child_board=true) {
+module PerpendicularBoard(with_child_board=true, parts_only=false) {
     rotate(90, Y_AXIS)rotate(-90) {
         translate(mm([
             -(J1001_at[COMPONENT_AT_LOCATION][X] - mainboard_pcb_center_at[0]),
             -(mainboard_pcb_center_at[1] - J1001_at[COMPONENT_AT_LOCATION][Y]),
             -mainboard_pcb_thickness / 2
         ])) {
-            PerpendicularBoard_PCB();
+            if(!parts_only) PerpendicularBoard_PCB();
             MainBoard_At(J1002_at) {
-                if (with_child_board) {
-                    rotate(180) rotate(90, Y_AXIS) translate([-mm(1.5),0,mm(7.2)]) CenterBoard();
-                }
-                rotate(-90) rotate(90, X_AXIS) translate(mm([0,-.5])) {
-                    Conn2mmFemale(2, 6);
+                pitch = mm(2);
+                translate([0,0,-pitch/2]) {
+                    if (with_child_board) {
+                        rotate(180) rotate(90, Y_AXIS) translate([-mm(1.5),0,mm(7.2)]) {
+                            CenterBoard(parts_only=parts_only);
+                        }
+                    }
+                    rotate(-90) rotate(90, X_AXIS) translate(mm([0,-.5])) {
+                        Conn2mmFemale(2, 6);
+                    }
                 }
             }
         }
@@ -118,13 +123,13 @@ module PerpendicularBoard_PCB() {
         Outline();
     }
 }
-module CenterBoard() {
+module CenterBoard(parts_only=false) {
     translate(mm([
         -(J1202_at[COMPONENT_AT_LOCATION][X] - mainboard_pcb_center_at[0]),
         -(mainboard_pcb_center_at[1] - J1202_at[COMPONENT_AT_LOCATION][Y]),
         -mainboard_pcb_thickness/2
     ])) {
-        CenterBoard_PCB();
+        if(!parts_only) CenterBoard_PCB();
         MainBoard_At(J1202_at) Conn2mmMale(2, 6);
     }
 }
