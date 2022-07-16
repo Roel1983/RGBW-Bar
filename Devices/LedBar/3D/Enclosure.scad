@@ -681,6 +681,13 @@ module CenterBoard(bottom_or_top, add_or_remove) {
     Bridge();
     Screw();
     
+    for (x = mm([-30.0, 30.0])) translate([x,0]) {
+        rotate(180) {
+            Bridge();
+            Screw();
+        }
+    }
+    
     module Screw() {
         CenterBoard_At(H1204_at) {
             if(bottom_or_top == "top" && add_or_remove == "remove") {
