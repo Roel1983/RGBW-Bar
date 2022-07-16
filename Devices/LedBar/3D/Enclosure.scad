@@ -47,12 +47,10 @@ if (effective_part == "case-bottom.stl") {
 } else if (effective_part == "boards") {
     MainBoard(with_child_board=true);
 } else {
-    *MainBoard(with_child_board=true, parts_only=false);
-    *render() Profile();
-    //render() {
-        *CasePart("bottom");
-        CasePart("top");
-    //}
+    MainBoard(with_child_board=true, parts_only=false);
+    %render() Profile();
+    CasePart("bottom");
+    !CasePart("top");
 }
 
 pcb_bottom_clearance = mm(3.2);
@@ -341,40 +339,54 @@ module J502Support(bottom_or_top, add_or_remove) {
 }
 
 module Guides(bottom_or_top, add_or_remove) {
-    if(bottom_or_top=="bottom" && add_or_remove == "add_inside") {
-        x1 = -mainboard_pcb_center[0];
-        x2 = mainboard_pcb_size[0]-mainboard_pcb_center[0];
-        y1 = -mainboard_pcb_center[1];
-        y2 = mainboard_pcb_size[1]-mainboard_pcb_center[1];
-        for(p=[
-            [[x1, mm( 14)],   0],
-            [[x1, mm(-14)],   0],
-            [[mm( 7.4), y1],  90],
-            [[x2, mm( 14)], 180],
-            [[x2, mm(-14)], 180],
-            [[mm( 14), y2], 270],
-            [[mm(-14), y2], 270],
-        ]) translate(p[0]) rotate(p[1]) {
-            Guide();
-        }
+   
+    x1 = -mainboard_pcb_center[0];
+    x2 = mainboard_pcb_size[0]-mainboard_pcb_center[0];
+    y1 = -mainboard_pcb_center[1];
+    y2 = mainboard_pcb_size[1]-mainboard_pcb_center[1];
+    for(p=[
+        [[x1, mm( 14)],   0],
+        [[x1, mm(-14)],   0],
+        [[mm( 7.4), y1],  90],
+        [[x2, mm( 14)], 180],
+        [[x2, mm(-14)], 180],
+        [[mm( 14), y2], 270],
+        [[mm(-14), y2], 270],
+    ]) translate(p[0]) rotate(p[1]) {
+        Guide();
     }
     
     module Guide() {
-        render() rotate(90, X_AXIS) {
-            linear_extrude(mm(3.0), center=true) {
-                BIAS = 0.01;
-                support = mm(0.0);
-                polygon([
-                    [0,0],
-                    [support, 0],
-                    [support, -pcb_bottom_clearance - BIAS],
-                    [-pcb_xy_clearance-BIAS, -pcb_bottom_clearance - BIAS],
-                    [-pcb_xy_clearance, -pcb_bottom_clearance - BIAS],
-                    [-pcb_xy_clearance, , case_seam_zpos],
-                    [-pcb_xy_clearance+mm(.2), mainboard_pcb_thickness + mm(1.5)],
-                    [-pcb_xy_clearance+mm(.2)+2*NOZZLE, mainboard_pcb_thickness + mm(1.5)],
-                    [0, mainboard_pcb_thickness],
-                ]);
+        if(bottom_or_top=="bottom" && add_or_remove == "add_inside") {
+            render() rotate(90, X_AXIS) {
+                linear_extrude(mm(3.0), center=true) {
+                    BIAS = 0.01;
+                    support = mm(0.0);
+                    polygon([
+                        [0,0],
+                        [support, 0],
+                        [support, -pcb_bottom_clearance - BIAS],
+                        [-pcb_xy_clearance-BIAS, -pcb_bottom_clearance - BIAS],
+                        [-pcb_xy_clearance, -pcb_bottom_clearance - BIAS],
+                        [-pcb_xy_clearance, , case_seam_zpos],
+                        [-pcb_xy_clearance+mm(.2), mainboard_pcb_thickness + mm(1.5)],
+                        [-pcb_xy_clearance+mm(.2)+2*NOZZLE, mainboard_pcb_thickness + mm(1.5)],
+                        [0, mainboard_pcb_thickness],
+                    ]);
+                }
+            }
+        }
+        if(bottom_or_top=="top" && add_or_remove == "remove") {
+            render() rotate(90, X_AXIS) {
+                linear_extrude(mm(3.3), center=true) {
+                    BIAS = 0.01;
+                    translate([mm(0.15),0]) {
+                        mirror(X_AXIS) square([
+                            pcb_xy_clearance + mm(0.15),
+                            mainboard_pcb_thickness + mm(1.7)
+                        ]);
+                    }
+                }
             }
         }
     }
