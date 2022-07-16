@@ -47,7 +47,7 @@ if (effective_part == "case-bottom.stl") {
 } else if (effective_part == "boards") {
     MainBoard(with_child_board=true);
 } else {
-    MainBoard(with_child_board=true, parts_only=false);
+    *MainBoard(with_child_board=true, parts_only=false);
     *render() Profile();
     //render() {
         *CasePart("bottom");
@@ -703,7 +703,7 @@ module CenterBoard(bottom_or_top, add_or_remove) {
         MainBoard_At(J502_at) {
             if(bottom_or_top=="top" && add_or_remove == "add_inside") {
                 translate([
-                    0, 0, mm(21.5)
+                    0, 0, mm(21.1)
                 ]) difference() {
                     linear_extrude(
                         mm(20.0)
@@ -716,7 +716,7 @@ module CenterBoard(bottom_or_top, add_or_remove) {
                     ], center = true);
                     LAYER_HEIGHT = mm(.15);
                     linear_extrude(
-                        4 * LAYER_HEIGHT,
+                        10 * LAYER_HEIGHT,
                         center = true
                     ) square([
                         max(
