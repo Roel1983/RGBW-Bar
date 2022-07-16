@@ -4,7 +4,7 @@ git_revision            :=$(git_revision_nr)$(git_uncommitted_changes)
 
 stl_folder              :=./stl/$(git_revision)
 
-parts                   := case-bottom.stl case-top.stl
+parts                    = case-bottom.stl case-top.stl profile-drill-guide.stl
 
 .PHONY: warn_committed_changes
 ifeq ($(git_uncommitted_changes),)
@@ -20,7 +20,7 @@ all: $(parts)
 
 define make-part-target
 .PHONY: $1
-case-bottom.stl: $(stl_folder)/$1
+$1: $(stl_folder)/$1
 
 $(stl_folder)/$1: Enclosure.scad warn_committed_changes
 	mkdir -p $(stl_folder)

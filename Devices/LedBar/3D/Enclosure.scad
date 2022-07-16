@@ -30,9 +30,14 @@ if (effective_part == "case-bottom.stl") {
     CasePart("bottom");
 } else if (effective_part == "case-top.stl") {
     echo("layer_height = 0.15mm");
-    echo("Ensure vertical shell thickness = true");
-    echo("Detect thinwalls = true");
+    echo("Detect bridge perimeters");
+    echo("Generate support material");
+    echo("Support on build plate only");
+    echo("Manual remove support under bridge and side connectors");
     CasePart("top");
+} else if (effective_part == "profile-drill-guide.stl") {
+    echo("layer_height = 0.15mm");
+    ProfileDrillGuide();
 } else if (effective_part == "case") {
     CasePart("bottom");
     CasePart("case-top");
@@ -48,9 +53,52 @@ if (effective_part == "case-bottom.stl") {
     MainBoard(with_child_board=true);
 } else {
     MainBoard(with_child_board=true, parts_only=false);
-    %render() Profile();
+    render() Profile();
     CasePart("bottom");
-    !CasePart("top");
+    CasePart("top");
+}
+
+module ProfileDrillGuide() {
+    difference() {
+        translate(mm([0,0,top_height])) {
+            difference() {
+                rotate(90, Y_AXIS) linear_extrude(mm(20), center=true) rotate(-45){
+                    difference() {
+                        translate(mm([-profile_thicknes - 3,-profile_thicknes - 3]))square(mm([5,30]));
+                        translate(mm([-profile_thicknes,-profile_thicknes]))square(mm(25.4));
+                        square(mm(30));
+                    }
+                }
+                rotate(45, X_AXIS) rotate(-135, Z_AXIS)cube(10);
+            }
+        }
+        CenterBoard_At(H1204_at) {
+            BIAS= 0.1;
+            translate([0,0,-4]) cylinder(d=mm(3.1), h=mm(8));
+        }
+        pitch      = mm(2.0);
+        pins       = [2, 6];
+        CenterBoard_At(J1202_at) {
+            translate([
+                .5 * pitch,
+                -(pins[Y] - .5) * pitch,
+                -5
+            ]) linear_extrude(case_thickness + profile_thicknes + 5) {
+                d = 1.1;
+                for(x=[d/2, pins[X] * pitch - d/2]) {
+                    for(y=[d/2, pins[Y] * pitch - d/2]) {
+                        translate([x,y])circle(d=d);
+                    }
+                }
+                a = mm(2.5);
+                translate([0,a])
+                square([
+                    pins[X] * pitch,
+                    pins[Y] * pitch - 2*a,
+                ]);
+            }
+        }
+    }
 }
 
 pcb_bottom_clearance = mm(3.2);
