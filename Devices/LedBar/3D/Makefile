@@ -18,15 +18,11 @@ endif
 .PHONY: all
 all: $(parts)
 
-.PHONY: case-bottom.stl
-case-bottom.stl: $(stl_folder)/case-bottom.stl
-
-#$(stl_folder)/case-bottom.stl: Enclosure.scad warn_committed_changes
-#	mkdir -p $(stl_folder)
-#	openscad -D "part=\"case-bottom.stl\"" -D "revision=\"$(git_revision)\"" -o $(stl_folder)/case-bottom.stl Enclosure.scad
-
 define make-part-target
-$1: Enclosure.scad warn_committed_changes
+.PHONY: $1
+case-bottom.stl: $(stl_folder)/$1
+
+$(stl_folder)/$1: Enclosure.scad warn_committed_changes
 	mkdir -p $(stl_folder)
 	openscad -D "part=\"$1\"" -D "revision=\"$(git_revision)\"" -o $(stl_folder)/$1 Enclosure.scad
 endef
