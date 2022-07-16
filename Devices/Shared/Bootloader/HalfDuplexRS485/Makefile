@@ -153,7 +153,7 @@ ng_isp: isp
 atmega328: TARGET = atmega328
 atmega328: MCU_TARGET = atmega328p
 atmega328: CFLAGS += '-DMAX_TIME_COUNT=F_CPU>>4' '-DNUM_LED_FLASHES=1' -DBAUD_RATE=57600
-atmega328: AVR_FREQ = 16000000L
+atmega328: AVR_FREQ = 14745600L
 atmega328: LDSECTION  = --section-start=.text=0x7800
 atmega328: $(PROGRAM)_atmega328.hex
 
