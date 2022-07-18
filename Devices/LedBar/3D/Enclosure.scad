@@ -35,6 +35,15 @@ if (effective_part == "case-bottom.stl") {
     echo("Support on build plate only");
     echo("Manual remove support under bridge and side connectors");
     CasePart("top");
+} else if (effective_part == "profile_support_mid.stl") {
+    echo("layer_height = 0.15mm");
+    ProfileSupportMid();
+} else if (effective_part == "profile_support_end_straight.stl") {
+    echo("layer_height = 0.15mm");
+    ProfileSupportEnd(angle = 0);
+} else if (effective_part == "profile_support_end_bend.stl") {
+    echo("layer_height = 0.15mm");
+    ProfileSupportEnd(angle = 45);
 } else if (effective_part == "profile-drill-guide.stl") {
     echo("layer_height = 0.15mm");
     ProfileDrillGuide();
@@ -53,9 +62,18 @@ if (effective_part == "case-bottom.stl") {
     MainBoard(with_child_board=true);
 } else {
     MainBoard(with_child_board=true, parts_only=false);
-    render() Profile();
+    %render() Profile();
     CasePart("bottom");
     CasePart("top");
+    mirror_copy(X_AXIS) translate([mm(80),0]) {
+        ProfileSupportMid();
+    }    
+    translate([(profile_lenght-profile_end_center_wall)/2,0]) {
+        ProfileSupportEnd(angle=0);
+    }
+    translate([-(profile_lenght-profile_end_center_wall)/2,0]) {
+        ProfileSupportEnd(angle=45);
+    }
 }
 
 module ProfileDrillGuide() {
@@ -65,7 +83,7 @@ module ProfileDrillGuide() {
                 rotate(90, Y_AXIS) linear_extrude(mm(20), center=true) rotate(-45){
                     difference() {
                         translate(mm([-profile_thicknes - 3,-profile_thicknes - 3]))square(mm([5,30]));
-                        translate(mm([-profile_thicknes,-profile_thicknes]))square(mm(25.4));
+                        translate(mm([-profile_thicknes,-profile_thicknes]))square(profile_size);
                         square(mm(30));
                     }
                 }
@@ -109,6 +127,7 @@ case_seam_zpos       = mainboard_pcb_thickness;
 case_seam_height     = mm(0.8);
 case_seam_thickness  = NOZZLE;
 case_seam_clearance  = mm(0.1);
+profile_end_center_wall = 2 * NOZZLE;
 
 module CaseModifications(bottom_or_top, add_or_remove) {
     Guides(bottom_or_top, add_or_remove);
@@ -730,6 +749,19 @@ module CenterBoard_At(at) {
     }
 }
 
+module ProfileScrewAndNutHole() {
+    mirror(Z_AXIS) {
+        cylinder(d=mm(3.2), h=mm(8.5));
+        translate([0,0, mm(4.0)]) {
+            
+            linear_extrude(mm(2.35))
+            hull() {
+                Hex(5.5);
+                translate([0,mm(2)] )Hex(5.5);
+            }
+        }
+    }
+}
 module CenterBoard(bottom_or_top, add_or_remove) {
     BIAS       = mm(0.1);
     pitch      = mm(2.0);
@@ -751,17 +783,7 @@ module CenterBoard(bottom_or_top, add_or_remove) {
     module Screw() {
         CenterBoard_At(H1204_at) {
             if(bottom_or_top == "top" && add_or_remove == "remove") {
-                mirror(Z_AXIS) {
-                    cylinder(d=mm(3.2), h=mm(8.5));
-                    translate([0,0, mm(4.0)]) {
-                        
-                        linear_extrude(mm(2.35))
-                        hull() {
-                            Hex(5.5);
-                            translate([0,mm(2)] )Hex(5.5);
-                        }
-                    }
-                }
+                ProfileScrewAndNutHole();
             }
         }
     }
@@ -836,6 +858,174 @@ module CenterBoard(bottom_or_top, add_or_remove) {
             }
         }
     }
+}
+
+module ProfileSupportBaseShape2D(tolerance, end=false) {
+    thickness = 2 * NOZZLE / sqrt(2);
+    
+    a = sqrt(0.5) * (profile_size + 2 * tolerance) + thickness;
+    b = end ? (
+        sqrt(2) * (tolerance + profile_thicknes + thickness)
+    ) : (
+        0
+    );
+    
+    polygon([
+        [ 0, top_height + b],
+        [ a, top_height - a + b],
+        [ a, -pcb_bottom_clearance - case_thickness],
+        [-a, -pcb_bottom_clearance - case_thickness],
+        [-a, top_height - a + b],
+        [ 0, top_height + b],
+    ]);
+}
+
+module SideBoard_At(at) {
+    CenterBoard_At(H1204_at) {
+        translate([
+            at[COMPONENT_AT_LOCATION][X] - H1102_at[COMPONENT_AT_LOCATION][X],
+            at[COMPONENT_AT_LOCATION][Y] - H1102_at[COMPONENT_AT_LOCATION][Y]
+        ]) rotate(
+            at[COMPONENT_AT_ROTATION]    - H1102_at[COMPONENT_AT_ROTATION]
+        ) {
+            children();
+        };
+    }
+}
+
+module ProfileSupportMid() {
+    profile_tolerance   = mm(.2);
+    width = mm(10);
+    
+    difference() {
+        rotate(90, Y_AXIS) linear_extrude(width, center=true) {
+            rotate(90) ProfileSupportBaseShape2D(
+                tolerance=profile_tolerance, end=false);
+        }
+        
+        SideBoard_At(H1102_at) {
+            ProfileScrewAndNutHole();
+        }
+        SideBoard_At(J1102_at) {
+            pitch = mm(2.0);
+            pins  = 5;
+            e     = mm(0.6);
+            header_male_female_height = mm(6.5);
+            
+            BIAS=0.01;
+            squeeze = mm(0.1);
+            rim = mm(0.5);
+            gap = mm(8);
+            tolerance = mm(0.2);
+            a = mainboard_pcb_thickness + header_male_female_height;
+            translate([0, (pins - 1)/2 * pitch]) {
+                rotate(-90, X_AXIS)linear_extrude(pins*pitch+e+tolerance, center=true) {
+                    mirror_copy() {
+                        polygon([
+                            [-BIAS, 0],
+                            [(pitch+e)/2, 0],
+                            [(pitch+e)/2 - squeeze, a],
+                            [-BIAS, a]
+                        ]);
+                    }
+                }
+                rotate(-90, X_AXIS)linear_extrude(pins*pitch+e - rim, center=true) {
+                    
+                    mirror_copy() {
+                        polygon([
+                            [-BIAS, 0],
+                            [(pitch+e)/2, 0],
+                            [(pitch+e)/2 - squeeze, a],
+                            [width, a ],
+                            [width, a + gap],
+                            [-BIAS, a + gap]
+                        ]);
+                        translate([-2,a + gap]) {
+                            translate([6, 0]) {
+                                square([width * 1.5, 3]);
+                            }
+                            translate([0,  + mm(2)]) {
+                                square([width * 1.5, 3]);
+                            }
+                            translate([0, mm(3+2+3)]) {
+                                square([width * 1.5, 3]);
+                            }
+                        }
+                        
+                    }
+                }
+            }
+        }
+        BIAS = 0.01;
+        translate([0,0,-pcb_bottom_clearance - case_thickness-BIAS]) {
+            linear_extrude(mm(.15) + BIAS) rotate(90) mirror() text(
+                text = effective_revision,
+                size = mm(5.5),
+                font = "Arial",
+                halign = "center",
+                valign = "center"
+            );
+        }
+    }
+    rotate_copy(180) {
+        translate([width/2,0]) rotate(-90)Mount();
+    }
+}
+
+
+module ProfileSupportEnd() {
+    width       = mm(10.0);
+    tolerance   = mm(.2);
+    
+    difference() {
+        rotate(90, Y_AXIS) linear_extrude(width, center=true) {
+            rotate(90) ProfileSupportBaseShape2D(tolerance= tolerance, end=true);
+        }
+        mirror_copy(X_AXIS)
+        translate([profile_end_center_wall/2, 0, top_height]) {
+            rotate(90, Y_AXIS) linear_extrude(width / 2) {
+                offset(delta= tolerance)Profile2D();
+            }
+        }
+        BIAS = 0.01;
+        translate([0,0,-pcb_bottom_clearance - case_thickness-BIAS]) {
+            linear_extrude(mm(.15) + BIAS) rotate(90) mirror() text(
+                text = effective_revision,
+                size = mm(5.5),
+                font = "Arial",
+                halign = "center",
+                valign = "center"
+            );
+        }
+    }
+}
+
+module Mount() {
+    BIAS = 0.1;
+    thickness = mm(1.5);
+    height    = pcb_bottom_clearance + case_thickness;
+    length    = mm(10);
+    d1   = mm(4.0);
+    d2   = mm(8.0);
+    wall      = 4 * NOZZLE;
+    
+    inner_width = d2 + mm(.5);
+    outer_width = inner_width + 2 * wall;
+    
+    translate([0,0, -pcb_bottom_clearance - case_thickness])difference() {
+        rotate(-90, Y_AXIS)linear_extrude(outer_width, center=true) polygon([
+            [0,-BIAS],
+            [0, length],
+            [thickness, length],
+            [height, -BIAS]
+        ]);
+        translate([0, length/2, height/2 + thickness]) {
+            cube([inner_width, length+ 4*BIAS, height], center=true);
+        }
+        translate([0, 5, -BIAS]) {
+            cylinder(d1=d1, d2=d2, h = 2*BIAS + thickness);
+        }
+    }    
 }
 
 module BatteryHolder(bottom_or_top, add_or_remove) {

@@ -4,7 +4,7 @@ git_revision            :=$(git_revision_nr)$(git_uncommitted_changes)
 
 stl_folder              :=./stl/$(git_revision)
 
-parts                    = case-bottom.stl case-top.stl profile-drill-guide.stl
+parts                    = case-bottom.stl case-top.stl profile-drill-guide.stl profile_support_mid.stl profile_support_end_straight.stl profile_support_end_bend.stl
 
 .PHONY: warn_committed_changes
 ifeq ($(git_uncommitted_changes),)

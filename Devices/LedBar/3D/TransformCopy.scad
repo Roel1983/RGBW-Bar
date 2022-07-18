@@ -30,3 +30,11 @@ module mirror_copy(
     children();
     mirror(vec) children();
 }
+
+module rotate_copy(
+    a,
+    vec=undef
+) {
+    children();
+    rotate(a, vec) children();
+}
