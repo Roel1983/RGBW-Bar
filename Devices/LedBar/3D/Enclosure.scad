@@ -69,10 +69,10 @@ if (effective_part == "case-bottom.stl") {
         ProfileSupportMid();
     }    
     translate([(profile_lenght-profile_end_center_wall)/2,0]) {
-        ProfileSupportEnd(angle=0);
+        ProfileSupportEnd(angle=45);
     }
     translate([-(profile_lenght-profile_end_center_wall)/2,0]) {
-        ProfileSupportEnd(angle=45);
+        ProfileSupportEnd(angle=0);
     }
 }
 
@@ -899,8 +899,16 @@ module ProfileSupportMid() {
     
     difference() {
         rotate(90, Y_AXIS) linear_extrude(width, center=true) {
-            rotate(90) ProfileSupportBaseShape2D(
-                tolerance=profile_tolerance, end=false);
+            difference() {
+                rotate(90) ProfileSupportBaseShape2D(
+                    tolerance=profile_tolerance, end=false);
+                translate([-2,14]) hull() {
+                    circle(d=3);
+                    translate([-8,0]) circle(d=3);
+                    translate([-10,-2]) circle(d=3);
+                    translate([0,-12]) circle(d=3);
+                }
+            }
         }
         
         SideBoard_At(H1102_at) {
@@ -972,24 +980,34 @@ module ProfileSupportMid() {
     }
 }
 
-
-module ProfileSupportEnd() {
+module ProfileSupportEnd(angle) {
     width       = mm(10.0);
     tolerance   = mm(.2);
     
-    difference() {
-        rotate(90, Y_AXIS) linear_extrude(width, center=true) {
-            rotate(90) ProfileSupportBaseShape2D(tolerance= tolerance, end=true);
-        }
-        mirror_copy(X_AXIS)
+    module cut() {
         translate([profile_end_center_wall/2, 0, top_height]) {
             rotate(90, Y_AXIS) linear_extrude(width / 2) {
                 offset(delta= tolerance)Profile2D();
             }
         }
+    }
+    
+    pivot = [0, -sqrt(0.5) * profile_size - mm(2.0)];
+    difference() {
+        render() rotate(90, Y_AXIS) linear_extrude_bend(angle, width/2,width/2,pivot=pivot) {
+            rotate(90) ProfileSupportBaseShape2D(tolerance= tolerance, end=true);
+        }
+        render() rotate(90, Y_AXIS) linear_extrude_bend(angle, width,width,pivot=pivot) {
+            r=3;
+            rotate(90) offset(r) offset(mm(-6-r)) ProfileSupportBaseShape2D(tolerance= tolerance, end=true);
+        }
+        
+        mirror(X_AXIS) cut();
+        pivot(-angle, pivot) cut();
+        
         BIAS = 0.01;
         translate([0,0,-pcb_bottom_clearance - case_thickness-BIAS]) {
-            linear_extrude(mm(.15) + BIAS) rotate(90) mirror() text(
+            pivot(-angle/2, pivot)linear_extrude(mm(.15) + BIAS) rotate(90) mirror() text(
                 text = effective_revision,
                 size = mm(5.5),
                 font = "Arial",
@@ -998,6 +1016,8 @@ module ProfileSupportEnd() {
             );
         }
     }
+    translate([-width/2,0]) rotate(90)Mount();
+    pivot(-angle, pivot) translate([width/2,0]) rotate(-90)Mount();
 }
 
 module Mount() {
@@ -1071,5 +1091,33 @@ module Revision(bottom_or_top, add_or_remove) {
             halign = "center",
             valign = "center"
         );
+    }
+}
+
+module linear_extrude_bend(angle, l1, l2, pivot = [0,0,0]) {
+    BIAS=0.01;
+    vec = [1,0,0];
+    module mid() {
+        translate(pivot) {
+            rotate(angle/2, vec) scale([1, 1/cos(angle/2),1]) {
+                translate(-pivot) {
+                    linear_extrude(BIAS, center=true) children(); 
+                }
+            }
+        }
+    }
+    hull() {
+        mirror([0,0,1]) linear_extrude(l1) children();
+        mid() children();
+    }
+    hull() {
+        mid() children();
+        pivot(angle, pivot, vec) linear_extrude(l2) children();
+    }
+}
+
+module pivot(angle, pivot=[0,0,0], vec = undef) {
+    translate(pivot) rotate(angle, vec) {
+        translate(-pivot) children();
     }
 }
