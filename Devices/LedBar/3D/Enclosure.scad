@@ -44,9 +44,12 @@ if (effective_part == "case-bottom.stl") {
 } else if (effective_part == "profile_support_end_bend.stl") {
     echo("layer_height = 0.15mm");
     ProfileSupportEnd(angle = 45);
-} else if (effective_part == "profile-drill-guide.stl") {
+} else if (effective_part == "profile-drill-guide-center.stl") {
     echo("layer_height = 0.15mm");
-    ProfileDrillGuide();
+    ProfileDrillGuideCenter();
+} else if (effective_part == "profile-drill-guide-side.stl") {
+    echo("layer_height = 0.15mm");
+    ProfileDrillGuideSide();
 } else if (effective_part == "case") {
     CasePart("bottom");
     CasePart("case-top");
@@ -76,20 +79,50 @@ if (effective_part == "case-bottom.stl") {
     }
 }
 
-module ProfileDrillGuide() {
-    difference() {
-        translate(mm([0,0,top_height])) {
-            difference() {
-                rotate(90, Y_AXIS) linear_extrude(mm(20), center=true) rotate(-45){
-                    difference() {
-                        translate(mm([-profile_thicknes - 3,-profile_thicknes - 3]))square(mm([5,30]));
-                        translate(mm([-profile_thicknes,-profile_thicknes]))square(profile_size);
-                        square(mm(30));
-                    }
+module ProfileDrillGuideBasis() {
+    translate(mm([0,0,top_height])) {
+        difference() {
+            rotate(90, Y_AXIS) linear_extrude(mm(20), center=true) rotate(-45){
+                difference() {
+                    translate(mm([-profile_thicknes - 3,-profile_thicknes - 3]))square(mm([5,30]));
+                    translate(mm([-profile_thicknes,-profile_thicknes]))square(profile_size);
+                    square(mm(30));
                 }
-                rotate(45, X_AXIS) rotate(-135, Z_AXIS)cube(10);
+            }
+            rotate(45, X_AXIS) rotate(-135, Z_AXIS)cube(10);
+        }
+    }
+}
+!ProfileDrillGuideSide();
+
+module ProfileDrillGuideSide() {
+    difference() {
+        ProfileDrillGuideBasis();
+        SideBoard_At(H1102_at) {
+            BIAS= 0.1;
+            translate([0,0,-4]) cylinder(d=mm(3.1), h=mm(8));
+        }
+        pitch      = mm(2.0);
+        pins       = [1, 5];
+        SideBoard_At(J1102_at) {
+            translate([
+                -.5 * pitch,
+                -(.5) * pitch,
+                -2
+            ]) linear_extrude(case_thickness + profile_thicknes + 5) {
+                translate([0])
+                square([
+                    pins[X] * pitch,
+                    pins[Y] * pitch,
+                ]);
             }
         }
+    }
+}
+
+module ProfileDrillGuideCenter() {
+    difference() {
+        ProfileDrillGuideBasis();
         CenterBoard_At(H1204_at) {
             BIAS= 0.1;
             translate([0,0,-4]) cylinder(d=mm(3.1), h=mm(8));
@@ -102,17 +135,10 @@ module ProfileDrillGuide() {
                 -(pins[Y] - .5) * pitch,
                 -5
             ]) linear_extrude(case_thickness + profile_thicknes + 5) {
-                d = 1.1;
-                for(x=[d/2, pins[X] * pitch - d/2]) {
-                    for(y=[d/2, pins[Y] * pitch - d/2]) {
-                        translate([x,y])circle(d=d);
-                    }
-                }
-                a = mm(2.5);
-                translate([0,a])
+                translate([0])
                 square([
                     pins[X] * pitch,
-                    pins[Y] * pitch - 2*a,
+                    pins[Y] * pitch,
                 ]);
             }
         }

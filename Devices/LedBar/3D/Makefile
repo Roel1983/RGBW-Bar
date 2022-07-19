@@ -5,7 +5,13 @@ git_revision            :=$(git_revision_nr)$(git_uncommitted_changes)
 stl_folder              :=./stl
 stl_folder_rev          :=$(stl_folder)/$(git_revision)
 
-parts                    = case-bottom.stl case-top.stl profile-drill-guide.stl profile_support_mid.stl profile_support_end_straight.stl profile_support_end_bend.stl
+parts                    = case-bottom.stl
+parts                   += case-top.stl
+parts                   += profile_support_mid.stl
+parts                   += profile_support_end_straight.stl
+parts                   += profile_support_end_bend.stl
+parts                   += profile-drill-guide-center.stl
+parts                   += profile-drill-guide-side.stl
 
 .PHONY: warn_committed_changes
 ifeq ($(git_uncommitted_changes),)
