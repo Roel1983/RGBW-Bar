@@ -13,6 +13,9 @@ parts                   += profile_support_end_bend.stl
 parts                   += profile-drill-guide-center.stl
 parts                   += profile-drill-guide-side.stl
 
+.PHONY: all
+all: $(parts)
+
 .PHONY: warn_committed_changes
 ifeq ($(git_uncommitted_changes),)
 warn_committed_changes:
@@ -21,9 +24,6 @@ else
 warn_committed_changes:
 	@echo -n "There are uncommitted changes. Continue? [y/N] " && read ans && [ $${ans:-N} = y ]
 endif
-
-.PHONY: all
-all: $(parts)
 
 define make-part-target
 .PHONY: $1

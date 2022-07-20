@@ -93,7 +93,6 @@ module ProfileDrillGuideBasis() {
         }
     }
 }
-!ProfileDrillGuideSide();
 
 module ProfileDrillGuideSide() {
     difference() {
@@ -918,7 +917,7 @@ module SideBoard_At(at) {
         };
     }
 }
-
+!ProfileSupportMid();
 module ProfileSupportMid() {
     profile_tolerance   = mm(.2);
     width = mm(10);
@@ -947,18 +946,17 @@ module ProfileSupportMid() {
             header_male_female_height = mm(6.5);
             
             BIAS=0.01;
-            squeeze = mm(0.1);
             rim = mm(0.5);
             gap = mm(8);
-            tolerance = mm(0.2);
+            tolerance = mm([.3,.5]);
             a = mainboard_pcb_thickness + header_male_female_height;
             translate([0, (pins - 1)/2 * pitch]) {
-                rotate(-90, X_AXIS)linear_extrude(pins*pitch+e+tolerance, center=true) {
+                rotate(-90, X_AXIS)linear_extrude(pins*pitch+e+tolerance[Y], center=true) {
                     mirror_copy() {
                         polygon([
                             [-BIAS, 0],
-                            [(pitch+e)/2, 0],
-                            [(pitch+e)/2 - squeeze, a],
+                            [(pitch+e)/2 + tolerance[X], 0],
+                            [(pitch+e)/2 + tolerance[X], a],
                             [-BIAS, a]
                         ]);
                     }
@@ -969,16 +967,19 @@ module ProfileSupportMid() {
                         polygon([
                             [-BIAS, 0],
                             [(pitch+e)/2, 0],
-                            [(pitch+e)/2 - squeeze, a],
+                            [(pitch+e)/2, a],
                             [width, a ],
                             [width, a + gap],
                             [-BIAS, a + gap]
                         ]);
                         translate([-2,a + gap]) {
-                            translate([6, 0]) {
+                            translate([4.5, 0]) {
                                 square([width * 1.5, 3]);
                             }
-                            translate([0,  + mm(2)]) {
+                            translate([0,  mm(2)]) {
+                                square([width * 1.5, 3]);
+                            }
+                            translate([6, mm(5)]) {
                                 square([width * 1.5, 3]);
                             }
                             translate([0, mm(3+2+3)]) {
