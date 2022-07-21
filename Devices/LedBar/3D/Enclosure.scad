@@ -1059,11 +1059,13 @@ module ProfileSupportEnd(angle) {
     pivot(-angle, pivot) translate([width/2,0]) rotate(-90)Mount();
 }
 
+
 module Mount() {
-    BIAS = 0.1;
+    BIAS      = 0.1;
+    slide     = mm(2.0);
     thickness = mm(1.5);
     height    = pcb_bottom_clearance + case_thickness;
-    length    = mm(10);
+    length    = mm(10) + slide;
     d1   = mm(4.0);
     d2   = mm(8.0);
     wall      = 4 * NOZZLE;
@@ -1082,7 +1084,15 @@ module Mount() {
             cube([inner_width, length+ 4*BIAS, height], center=true);
         }
         translate([0, 5, -BIAS]) {
-            cylinder(d1=d1, d2=d2, h = 2*BIAS + thickness);
+            if(slide == 0) {
+                cylinder(d1=d1, d2=d2, h = 2*BIAS + thickness);
+            } else {
+                hull() {
+                    translate_copy([0, slide]) {
+                        cylinder(d1=d1, d2=d2, h = 2*BIAS + thickness);
+                    }
+                }
+            }
         }
     }    
 }

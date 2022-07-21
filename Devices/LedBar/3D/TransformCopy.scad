@@ -38,3 +38,10 @@ module rotate_copy(
     children();
     rotate(a, vec) children();
 }
+
+module translate_copy(
+    vec
+) {
+    children();
+    translate(vec) children();
+}
