@@ -174,6 +174,10 @@ case_inner_front_right = [
     mainboard_pcb_front_right[X] + pcb_xy_clearance,
     mainboard_pcb_front_right[Y] + pcb_xy_clearance
 ];
+case_outer_front_right = [
+    case_inner_front_right[X] + case_thickness,
+    case_inner_front_right[Y] + case_thickness,
+];
 mainboard_pcb_back_left = [
     - mainboard_pcb_size[X] + mainboard_pcb_center[X],
     - mainboard_pcb_center[Y]
@@ -486,7 +490,7 @@ module Guides(bottom_or_top, add_or_remove) {
 
 module PcbScrews(bottom_or_top, add_or_remove) {
     MainBoard_At_2D(H201_at, rotate=false) {
-        rotate( 90) PcbScrew(bottom_or_top, add_or_remove, "M4");
+        rotate( 90) PcbScrew(bottom_or_top, add_or_remove, "M3");
     }
     MainBoard_At_2D(H202_at, rotate=false) {
         rotate(180) PcbScrew(bottom_or_top, add_or_remove, "M3");
@@ -495,8 +499,16 @@ module PcbScrews(bottom_or_top, add_or_remove) {
         rotate(  0) PcbScrew(bottom_or_top, add_or_remove, "M3");
     }
     MainBoard_At_2D(H204_at, rotate=false) {
-        rotate(270) PcbScrew(bottom_or_top, add_or_remove, "M4");
+        rotate(270) PcbScrew(bottom_or_top, add_or_remove, "M3");
     }
+    for (y=[
+        mainboard_at_xy(H201_at)[Y],
+        mainboard_at_xy(H202_at)[Y],
+    ]) {
+        translate([case_outer_back_left[0],y]) rotate(90) Mount();
+        translate([case_outer_front_right[0],y]) rotate(-90) Mount();
+    }
+    
     module PcbScrew(bottom_or_top, add_or_remove, m3_or_m4) {
         module Edge_2D() {
             l = mm(10.0);
