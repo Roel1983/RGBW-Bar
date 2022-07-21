@@ -65,16 +65,16 @@ if (effective_part == "case-bottom.stl") {
     MainBoard(with_child_board=true);
 } else {
     MainBoard(with_child_board=true, parts_only=false);
-    %render() Profile();
-    CasePart("bottom");
+    *%render() Profile();
+    *CasePart("bottom");
     CasePart("top");
-    mirror_copy(X_AXIS) translate([mm(80),0]) {
+    *mirror_copy(X_AXIS) translate([mm(80),0]) {
         ProfileSupportMid();
     }    
-    translate([(profile_lenght-profile_end_center_wall)/2,0]) {
+    *translate([(profile_lenght-profile_end_center_wall)/2,0]) {
         ProfileSupportEnd(angle=45);
     }
-    translate([-(profile_lenght-profile_end_center_wall)/2,0]) {
+    *translate([-(profile_lenght-profile_end_center_wall)/2,0]) {
         ProfileSupportEnd(angle=0);
     }
 }
@@ -219,9 +219,9 @@ module BackConnectors(bottom_or_top, add_or_remove) {
     front_to_pin = mm(8.0);
     
     Bar();
-    Conn15EDGRC(J401_at, pins=3, pitch = mm(3.5));
-    Conn15EDGRC(J601_at, pins=2, pitch = mm(3.5));
-    Conn15EDGRC(J301_at, pins=2, pitch = mm(3.81));
+    Conn15EDGRC(J401_at, pins=3, pitch = mm(3.5),  b = mm(4.4));
+    Conn15EDGRC(J601_at, pins=2, pitch = mm(3.5),  b = mm(4.4));
+    Conn15EDGRC(J301_at, pins=2, pitch = mm(3.81), b = mm(4.75));
     Pack0805(C601_at);
     hull() {
         Pack0805(R601_at);
@@ -257,7 +257,7 @@ module BackConnectors(bottom_or_top, add_or_remove) {
             }            
         }
     }
-    module Conn15EDGRC(component_position, pins, pitch) {
+    module Conn15EDGRC(component_position, pins, pitch, b) {
         MainBoard_At_2D(component_position) {
             if(bottom_or_top=="bottom" && add_or_remove == "remove") {
                 hull() for (pin_nr = [0:pins-1]) translate([pin_nr * pitch, 0]) {
@@ -272,7 +272,7 @@ module BackConnectors(bottom_or_top, add_or_remove) {
             
             if(bottom_or_top=="top" && add_or_remove == "remove") {
                 a     = (pins - 1) * pitch;
-                w     = a + mm(5.2);
+                w     = a + b;
                 h     = mm(7.00);
                 front_to_pin = mm(8.0);
                 BIAS         = 0.1;

@@ -23,14 +23,14 @@ module MainBoard(with_child_board=true, parts_only=false) {
 
     MainBoard_At(F301_at)  FuseHolder5x20mm();
 
-    MainBoard_At(J301_at)  Conn15EDGRC(pins=2, pitch = mm(3.81));
-    MainBoard_At(J401_at)  Conn15EDGRC(pins=3, pitch = mm(3.5));
+    MainBoard_At(J301_at)  Conn15EDGRC(pins=2, pitch = mm(3.81), b = mm(4.75));
+    MainBoard_At(J401_at)  Conn15EDGRC(pins=3, pitch = mm(3.5), b = mm(4.4));
     MainBoard_At(J501_at)  ConnPH(pins=5);
     if(with_child_board) {
         MainBoard_At(J502_at)  PerpendicularBoard(parts_only=parts_only);
     }
     MainBoard_At(J503_at)  ConnPH(pins=5);
-    MainBoard_At(J601_at)  Conn15EDGRC(pins=2, pitch = mm(3.5));
+    MainBoard_At(J601_at)  Conn15EDGRC(pins=2, pitch = mm(3.5), b = mm(4.4));
 
     MainBoard_At(SW701_at) SwPuch6mm(mm(8.0));
     MainBoard_At(SW702_at) SmdSwitch();
@@ -177,9 +177,9 @@ module ConnIsp1_27mm_BoardOutline() {
     }
 }
 
-module Conn15EDGRC(pins, pitch) {
+module Conn15EDGRC(pins, pitch, b) {
     a     = (pins - 1) * pitch;
-    w     = a + mm(5.2);
+    w     = a + b;
     d     = mm(9.2);
     h     = mm(7.25);
     front_to_pin = mm(8.0);
