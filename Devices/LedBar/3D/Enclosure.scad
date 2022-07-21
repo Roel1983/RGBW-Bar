@@ -65,16 +65,16 @@ if (effective_part == "case-bottom.stl") {
     MainBoard(with_child_board=true);
 } else {
     MainBoard(with_child_board=true, parts_only=false);
-    *%render() Profile();
-    *CasePart("bottom");
+    %render() Profile();
+    CasePart("bottom");
     CasePart("top");
-    *mirror_copy(X_AXIS) translate([mm(80),0]) {
+    mirror_copy(X_AXIS) translate([mm(80),0]) {
         ProfileSupportMid();
     }    
-    *translate([(profile_lenght-profile_end_center_wall)/2,0]) {
+    translate([(profile_lenght-profile_end_center_wall)/2,0]) {
         ProfileSupportEnd(angle=45);
     }
-    *translate([-(profile_lenght-profile_end_center_wall)/2,0]) {
+    translate([-(profile_lenght-profile_end_center_wall)/2,0]) {
         ProfileSupportEnd(angle=0);
     }
 }

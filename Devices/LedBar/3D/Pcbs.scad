@@ -15,11 +15,11 @@ module MainBoard(with_child_board=true, parts_only=false) {
     MainBoard_At(C503_at)  CpRadialP2(d=mm(10.2), h=mm(20.7), pitch=mm(5.0));
     MainBoard_At(C505_at)  CpRadialP2(d=mm(10.2), h=mm(20.7), pitch=mm(5.0));
 
-    MainBoard_At(D701_at)  Led3mm(h=mm(3.0), color="Blue");
-    MainBoard_At(D702_at)  Led3mm(h=mm(3.0), color="Red");
-    MainBoard_At(D703_at)  Led3mm(h=mm(3.0), color="Orange");
-    MainBoard_At(D704_at)  Led3mm(h=mm(3.0), color="Yellow");
-    MainBoard_At(D705_at)  Led3mm(h=mm(3.0), color="Lime");
+    MainBoard_At(D701_at)  Led3mm(h=mm(4.8), color="Blue");
+    MainBoard_At(D702_at)  Led3mm(h=mm(4.8), color="Red");
+    MainBoard_At(D703_at)  Led3mm(h=mm(4.8), color="Orange");
+    MainBoard_At(D704_at)  Led3mm(h=mm(4.8), color="Yellow");
+    MainBoard_At(D705_at)  Led3mm(h=mm(4.8), color="Lime");
 
     MainBoard_At(F301_at)  FuseHolder5x20mm();
 
