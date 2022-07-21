@@ -392,7 +392,7 @@ module SideConnectors(bottom_or_top, add_or_remove) {
 module StatusLeds(bottom_or_top, add_or_remove) {
     module Hole() {
         pitch = mill(10);
-        translate([pitch/4,0, mm(2.0)]) {
+        translate([pitch/2,0, mm(2.0)]) {
             cylinder(d=mm(3.2), h=mm(10));
         }
     }
@@ -917,7 +917,7 @@ module SideBoard_At(at) {
         };
     }
 }
-!ProfileSupportMid();
+
 module ProfileSupportMid() {
     profile_tolerance   = mm(.2);
     width = mm(10);

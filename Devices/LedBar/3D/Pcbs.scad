@@ -269,7 +269,7 @@ module Led3mm(h=0.0, color="Red") {
     d2 = mm(3.5);
     t  = mm(1.0);
     h1 = mm(5.1);
-    pitch = mill(5);
+    pitch = mill(10);
     h_cylinder = h1-d1/2;
     BIAS = 0.1;
     
