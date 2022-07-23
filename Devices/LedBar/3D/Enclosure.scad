@@ -501,12 +501,14 @@ module PcbScrews(bottom_or_top, add_or_remove) {
     MainBoard_At_2D(H204_at, rotate=false) {
         rotate(270) PcbScrew(bottom_or_top, add_or_remove, "M3");
     }
-    for (y=[
-        mainboard_at_xy(H201_at)[Y],
-        mainboard_at_xy(H202_at)[Y],
-    ]) {
-        translate([case_outer_back_left[0],y]) rotate(90) Mount();
-        translate([case_outer_front_right[0],y]) rotate(-90) Mount();
+    if(bottom_or_top=="bottom" && add_or_remove == "add") {
+        for (y=[
+            mainboard_at_xy(H201_at)[Y],
+            mainboard_at_xy(H202_at)[Y],
+        ]) {
+            translate([case_outer_back_left[0],y]) rotate(90) Mount();
+            translate([case_outer_front_right[0],y]) rotate(-90) Mount();
+        }
     }
     
     module PcbScrew(bottom_or_top, add_or_remove, m3_or_m4) {
