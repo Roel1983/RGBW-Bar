@@ -31,6 +31,7 @@ if (effective_part == "case-bottom.stl") {
 } else if (effective_part == "case-top.stl") {
     echo("layer_height = 0.15mm");
     echo("Detect bridge perimeters");
+    echo("Detect thinwalls = true");
     echo("Generate support material");
     echo("Support on build plate only");
     echo("Manual remove support under bridge and side connectors");
@@ -224,9 +225,12 @@ module BackConnectors(bottom_or_top, add_or_remove) {
     front_to_pin = mm(8.0);
     
     Bar();
-    Conn15EDGRC(J401_at, pins=3, pitch = mm(3.5),  b = mm(4.4));
-    Conn15EDGRC(J601_at, pins=2, pitch = mm(3.5),  b = mm(4.4));
-    Conn15EDGRC(J301_at, pins=2, pitch = mm(3.81), b = mm(4.75));
+    Conn15EDGRC(J401_at, pins=3, pitch = mm(3.5),  b = mm(4.4),
+        label = "RS485", pin_labels = ["<GND>", "A", "B"]);
+    Conn15EDGRC(J601_at, pins=2, pitch = mm(3.5),  b = mm(4.4),
+        label = "0-10V", pin_labels = ["<GND>", "<OUT>"]);
+    Conn15EDGRC(J301_at, pins=2, pitch = mm(3.81), b = mm(4.75),
+        label = "12V/5A", pin_labels = ["<GND>", "+"]);
     Pack0805(C601_at);
     hull() {
         Pack0805(R601_at);
@@ -262,7 +266,7 @@ module BackConnectors(bottom_or_top, add_or_remove) {
             }            
         }
     }
-    module Conn15EDGRC(component_position, pins, pitch, b) {
+    module Conn15EDGRC(component_position, pins, pitch, b, label, pin_labels) {
         MainBoard_At_2D(component_position) {
             if(bottom_or_top=="bottom" && add_or_remove == "remove") {
                 hull() for (pin_nr = [0:pins-1]) translate([pin_nr * pitch, 0]) {
@@ -275,49 +279,78 @@ module BackConnectors(bottom_or_top, add_or_remove) {
                 }                
             }
             
-            if(bottom_or_top=="top" && add_or_remove == "remove") {
+            if(bottom_or_top=="top") {
                 a     = (pins - 1) * pitch;
                 w     = a + b;
                 h     = mm(7.00);
                 front_to_pin = mm(8.0);
                 BIAS         = 0.1;
                 
-                y = front_to_pin - d - clearance_xy;
-                translate([
-                    (-w+a)/2 - clearance_xy,
-                    y,
-                    mainboard_pcb_thickness - BIAS
-                ]) {                
-                    cube([
-                        w + 2 * clearance_xy,
-                        d + 2 * clearance_xy,
-                        h + 1 * clearance_z + BIAS]);
-                    cube([
-                        w + 2 * clearance_xy,
-                        -case_inner_back_left[Y] - y + mainboard_at_xy(component_position)[Y],
-                        pcb_top_clearance + BIAS]);
+                if(add_or_remove == "remove") {
+                    y = front_to_pin - d - clearance_xy;
+                    translate([
+                        (-w+a)/2 - clearance_xy,
+                        y,
+                        mainboard_pcb_thickness - BIAS
+                    ]) {                
+                        cube([
+                            w + 2 * clearance_xy,
+                            d + 2 * clearance_xy,
+                            h + 1 * clearance_z + BIAS]);
+                        cube([
+                            w + 2 * clearance_xy,
+                            -case_inner_back_left[Y] - y + mainboard_at_xy(component_position)[Y],
+                            pcb_top_clearance + BIAS]);
+                    }
+                }
+                if(add_or_remove == "add") {
+                    echo(pitch);
+                    h = mainboard_pcb_thickness + pcb_top_clearance + case_thickness;
+                    relief = 0.15;
+                    rotate(component_position[COMPONENT_AT_ROTATION]) {
+                        translate([0,0,h]) linear_extrude(BIAS + relief) {
+                            translate([-pitch * (pins - 1) / 2,0, h]) { 
+                                LabelText(label);
+                            }
+                            for(pin=[0:pins-1]) {
+                                translate([-pitch * pin,-4.0]) {
+                                    LabelText(pin_labels[pin]);
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
-        
-        
-        
-        /*a     = (pins - 1) * pitch;
-        w     = a + mm(5.2) + 2 * case_thickness;
-        d     = mm(9.2);
-        h     = mm(7.25) + case_thickness;
-        front_to_pin = mm(8.0);
-        translate([mainboard_at_xy(component_position)[X], 0]) {
-            if(bottom_or_top=="top" && add_or_remove == "add_outside") {
-                translate([(w-a)/2, 0, mainboard_pcb_thickness]) {
-                    rotate(180) cube([
-                        w,
-                        mainboard_pcb_center[Y] + pcb_xy_clearance + mainboard_pcb_thickness,
-                        h
-                    ]);
+    }
+    module LabelText(text) {
+        if(text[0] == "<" && text[len(text)-1] == ">") {
+            if (text == "<IN>") {
+                translate([0, -.3])
+                square([0.6, 2.6], center=true);
+                translate([0,(3.0) / 2]) {
+                    mirror_copy() {
+                        rotate(-135) square([2.0, 0.6]);
+                    }
                 }
+            } else if (text == "<OUT>") {
+                rotate(180) LabelText("<IN>");
+            } else if (text == "<GND>") {
+                square([0.6, 2.9], center=true);
+                translate([0,-(2.9 - 0.6) / 2]) {
+                    square([2.5, 0.8], center=true);
+                }
+            } else {
+                LabelText("?");
             }
-        }*/
+        } else {
+            offset(r=.1) text(text = text,
+                font = "Arial",
+                size = 2.9,
+                halign = "center",
+                valign = "center"
+            );
+        }
     }
     module Pack0805(component_position) {
         if(bottom_or_top=="bottom" && add_or_remove == "remove") {
@@ -899,7 +932,6 @@ module CenterBoard(bottom_or_top, add_or_remove) {
         }
     }
 }
-
 
 module LabelHolder(bottom_or_top, add_or_remove) {
     width = 30;
