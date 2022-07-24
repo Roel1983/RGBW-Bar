@@ -165,6 +165,7 @@ module CaseModifications(bottom_or_top, add_or_remove) {
     CenterBoard(bottom_or_top, add_or_remove);
     BatteryHolder(bottom_or_top, add_or_remove);
     Revision(bottom_or_top, add_or_remove);
+    LabelHolder(bottom_or_top, add_or_remove);
 }
 mainboard_pcb_front_right = [
     mainboard_pcb_center[X],
@@ -894,6 +895,61 @@ module CenterBoard(bottom_or_top, add_or_remove) {
                         ]);
                     }
                 }
+            }
+        }
+    }
+}
+
+
+module LabelHolder(bottom_or_top, add_or_remove) {
+    width = 30;
+    wall  = 0.8;
+    gap   = 0.75;
+    hold  = [2.0, 1.0];
+    BIAS  = 0.1;
+    if(add_or_remove == "add") {
+        difference() {
+            h = mainboard_pcb_thickness + pcb_top_clearance + wall;
+            if (bottom_or_top == "bottom") {
+                translate([
+                    -width / 2,
+                    case_outer_front_right[Y],
+                    case_outer_bottom
+                ]) cube([
+                    width,
+                    wall + gap,
+                    case_seam_zpos - case_outer_bottom
+                ]);
+            } else if (bottom_or_top == "top") {
+                translate([
+                    -width / 2,
+                    case_outer_front_right[Y],
+                    case_seam_zpos
+                ]) cube([
+                    width,
+                    wall + gap,
+                    h - case_seam_zpos
+                ]);
+            }
+            if (bottom_or_top == "top" || bottom_or_top == "bottom") {
+                translate([
+                    -width / 2 + wall,
+                    case_outer_front_right[Y],
+                    case_outer_bottom + wall
+                ]) cube([
+                    width - 2 * wall,
+                    gap,
+                    h - case_outer_bottom - 2 * wall 
+                ]);
+                translate([
+                    -width / 2 + wall + hold[X],
+                    case_outer_front_right[Y],
+                    case_outer_bottom + wall + hold[Y]
+                ]) cube([
+                    width - 2 * (wall + hold[X]),
+                    gap + wall + BIAS,
+                    h - case_outer_bottom - 2 * (wall + hold[Y])
+                ]);
             }
         }
     }
