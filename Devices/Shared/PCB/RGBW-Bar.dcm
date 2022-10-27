@@ -17,6 +17,18 @@ K connector
 F ~
 $ENDCMP
 #
+$CMP Conn_RGB
+D RGB Led strip connector
+K connector
+F ~
+$ENDCMP
+#
+$CMP Conn_RGBW
+D RGBW led strip connector
+K connector
+F ~
+$ENDCMP
+#
 $CMP GND_iso
 D Power symbol creates a global label with name "GND_iso" , ground
 K power-flag

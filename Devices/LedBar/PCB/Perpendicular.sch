@@ -75,9 +75,9 @@ Text Label 5100 2300 0    50   ~ 0
 strip3_+12V_1
 Text Label 5100 2400 0    50   ~ 0
 strip3_+12V_2
-Text Label 5100 2500 0    50   ~ 0
-strip3_g_out
 Text Label 5100 2600 0    50   ~ 0
+strip3_g_out
+Text Label 5100 2500 0    50   ~ 0
 strip3_r_out
 Text Label 5100 2700 0    50   ~ 0
 strip3_b_out
@@ -123,9 +123,9 @@ Text Label 6300 2300 0    50   ~ 0
 strip2_+12V_1
 Text Label 6300 2400 0    50   ~ 0
 strip2_+12V_2
-Text Label 6300 2500 0    50   ~ 0
-strip2_g_out
 Text Label 6300 2600 0    50   ~ 0
+strip2_g_out
+Text Label 6300 2500 0    50   ~ 0
 strip2_r_out
 Text Label 6300 2700 0    50   ~ 0
 strip2_b_out

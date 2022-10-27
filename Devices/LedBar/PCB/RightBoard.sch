@@ -14,29 +14,29 @@ Comment3 ""
 Comment4 "4 channel RGBW LED bar, Arduino compatible with isolated half duplex RS485."
 $EndDescr
 $Comp
-L RGBW-Bar:Conn_GRBW J?
+L RGBW-Bar:Conn_RGBW J?
 U 1 1 618BFD61
 P 6450 3250
 AR Path="/618804D0/618BFD61" Ref="J?"  Part="1" 
 AR Path="/6188055C/618BFD61" Ref="J1302"  Part="1" 
 AR Path="/6188050F/618BFD61" Ref="J?"  Part="1" 
 F 0 "J1302" H 6350 2850 50  0000 L CNN
-F 1 "Strip4_GRBW" H 6200 2950 50  0000 L CNN
-F 2 "RGBW-Bar:GRBW-wire-solder-pads-L" H 6450 3250 50  0001 C CNN
+F 1 "Strip4_RGBW" H 6200 2950 50  0000 L CNN
+F 2 "RGBW-Bar:RGBW-wire-solder-pads-L" H 6450 3250 50  0001 C CNN
 F 3 "~" H 6450 3250 50  0001 C CNN
 	1    6450 3250
 	1    0    0    1   
 $EndComp
 $Comp
-L RGBW-Bar:Conn_GRB J?
+L RGBW-Bar:Conn_RGB J?
 U 1 1 618BFD6C
 P 6450 4400
 AR Path="/618804D0/618BFD6C" Ref="J?"  Part="1" 
 AR Path="/6188050F/618BFD6C" Ref="J?"  Part="1" 
 AR Path="/6188055C/618BFD6C" Ref="J1303"  Part="1" 
 F 0 "J1303" H 6350 4000 50  0000 L CNN
-F 1 "Strip4_GRB" H 6250 4100 50  0000 L CNN
-F 2 "RGBW-Bar:GRB-wire-solder-pads-L" H 6450 4400 50  0001 C CNN
+F 1 "Strip4_BRG" H 6250 4100 50  0000 L CNN
+F 2 "RGBW-Bar:BRG-wire-solder-pads-L" H 6450 4400 50  0001 C CNN
 F 3 "~" H 6450 4400 50  0001 C CNN
 	1    6450 4400
 	1    0    0    1   
@@ -80,9 +80,9 @@ F 3 "~" H 4500 2500 50  0001 C CNN
 $EndComp
 Text Label 5000 3450 0    50   ~ 0
 12V+
-Text Label 5000 3350 0    50   ~ 0
-strip4_g_out
 Text Label 5000 3250 0    50   ~ 0
+strip4_g_out
+Text Label 5000 3350 0    50   ~ 0
 strip4_r_out
 Text Label 5000 3150 0    50   ~ 0
 strip4_b_out

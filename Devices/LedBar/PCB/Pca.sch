@@ -232,9 +232,9 @@ Wire Wire Line
 	3250 5450 2700 5450
 Wire Wire Line
 	3250 5550 2700 5550
-Text Label 3200 5250 2    50   ~ 0
-strip1_g_out
 Text Label 3200 5350 2    50   ~ 0
+strip1_g_out
+Text Label 3200 5250 2    50   ~ 0
 strip1_r_out
 Text Label 3200 5450 2    50   ~ 0
 strip1_b_out
@@ -306,11 +306,11 @@ Wire Wire Line
 	5750 5450 5000 5450
 Wire Wire Line
 	5750 5550 5000 5550
-Text Label 5050 5250 0    50   ~ 0
+Text Label 5050 5350 0    50   ~ 0
 strip2_g_out
 Text Label 3700 1900 2    50   ~ 0
 strip1_r
-Text Label 5050 5350 0    50   ~ 0
+Text Label 5050 5250 0    50   ~ 0
 strip2_r_out
 Text Label 5050 5450 0    50   ~ 0
 strip2_b_out
@@ -379,9 +379,9 @@ F 3 "" H 7500 6050 50  0001 C CNN
 	1    7500 6100
 	1    0    0    -1  
 $EndComp
-Text Label 6950 5250 2    50   ~ 0
-strip3_g_out
 Text Label 6950 5350 2    50   ~ 0
+strip3_g_out
+Text Label 6950 5250 2    50   ~ 0
 strip3_r_out
 Text Label 6950 5450 2    50   ~ 0
 strip3_b_out
@@ -406,9 +406,9 @@ Wire Wire Line
 	8750 5450 9300 5450
 Wire Wire Line
 	8750 5550 9300 5550
-Text Label 8800 5250 0    50   ~ 0
-strip4_g_out
 Text Label 8800 5350 0    50   ~ 0
+strip4_g_out
+Text Label 8800 5250 0    50   ~ 0
 strip4_r_out
 Text Label 8800 5450 0    50   ~ 0
 strip4_b_out

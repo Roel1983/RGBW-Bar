@@ -28,21 +28,21 @@ Text Label 5500 3050 0    50   ~ 0
 strip1_w_out
 Text Label 5500 3150 0    50   ~ 0
 strip1_b_out
-Text Label 5500 3250 0    50   ~ 0
-strip1_r_out
 Text Label 5500 3350 0    50   ~ 0
+strip1_r_out
+Text Label 5500 3250 0    50   ~ 0
 strip1_g_out
 Text Label 5500 3450 0    50   ~ 0
 12V+
 $Comp
-L RGBW-Bar:Conn_GRBW J1101
+L RGBW-Bar:Conn_RGBW J1101
 U 1 1 618B5913
 P 4550 3250
 AR Path="/618804D0/618B5913" Ref="J1101"  Part="1" 
 AR Path="/6188050F/618B5913" Ref="J?"  Part="1" 
 F 0 "J1101" H 4468 2825 50  0000 C CNN
-F 1 "strip1_GRBW" H 4468 2916 50  0000 C CNN
-F 2 "RGBW-Bar:GRBW-wire-solder-pads-R" H 4550 3250 50  0001 C CNN
+F 1 "strip1_RGBW" H 4468 2916 50  0000 C CNN
+F 2 "RGBW-Bar:RGBW-wire-solder-pads-R" H 4550 3250 50  0001 C CNN
 F 3 "~" H 4550 3250 50  0001 C CNN
 	1    4550 3250
 	-1   0    0    1   
@@ -50,14 +50,14 @@ $EndComp
 Wire Wire Line
 	4750 3250 5250 3250
 $Comp
-L RGBW-Bar:Conn_GRB J1103
+L RGBW-Bar:Conn_RGB J1103
 U 1 1 618B591A
 P 4550 4400
 AR Path="/618804D0/618B591A" Ref="J1103"  Part="1" 
 AR Path="/6188050F/618B591A" Ref="J?"  Part="1" 
 F 0 "J1103" H 4468 3975 50  0000 C CNN
-F 1 "Strip1_GRB" H 4468 4066 50  0000 C CNN
-F 2 "RGBW-Bar:GRB-wire-solder-pads-R" H 4550 4400 50  0001 C CNN
+F 1 "Strip1_BRG" H 4468 4066 50  0000 C CNN
+F 2 "RGBW-Bar:BRG-wire-solder-pads-R" H 4550 4400 50  0001 C CNN
 F 3 "~" H 4550 4400 50  0001 C CNN
 	1    4550 4400
 	-1   0    0    1   
