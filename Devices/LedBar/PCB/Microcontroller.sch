@@ -843,8 +843,6 @@ Wire Wire Line
 Wire Wire Line
 	4600 6600 4600 6750
 Wire Wire Line
-	6600 6650 6600 6850
-Wire Wire Line
 	6600 6150 6600 6350
 Wire Wire Line
 	6600 5750 6600 5850
@@ -861,7 +859,7 @@ F 1 "Blue" V 6548 6382 50  0000 R CNN
 F 2 "LED_THT:LED_D3.0mm" H 6600 6500 50  0001 C CNN
 F 3 "~" H 6600 6500 50  0001 C CNN
 	1    6600 6500
-	0    -1   -1   0   
+	0    1    1    0   
 $EndComp
 $Comp
 L Device:R R?
@@ -876,17 +874,6 @@ F 1 "10k" H 6670 5955 50  0000 L CNN
 F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder" V 6530 6000 50  0001 C CNN
 F 3 "~" H 6600 6000 50  0001 C CNN
 	1    6600 6000
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR0714
-U 1 1 619C9B0C
-P 6600 6850
-F 0 "#PWR0714" H 6600 6600 50  0001 C CNN
-F 1 "GND" H 6605 6677 50  0000 C CNN
-F 2 "" H 6600 6850 50  0001 C CNN
-F 3 "" H 6600 6850 50  0001 C CNN
-	1    6600 6850
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -1151,4 +1138,17 @@ Text Label 1600 5950 0    50   ~ 0
 led3_mosi
 Text Label 1600 6050 0    50   ~ 0
 led1_sck
+Wire Wire Line
+	6600 6650 6600 6850
+$Comp
+L power:+5V #PWR?
+U 1 1 636C480C
+P 6600 6850
+F 0 "#PWR?" H 6600 6700 50  0001 C CNN
+F 1 "+5V" H 6615 7023 50  0000 C CNN
+F 2 "" H 6600 6850 50  0001 C CNN
+F 3 "" H 6600 6850 50  0001 C CNN
+	1    6600 6850
+	-1   0    0    1   
+$EndComp
 $EndSCHEMATC
