@@ -161,8 +161,6 @@ Text Label 3500 2700 0    50   ~ 0
 ~button~
 Text Label 3500 2800 0    50   ~ 0
 debug1
-Text Label 3500 2900 0    50   ~ 0
-debug2
 Text HLabel 4000 3000 2    50   Output ~ 0
 tx_en
 Text HLabel 6850 5250 2    50   Output ~ 0
@@ -626,33 +624,18 @@ Wire Wire Line
 Wire Wire Line
 	3100 4200 4000 4200
 $Comp
-L Connector:TestPoint TP704
-U 1 1 609CDE03
+L Connector:TestPoint TP705
+U 1 1 609D0394
 P 4350 2800
-F 0 "TP704" V 4304 2988 50  0000 L CNN
+F 0 "TP705" V 4304 2988 50  0000 L CNN
 F 1 "dbg1" V 4395 2988 50  0000 L CNN
 F 2 "RGBW-Bar:TestPoint_Pad_D1.0mm" H 4550 2800 50  0001 C CNN
 F 3 "~" H 4550 2800 50  0001 C CNN
 	1    4350 2800
 	0    1    1    0   
 $EndComp
-$Comp
-L Connector:TestPoint TP705
-U 1 1 609D0394
-P 4350 3100
-F 0 "TP705" V 4304 3288 50  0000 L CNN
-F 1 "dbg2" V 4395 3288 50  0000 L CNN
-F 2 "RGBW-Bar:TestPoint_Pad_D1.0mm" H 4550 3100 50  0001 C CNN
-F 3 "~" H 4550 3100 50  0001 C CNN
-	1    4350 3100
-	0    1    1    0   
-$EndComp
 Wire Wire Line
-	3100 2800 4350 2800
-Wire Wire Line
-	4350 3100 4350 2900
-Wire Wire Line
-	4350 2900 3100 2900
+	4000 2900 3100 2900
 Wire Wire Line
 	4750 2400 4750 2300
 Wire Wire Line
@@ -737,10 +720,6 @@ F 3 "~" H 6600 5500 50  0001 C CNN
 	1    6600 5500
 	-1   0    0    1   
 $EndComp
-Text Label 3500 3700 0    50   ~ 0
-~pca_oe~
-Wire Wire Line
-	3100 3700 4000 3700
 Text Label 5900 5250 0    50   ~ 0
 ~pca_oe~
 Text Label 5900 5750 0    50   ~ 0
@@ -1141,14 +1120,83 @@ led1_sck
 Wire Wire Line
 	6600 6650 6600 6850
 $Comp
-L power:+5V #PWR?
+L power:+5V #PWR0723
 U 1 1 636C480C
 P 6600 6850
-F 0 "#PWR?" H 6600 6700 50  0001 C CNN
+F 0 "#PWR0723" H 6600 6700 50  0001 C CNN
 F 1 "+5V" H 6615 7023 50  0000 C CNN
 F 2 "" H 6600 6850 50  0001 C CNN
 F 3 "" H 6600 6850 50  0001 C CNN
 	1    6600 6850
 	-1   0    0    1   
 $EndComp
+$Comp
+L Device:D D706
+U 1 1 636E3AFB
+P 6600 5000
+F 0 "D706" V 6646 4920 50  0000 R CNN
+F 1 "1N4148" V 6555 4920 50  0000 R CNN
+F 2 "Diode_SMD:D_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 6600 5000 50  0001 C CNN
+F 3 "~" H 6600 5000 50  0001 C CNN
+	1    6600 5000
+	0    -1   -1   0   
+$EndComp
+$Comp
+L Device:R R711
+U 1 1 636E6D37
+P 6600 4500
+F 0 "R711" H 6670 4546 50  0000 L CNN
+F 1 "10k" H 6670 4455 50  0000 L CNN
+F 2 "Resistor_SMD:R_0805_2012Metric_Pad1.20x1.40mm_HandSolder" V 6530 4500 50  0001 C CNN
+F 3 "~" H 6600 4500 50  0001 C CNN
+	1    6600 4500
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+5V #PWR0714
+U 1 1 636E9562
+P 6600 4250
+F 0 "#PWR0714" H 6600 4100 50  0001 C CNN
+F 1 "+5V" H 6615 4423 50  0000 C CNN
+F 2 "" H 6600 4250 50  0001 C CNN
+F 3 "" H 6600 4250 50  0001 C CNN
+	1    6600 4250
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6600 4250 6600 4350
+Wire Wire Line
+	6600 4650 6600 4750
+Wire Wire Line
+	6600 5150 6600 5250
+Wire Wire Line
+	6600 4750 5850 4750
+Connection ~ 6600 4750
+Wire Wire Line
+	6600 4750 6600 4850
+Text Label 5900 4750 0    50   ~ 0
+~pca_rdy~
+Text Label 5000 3600 0    50   ~ 0
+~pca_rdy~
+Text Label 3500 2900 0    50   ~ 0
+~pca_rdy~
+$Comp
+L Connector:TestPoint TP704
+U 1 1 63722A12
+P 6750 4750
+F 0 "TP704" V 6704 4938 50  0000 L CNN
+F 1 "~pca_rdy~" V 6795 4938 50  0000 L CNN
+F 2 "RGBW-Bar:TestPoint_Pad_D1.0mm" H 6950 4750 50  0001 C CNN
+F 3 "~" H 6950 4750 50  0001 C CNN
+	1    6750 4750
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	6750 4750 6600 4750
+Wire Wire Line
+	3100 3700 4000 3700
+Text Label 3500 3700 0    50   ~ 0
+~pca_oe~
+Wire Wire Line
+	3100 2800 4350 2800
 $EndSCHEMATC
