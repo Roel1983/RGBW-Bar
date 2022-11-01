@@ -81,13 +81,9 @@ F 3 "~" H 4500 4000 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	2900 4000 3000 4000
-Wire Wire Line
-	5000 4000 5000 4600
 Connection ~ 5000 4000
 Wire Wire Line
 	5000 4900 5000 5500
-Wire Wire Line
-	4000 4600 4000 4500
 Wire Wire Line
 	4000 4900 4000 5500
 Connection ~ 5000 5500
@@ -342,10 +338,10 @@ Connection ~ 4350 3000
 Wire Wire Line
 	4350 3000 4350 3350
 Wire Wire Line
-	8000 4500 9000 4500
+	8000 4500 8500 4500
 Connection ~ 8000 4500
 Wire Wire Line
-	7500 5500 9000 5500
+	7500 5500 8500 5500
 Wire Wire Line
 	6000 2650 6000 3000
 Connection ~ 6000 3000
@@ -465,12 +461,6 @@ $EndComp
 Wire Wire Line
 	6000 5500 6000 5600
 Wire Wire Line
-	4000 4500 6000 4500
-Connection ~ 4000 4500
-Wire Wire Line
-	4000 4500 4000 4000
-Connection ~ 6000 4500
-Wire Wire Line
 	5000 4000 5500 4000
 Connection ~ 5500 4000
 $Comp
@@ -488,4 +478,59 @@ Text Label 2500 4650 1    50   ~ 0
 unprotected_12VDC
 Text Label 3100 4000 0    50   ~ 0
 +12V_not_measured
+Wire Wire Line
+	5000 4000 5000 4600
+Wire Wire Line
+	4000 4000 4000 4500
+$Comp
+L Device:R R304
+U 1 1 6381CA7A
+P 5500 4500
+F 0 "R304" V 5293 4500 50  0000 C CNN
+F 1 "62R/0.25W" V 5384 4500 50  0000 C CNN
+F 2 "Resistor_SMD:R_1210_3225Metric_Pad1.30x2.65mm_HandSolder" V 5430 4500 50  0001 C CNN
+F 3 "~" H 5500 4500 50  0001 C CNN
+	1    5500 4500
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	4000 4500 5350 4500
+Connection ~ 4000 4500
+Wire Wire Line
+	4000 4500 4000 4600
+Wire Wire Line
+	5650 4500 6000 4500
+Connection ~ 6000 4500
+$Comp
+L power:PWR_FLAG #FLG0101
+U 1 1 638308BB
+P 6000 4500
+F 0 "#FLG0101" H 6000 4575 50  0001 C CNN
+F 1 "PWR_FLAG" H 6000 4673 50  0001 C CNN
+F 2 "" H 6000 4500 50  0001 C CNN
+F 3 "~" H 6000 4500 50  0001 C CNN
+	1    6000 4500
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:D_Zener D302
+U 1 1 63837588
+P 8500 5000
+F 0 "D302" V 8454 5080 50  0000 L CNN
+F 1 "5v1" V 8545 5080 50  0000 L CNN
+F 2 "Diode_SMD:D_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 8500 5000 50  0001 C CNN
+F 3 "~" H 8500 5000 50  0001 C CNN
+	1    8500 5000
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	8500 4850 8500 4500
+Connection ~ 8500 4500
+Wire Wire Line
+	8500 4500 9000 4500
+Wire Wire Line
+	8500 5150 8500 5500
+Connection ~ 8500 5500
+Wire Wire Line
+	8500 5500 9000 5500
 $EndSCHEMATC
