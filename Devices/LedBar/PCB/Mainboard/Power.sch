@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 3 13
+Sheet 2 13
 Title "LedBar - MainBoard"
 Date "2022-06-26"
 Rev "1.0"

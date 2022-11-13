@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name RGBW-Bar)(type KiCad)(uri ${KIPRJMOD}/../../../Shared/PCB/RGBW-Bar.pretty)(options "")(descr ""))
+)

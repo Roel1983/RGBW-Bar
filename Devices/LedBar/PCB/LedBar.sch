@@ -13,12 +13,6 @@ Comment2 ""
 Comment3 ""
 Comment4 "4 channel RGBW LED bar, Arduino compatible with isolated half duplex RS485."
 $EndDescr
-$Sheet
-S 5000 1000 2000 1000
-U 617A8CB5
-F0 "Mainboard" 118
-F1 "Mainboard.sch" 118
-$EndSheet
 Wire Notes Line
 	7100 1500 8500 1500
 Wire Notes Line
@@ -27,98 +21,104 @@ Wire Notes Line
 	8500 1500 8500 4700
 Wire Notes Line
 	6000 4250 6000 4750
+Wire Notes Line
+	3500 1500 3500 4750
+Wire Notes Line
+	6000 2250 6000 2750
+$Sheet
+S 5000 1000 2000 1000
+U 617A8CB5
+F0 "Mainboard" 118
+F1 "Mainboard/Mainboard.sch" 118
+$EndSheet
 $Sheet
 S 2500 5000 2000 1000
 U 618804D0
 F0 "LeftBoard" 118
-F1 "LeftBoard.sch" 118
+F1 "Subboards/LeftBoard.sch" 118
 $EndSheet
 $Sheet
 S 5000 5000 2000 1000
 U 6188050F
 F0 "CenterBoard" 118
-F1 "CenterBoard.sch" 118
+F1 "Subboards/CenterBoard.sch" 118
 $EndSheet
 $Sheet
 S 7500 5000 2000 1000
 U 6188055C
 F0 "RightBoard" 118
-F1 "RightBoard.sch" 118
+F1 "Subboards/RightBoard.sch" 118
 $EndSheet
-Wire Notes Line
-	3500 1500 3500 4750
-$Comp
-L RGBW-Bar:MouseBit MB101
-U 1 1 618FDB69
-P 1450 1000
-F 0 "MB101" H 1728 1046 50  0000 L CNN
-F 1 "MouseBit" H 1728 955 50  0000 L CNN
-F 2 "RGBW-Bar:MouseBit" H 1370 1420 50  0001 C CNN
-F 3 "" H 1450 940 50  0001 C CNN
-	1    1450 1000
-	1    0    0    -1  
-$EndComp
-$Comp
-L RGBW-Bar:MouseBit MB102
-U 1 1 61901AE5
-P 1450 1300
-F 0 "MB102" H 1728 1346 50  0000 L CNN
-F 1 "MouseBit" H 1728 1255 50  0000 L CNN
-F 2 "RGBW-Bar:MouseBit" H 1370 1720 50  0001 C CNN
-F 3 "" H 1450 1240 50  0001 C CNN
-	1    1450 1300
-	1    0    0    -1  
-$EndComp
-$Comp
-L RGBW-Bar:MouseBit MB103
-U 1 1 619021A7
-P 1450 1600
-F 0 "MB103" H 1728 1646 50  0000 L CNN
-F 1 "MouseBit" H 1728 1555 50  0000 L CNN
-F 2 "RGBW-Bar:MouseBit" H 1370 2020 50  0001 C CNN
-F 3 "" H 1450 1540 50  0001 C CNN
-	1    1450 1600
-	1    0    0    -1  
-$EndComp
-$Comp
-L RGBW-Bar:MouseBit MB104
-U 1 1 61907DC7
-P 1450 1900
-F 0 "MB104" H 1728 1946 50  0000 L CNN
-F 1 "MouseBit" H 1728 1855 50  0000 L CNN
-F 2 "RGBW-Bar:MouseBit" H 1370 2320 50  0001 C CNN
-F 3 "" H 1450 1840 50  0001 C CNN
-	1    1450 1900
-	1    0    0    -1  
-$EndComp
-$Comp
-L RGBW-Bar:MouseBit MB105
-U 1 1 619FF750
-P 1450 2200
-F 0 "MB105" H 1728 2246 50  0000 L CNN
-F 1 "MouseBit" H 1728 2155 50  0000 L CNN
-F 2 "RGBW-Bar:MouseBit_modified1" H 1370 2620 50  0001 C CNN
-F 3 "" H 1450 2140 50  0001 C CNN
-	1    1450 2200
-	1    0    0    -1  
-$EndComp
-$Comp
-L RGBW-Bar:MouseBit MB106
-U 1 1 619FFB38
-P 1450 2500
-F 0 "MB106" H 1728 2546 50  0000 L CNN
-F 1 "MouseBit" H 1728 2455 50  0000 L CNN
-F 2 "RGBW-Bar:MouseBit" H 1370 2920 50  0001 C CNN
-F 3 "" H 1450 2440 50  0001 C CNN
-	1    1450 2500
-	1    0    0    -1  
-$EndComp
 $Sheet
 S 5000 3000 2000 1000
 U 6187FE9B
 F0 "Perpendicular" 118
-F1 "Perpendicular.sch" 118
+F1 "Subboards/Perpendicular.sch" 118
 $EndSheet
-Wire Notes Line
-	6000 2250 6000 2750
+$Comp
+L RGBW-Bar:MouseBit MB101
+U 1 1 6372AD1D
+P 1500 1500
+F 0 "MB101" H 1778 1546 50  0000 L CNN
+F 1 "MouseBit" H 1778 1455 50  0000 L CNN
+F 2 "RGBW-Bar:MouseBit" H 1500 1730 50  0001 C CNN
+F 3 "" H 1500 1440 50  0001 C CNN
+	1    1500 1500
+	1    0    0    -1  
+$EndComp
+$Comp
+L RGBW-Bar:MouseBit MB102
+U 1 1 6372B2F8
+P 1500 2000
+F 0 "MB102" H 1778 2046 50  0000 L CNN
+F 1 "MouseBit" H 1778 1955 50  0000 L CNN
+F 2 "RGBW-Bar:MouseBit" H 1500 2230 50  0001 C CNN
+F 3 "" H 1500 1940 50  0001 C CNN
+	1    1500 2000
+	1    0    0    -1  
+$EndComp
+$Comp
+L RGBW-Bar:MouseBit MB103
+U 1 1 6372BAB7
+P 1500 2500
+F 0 "MB103" H 1778 2546 50  0000 L CNN
+F 1 "MouseBit" H 1778 2455 50  0000 L CNN
+F 2 "RGBW-Bar:MouseBit" H 1500 2730 50  0001 C CNN
+F 3 "" H 1500 2440 50  0001 C CNN
+	1    1500 2500
+	1    0    0    -1  
+$EndComp
+$Comp
+L RGBW-Bar:MouseBit MB104
+U 1 1 6372BCA3
+P 1500 3000
+F 0 "MB104" H 1778 3046 50  0000 L CNN
+F 1 "MouseBit" H 1778 2955 50  0000 L CNN
+F 2 "RGBW-Bar:MouseBit" H 1500 3230 50  0001 C CNN
+F 3 "" H 1500 2940 50  0001 C CNN
+	1    1500 3000
+	1    0    0    -1  
+$EndComp
+$Comp
+L RGBW-Bar:MouseBit MB105
+U 1 1 6372BED5
+P 1550 3500
+F 0 "MB105" H 1828 3546 50  0000 L CNN
+F 1 "MouseBit" H 1828 3455 50  0000 L CNN
+F 2 "RGBW-Bar:MouseBit_modified1" H 1550 3730 50  0001 C CNN
+F 3 "" H 1550 3440 50  0001 C CNN
+	1    1550 3500
+	1    0    0    -1  
+$EndComp
+$Comp
+L RGBW-Bar:MouseBit MB106
+U 1 1 6372C14D
+P 1550 4000
+F 0 "MB106" H 1828 4046 50  0000 L CNN
+F 1 "MouseBit" H 1828 3955 50  0000 L CNN
+F 2 "RGBW-Bar:MouseBit" H 1550 4230 50  0001 C CNN
+F 3 "" H 1550 3940 50  0001 C CNN
+	1    1550 4000
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
