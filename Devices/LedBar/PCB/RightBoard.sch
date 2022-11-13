@@ -22,7 +22,7 @@ AR Path="/6188055C/618BFD61" Ref="J1302"  Part="1"
 AR Path="/6188050F/618BFD61" Ref="J?"  Part="1" 
 F 0 "J1302" H 6350 2850 50  0000 L CNN
 F 1 "Strip4_RGBW" H 6200 2950 50  0000 L CNN
-F 2 "RGBW-Bar:RGBW-wire-solder-pads-L" H 6450 3250 50  0001 C CNN
+F 2 "RGBW-Bar:RGBW-wire-solder-pads-R" H 6450 3250 50  0001 C CNN
 F 3 "~" H 6450 3250 50  0001 C CNN
 	1    6450 3250
 	1    0    0    1   
@@ -36,7 +36,7 @@ AR Path="/6188050F/618BFD6C" Ref="J?"  Part="1"
 AR Path="/6188055C/618BFD6C" Ref="J1303"  Part="1" 
 F 0 "J1303" H 6350 4000 50  0000 L CNN
 F 1 "Strip4_BRG" H 6250 4100 50  0000 L CNN
-F 2 "RGBW-Bar:BRG-wire-solder-pads-L" H 6450 4400 50  0001 C CNN
+F 2 "RGBW-Bar:BRG-wire-solder-pads-R" H 6450 4400 50  0001 C CNN
 F 3 "~" H 6450 4400 50  0001 C CNN
 	1    6450 4400
 	1    0    0    1   
@@ -94,12 +94,12 @@ U 1 1 61891AC0
 P 4500 3250
 AR Path="/618804D0/61891AC0" Ref="J?"  Part="1" 
 AR Path="/6188055C/61891AC0" Ref="J1301"  Part="1" 
-F 0 "J1301" H 4418 3667 50  0000 C CNN
-F 1 "Conn_01x05" H 4418 3576 50  0000 C CNN
-F 2 "Connector_PinHeader_2.00mm:PinHeader_1x05_P2.00mm_Vertical" H 4500 3250 50  0001 C CNN
+F 0 "J1301" H 4500 2850 50  0000 C CNN
+F 1 "Conn_01x05" H 4500 2950 50  0000 C CNN
+F 2 "RGBW-Bar:PinHeader_1x05_P2.00mm_Vertical_no_silk" H 4500 3250 50  0001 C CNN
 F 3 "~" H 4500 3250 50  0001 C CNN
 	1    4500 3250
-	-1   0    0    -1  
+	-1   0    0    1   
 $EndComp
 Connection ~ 5550 3450
 Wire Wire Line

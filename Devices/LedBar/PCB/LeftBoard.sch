@@ -19,7 +19,7 @@ U 1 1 6188E385
 P 6500 3250
 F 0 "J1102" H 6418 2825 50  0000 C CNN
 F 1 "Conn_01x05" H 6418 2916 50  0000 C CNN
-F 2 "Connector_PinHeader_2.00mm:PinHeader_1x05_P2.00mm_Vertical" H 6500 3250 50  0001 C CNN
+F 2 "RGBW-Bar:PinHeader_1x05_P2.00mm_Vertical_no_silk" H 6500 3250 50  0001 C CNN
 F 3 "~" H 6500 3250 50  0001 C CNN
 	1    6500 3250
 	1    0    0    1   
