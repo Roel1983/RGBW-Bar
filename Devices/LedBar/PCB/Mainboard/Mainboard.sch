@@ -5,8 +5,8 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 2 13
 Title "LedBar - MainBoard"
-Date "2022-06-26"
-Rev "1.0"
+Date "2022-11-17"
+Rev "2.0"
 Comp "Roel Drost"
 Comment1 "GNU General Public License v3.0"
 Comment2 ""

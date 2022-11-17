@@ -19,6 +19,13 @@ For each PCB we need to do the following steps.
   - *LedBar.sch*
   - *Mainboard/Mainboard.sch*
   - *Subboards/subboards.sch*
+- For each PBC:
+  - Load netlist files
+  - `Update PCB from schematic`
+  - `Perform design rule check`
+  - Update revision text on `B.SilkS` layer
+    - Revision
+    - Date
 
 ## Plot schematic
 
@@ -43,7 +50,9 @@ For each PCB:
 - `File` -> `Plot...`
 - Output directory: `Releases/<version>/gerber/jlcpcb`
 - See for further instructions: https://support.jlcpcb.com/article/149-how-to-generate-gerber-and-drill-files-in-kicad
-- 
+- Zip the files to a file named: `RGBW-Bar_<PCB>_<version>` like resp.:
+  - RGBW-Bar_Mainboard_v2_0.zip
+  - RGBW-Bar_Subboards_v2_0.zip 
 
 # Commit and tag
 
