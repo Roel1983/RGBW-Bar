@@ -1,3 +1,3 @@
 (sym_lib_table
-  (lib (name RGBW-Bar)(type Legacy)(uri /home/roel/git/2200-RGBW-Bar/Devices/Shared/PCB/RGBW-Bar.lib)(options "")(descr ""))
+  (lib (name RGBW-Bar)(type Legacy)(uri ${KIPRJMOD}/../../Shared/PCB/RGBW-Bar.lib)(options "")(descr ""))
 )
