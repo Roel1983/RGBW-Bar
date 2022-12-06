@@ -5,7 +5,7 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title "RS485-TTL"
-Date "2022-11-17"
+Date "2022-12-06"
 Rev "1.0"
 Comp "Roel Drost"
 Comment1 "GNU General Public License v3.0"
