@@ -3,14 +3,14 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 4 13
+Sheet 7 13
 Title "LedBar - MainBoard"
-Date "2022-06-26"
-Rev "1.0"
+Date "2022-12-06"
+Rev "2.0"
 Comp "Roel Drost"
 Comment1 "GNU General Public License v3.0"
 Comment2 ""
-Comment3 "Brown-out detection on the 12V bus."
+Comment3 ""
 Comment4 "4 channel RGBW LED bar, Arduino compatible with isolated half duplex RS485."
 $EndDescr
 $Comp

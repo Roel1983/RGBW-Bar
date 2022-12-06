@@ -5,12 +5,12 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 6 13
 Title "LedBar - MainBoard"
-Date "2022-06-26"
-Rev "1.0"
+Date "2022-12-06"
+Rev "2.0"
 Comp "Roel Drost"
 Comment1 "GNU General Public License v3.0"
 Comment2 ""
-Comment3 "Arduino Atmega328 5V / 16MHz compatible controller with ISP."
+Comment3 ""
 Comment4 "4 channel RGBW LED bar, Arduino compatible with isolated half duplex RS485."
 $EndDescr
 $Comp

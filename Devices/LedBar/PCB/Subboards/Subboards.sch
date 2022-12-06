@@ -4,38 +4,38 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 5
-Title ""
-Date ""
-Rev ""
-Comp ""
-Comment1 ""
+Title "LedBar - MainBoard"
+Date "2022-12-06"
+Rev "2.0"
+Comp "Roel Drost"
+Comment1 "GNU General Public License v3.0"
 Comment2 ""
 Comment3 ""
-Comment4 ""
+Comment4 "4 channel RGBW LED bar, Arduino compatible with isolated half duplex RS485."
 $EndDescr
 $Sheet
 S 5000 5000 2000 1000
 U 6371587E
-F0 "CenterBoard" 100
-F1 "CenterBoard.sch" 100
+F0 "CenterBoard" 118
+F1 "CenterBoard.sch" 79
 $EndSheet
 $Sheet
 S 7500 5000 2000 1000
 U 637158E2
-F0 "RightBoard" 100
-F1 "RightBoard.sch" 100
+F0 "RightBoard" 118
+F1 "RightBoard.sch" 79
 $EndSheet
 $Sheet
 S 2500 5000 2000 1000
 U 6371595F
-F0 "LeftBoard" 100
-F1 "LeftBoard.sch" 100
+F0 "LeftBoard" 118
+F1 "LeftBoard.sch" 79
 $EndSheet
 $Sheet
 S 5000 3000 2000 1000
 U 637159B2
-F0 "Perpendicular" 100
-F1 "Perpendicular.sch" 100
+F0 "Perpendicular" 118
+F1 "Perpendicular.sch" 79
 $EndSheet
 Wire Notes Line
 	6000 4200 6000 4800

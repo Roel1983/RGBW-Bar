@@ -5,8 +5,8 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 13
 Title "LedBar - MainBoard"
-Date "2022-06-26"
-Rev "1.0"
+Date "2022-12-06"
+Rev "2.0"
 Comp "Roel Drost"
 Comment1 "GNU General Public License v3.0"
 Comment2 ""
@@ -29,31 +29,31 @@ $Sheet
 S 5000 1000 2000 1000
 U 617A8CB5
 F0 "Mainboard" 118
-F1 "Mainboard/Mainboard.sch" 118
+F1 "Mainboard/Mainboard.sch" 79
 $EndSheet
 $Sheet
 S 2500 5000 2000 1000
 U 618804D0
 F0 "LeftBoard" 118
-F1 "Subboards/LeftBoard.sch" 118
+F1 "Subboards/LeftBoard.sch" 79
 $EndSheet
 $Sheet
 S 5000 5000 2000 1000
 U 6188050F
 F0 "CenterBoard" 118
-F1 "Subboards/CenterBoard.sch" 118
+F1 "Subboards/CenterBoard.sch" 79
 $EndSheet
 $Sheet
 S 7500 5000 2000 1000
 U 6188055C
 F0 "RightBoard" 118
-F1 "Subboards/RightBoard.sch" 118
+F1 "Subboards/RightBoard.sch" 79
 $EndSheet
 $Sheet
 S 5000 3000 2000 1000
 U 6187FE9B
 F0 "Perpendicular" 118
-F1 "Subboards/Perpendicular.sch" 118
+F1 "Subboards/Perpendicular.sch" 79
 $EndSheet
 $Comp
 L RGBW-Bar:MouseBit MB101
