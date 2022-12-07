@@ -49,7 +49,7 @@ For each PCB we need to do the following steps.
 
 The production files (Gerber and drill files) differ per manufacturer. The following sub chapters show how to generate for each of them.
 
-### Generate Gerber and JLCPCB
+### Generate Gerber for JLCPCB
 
 For each PCB:
 
@@ -84,8 +84,37 @@ Push
 
 # Order
 
-Board thickness should be 1.2mm thick.
+PCB thickness must be 1.2mm thick.
 
 ## Order at JLCPBC
 
-TODO.
+|                         | RGBW-Bar                           | RGBW-Bar_Mainboard                 | RGBW-Bar_Subboards                 |
+| ----------------------- | ---------------------------------- | ---------------------------------- | ---------------------------------- |
+| Base Material           | FR-4                               | FR-4                               | FR-4                               |
+| Layers                  | 2                                  | 2                                  | 2                                  |
+| Dimension               |                                    | 63.5 mm* 73.66 mm                  | 63.5 mm* 23.11 mm                  |
+| **PCB Qty**             | *10*                               | *10*                               | *10*                               |
+| Product Type            | Industrial/Consumer electronics    | Industrial/Consumer electronics    | Industrial/Consumer electronics    |
+| **Different Design**    | **4**                              | **1**                              | **3**                              |
+| **Delivery Format**     | **Panel by Customer**              | **Single PCB**                     | **Panel by Customer**              |
+| **PCB Thickness**       | **1.2**                            | **1.2**                            | **1.2**                            |
+| Impedance Control       | no                                 | no                                 | no                                 |
+| Layer Sequence          |                                    |                                    |                                    |
+| **PCB Color**           | **White**                          | *Green*                            | **White**                          |
+| **Silkscreen**          | **Black**                          | *White*                            | **Black**                          |
+| Via Covering            | Tented                             | Tented                             | Tented                             |
+| Surface Finish          | HASL(with lead)                    | HASL(with lead)                    | HASL(with lead)                    |
+| Deburring/Edge rounding | No                                 | No                                 | No                                 |
+| Outer Copper Weight     | 1                                  | 1                                  | 1                                  |
+| Gold Fingers            | No                                 | No                                 | No                                 |
+| Flying Probe Test       | Fully Test                         | Fully Test                         | Fully Test                         |
+| Castellated Holes       | no                                 | no                                 | no                                 |
+| Remove Order Number     | No                                 | No                                 | No                                 |
+| Package Box             | With JLCPCB logo                   | With JLCPCB logo                   | With JLCPCB logo                   |
+| Silkscreen Technology   | Ink-jet/Screen Printing Silkscreen | Ink-jet/Screen Printing Silkscreen | Ink-jet/Screen Printing Silkscreen |
+| Confirm Production file | No                                 | No                                 | No                                 |
+| Appearance Quality      | IPC Class 2 Standard               | IPC Class 2 Standard               | IPC Class 2 Standard               |
+| Paper between PCBs      | No                                 | No                                 | No                                 |
+| Material Type           | FR4-Standard TG 135-140            | FR4-Standard TG 135-140            | FR4-Standard TG 135-140            |
+| 4-Wire Kelvin Test      | No                                 | No                                 | No                                 |
+
