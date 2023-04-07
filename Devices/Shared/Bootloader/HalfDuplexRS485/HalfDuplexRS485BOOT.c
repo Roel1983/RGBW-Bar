@@ -71,26 +71,10 @@
 #include <avr/wdt.h>
 #include <util/delay.h>
 
-/* the current avr-libc eeprom functions do not support the ATmega168 */
-/* own eeprom write/read functions are used instead */
-#if !defined(__AVR_ATmega168__) || !defined(__AVR_ATmega328P__) || !defined(__AVR_ATmega328__)
-#include <avr/eeprom.h>
-#endif
-
-/* Use the F_CPU defined in Makefile */
-
-/* 20060803: hacked by DojoCorp */
-/* 20070626: hacked by David A. Mellis to decrease waiting time for auto-reset */
-/* set the waiting time for the bootloader */
-/* get this from the Makefile instead */
-/* #define MAX_TIME_COUNT (F_CPU>>4) */
-
 /* 20070707: hacked by David A. Mellis - after this many errors give up and launch application */
 #define MAX_ERROR_COUNT 5
 
 /* set the UART baud rate */
-/* 20060803: hacked by DojoCorp */
-//#define BAUD_RATE   115200
 #ifndef BAUD_RATE
 #define BAUD_RATE   19200
 #endif
@@ -103,141 +87,47 @@
 #define SW_MINOR 0x10
 
 
-/* Adjust to suit whatever pin your hardware uses to enter the bootloader */
-/* ATmega128 has two UARTS so two pins are used to enter bootloader and select UART */
-/* ATmega1280 has four UARTS, but for Arduino Mega, we will only use RXD0 to get code */
-/* BL0... means UART0, BL1... means UART1 */
-#ifdef __AVR_ATmega128__
-#define BL_DDR  DDRF
-#define BL_PORT PORTF
-#define BL_PIN  PINF
-#define BL0     PINF7
-#define BL1     PINF6
-#elif defined __AVR_ATmega1280__ 
-/* we just don't do anything for the MEGA and enter bootloader on reset anyway*/
-#else
-/* other ATmegas have only one UART, so only one pin is defined to enter bootloader */
-#define BL_DDR  DDRD
-#define BL_PORT PORTD
-#define BL_PIN  PIND
-#define BL      PIND6
-#endif
-
-
 /* onboard LED is used to indicate, that the bootloader was entered (3x flashing) */
 /* if monitor functions are included, LED goes on after monitor was entered */
-#if defined __AVR_ATmega128__ || defined __AVR_ATmega1280__
-/* Onboard LED is connected to pin PB7 (e.g. Crumb128, PROBOmega128, Savvy128, Arduino Mega) */
-#define LED_DDR  DDRB
-#define LED_PORT PORTB
-#define LED_PIN  PINB
-#define LED      PINB7
-#else
-/* Onboard LED is connected to pin PB5 in Arduino NG, Diecimila, and Duomilanuove */ 
-/* other boards like e.g. Crumb8, Crumb168 are using PB2 */
-#define LED_DDR  DDRB
-#define LED_PORT PORTB
-#define LED_PIN  PINB
-#define LED      PINB5
-#endif
+#define LED1_DDR  DDRB
+#define LED1_PORT PORTB
+#define LED1_PIN  PINB
+#define LED1      PINB5
 
-#if defined RS485
+#define LED2_DDR  DDRB
+#define LED2_PORT PORTB
+#define LED2_PIN  PINB
+#define LED2      PINB4
+
+#define LED3_DDR  DDRB
+#define LED3_PORT PORTB
+#define LED3_PIN  PINB
+#define LED3      PINB3
+
+#define LED4_DDR  DDRB
+#define LED4_PORT PORTB
+#define LED4_PIN  PINB
+#define LED4      PINB2
+
+#define BUTTON_DDR  DDRC
+#define BUTTON_PORT PORTC
+#define BUTTON_PIN  PINC
+#define BUTTON      PINC0
+
+
 #define TXEN_DDR  DDRC
 #define TXEN_PORT PORTC
 #define TXEN_PIN  PINC
 #define TXEN      PINC3
-#endif
-
-/* monitor functions will only be compiled when using ATmega128, due to bootblock size constraints */
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega1280__)
-#define MONITOR 1
-#endif
 
 
 /* define various device id's */
 /* manufacturer byte is always the same */
 #define SIG1	0x1E	// Yep, Atmel is the only manufacturer of AVR micros.  Single source :(
 
-#if defined __AVR_ATmega1280__
-#define SIG2	0x97
-#define SIG3	0x03
-#define PAGE_SIZE	0x80U	//128 words
-
-#elif defined __AVR_ATmega1281__
-#define SIG2	0x97
-#define SIG3	0x04
-#define PAGE_SIZE	0x80U	//128 words
-
-#elif defined __AVR_ATmega128__
-#define SIG2	0x97
-#define SIG3	0x02
-#define PAGE_SIZE	0x80U	//128 words
-
-#elif defined __AVR_ATmega64__
-#define SIG2	0x96
-#define SIG3	0x02
-#define PAGE_SIZE	0x80U	//128 words
-
-#elif defined __AVR_ATmega32__
-#define SIG2	0x95
-#define SIG3	0x02
-#define PAGE_SIZE	0x40U	//64 words
-
-#elif defined __AVR_ATmega16__
-#define SIG2	0x94
-#define SIG3	0x03
-#define PAGE_SIZE	0x40U	//64 words
-
-#elif defined __AVR_ATmega8__
-#define SIG2	0x93
-#define SIG3	0x07
-#define PAGE_SIZE	0x20U	//32 words
-
-#elif defined __AVR_ATmega88__
-#define SIG2	0x93
-#define SIG3	0x0a
-#define PAGE_SIZE	0x20U	//32 words
-
-#elif defined __AVR_ATmega168__
-#define SIG2	0x94
-#define SIG3	0x06
-#define PAGE_SIZE	0x40U	//64 words
-
-#elif defined __AVR_ATmega328P__
 #define SIG2	0x95
 #define SIG3	0x0F
 #define PAGE_SIZE	0x40U	//64 words
-
-#elif defined __AVR_ATmega328__
-#define SIG2	0x95
-#define SIG3	0x14
-#define PAGE_SIZE	0x40U	//64 words
-
-#elif defined __AVR_ATmega162__
-#define SIG2	0x94
-#define SIG3	0x04
-#define PAGE_SIZE	0x40U	//64 words
-
-#elif defined __AVR_ATmega163__
-#define SIG2	0x94
-#define SIG3	0x02
-#define PAGE_SIZE	0x40U	//64 words
-
-#elif defined __AVR_ATmega169__
-#define SIG2	0x94
-#define SIG3	0x05
-#define PAGE_SIZE	0x40U	//64 words
-
-#elif defined __AVR_ATmega8515__
-#define SIG2	0x93
-#define SIG3	0x06
-#define PAGE_SIZE	0x20U	//32 words
-
-#elif defined __AVR_ATmega8535__
-#define SIG2	0x93
-#define SIG3	0x08
-#define PAGE_SIZE	0x20U	//32 words
-#endif
 
 
 /* function prototypes */
@@ -249,6 +139,7 @@ void nothing_response(void);
 char gethex(void);
 void puthex(char);
 void flash_led(uint8_t);
+void flash_red_led(uint8_t count);
 
 /* some variables */
 union address_union {
@@ -278,6 +169,7 @@ uint8_t error_count = 0;
 
 void (*app_start)(void) = 0x0000;
 
+uint8_t continues;
 
 /* main program starts here */
 int main(void)
@@ -285,29 +177,11 @@ int main(void)
 	uint8_t ch,ch2;
 	uint16_t w;
 
-#ifdef WATCHDOG_MODS
-	ch = MCUSR;
-	MCUSR = 0;
-
-	WDTCSR |= _BV(WDCE) | _BV(WDE);
-	WDTCSR = 0;
-
-	// Check if the WDT was used to reset, in which case we dont bootload and skip straight to the code. woot.
-	if (! (ch &  _BV(EXTRF))) // if its a not an external reset...
-		app_start();  // skip bootloader
-#else
 	asm volatile("nop\n\t");
-#endif
 
 	/* initialize UART(s) depending on CPU defined */
-#ifdef DOUBLE_SPEED
-	UCSR0A = (1<<U2X0); //Double speed mode USART0
-	UBRR0L = (uint8_t)(F_CPU/(BAUD_RATE*8L)-1);
-	UBRR0H = (F_CPU/(BAUD_RATE*8L)-1) >> 8;
-#else
 	UBRR0L = (uint8_t)(F_CPU/(BAUD_RATE*16L)-1);
 	UBRR0H = (F_CPU/(BAUD_RATE*16L)-1) >> 8;
-#endif
 	UCSR0B = (1<<RXEN0) | (1<<TXEN0);
 	UCSR0C = (1<<UCSZ00) | (1<<UCSZ01);
 
@@ -321,49 +195,27 @@ int main(void)
 	TXEN_DDR |= _BV(TXEN);
 	TXEN_PORT &= ~_BV(TXEN);
 
+	BUTTON_DDR &= ~_BV(BUTTON);
+	BUTTON_PORT |= _BV(BUTTON);
 	
 	/* set LED pin as output */
-	LED_DDR |= _BV(LED);
+	LED1_DDR |= _BV(LED1);
+	LED2_DDR |= _BV(LED2);
+	LED3_DDR |= _BV(LED3);
+	LED4_DDR |= _BV(LED4);
+
+	continues = (BUTTON_PIN & _BV(BUTTON)) == 0;
 
 	/* flash onboard LED to signal entering of bootloader */
 	flash_led(NUM_LED_FLASHES);
 
-	/*for(;;) {
-		/*TXEN_PORT |= _BV(TXEN);
-		while (!(UCSR0A & _BV(UDRE0)));
-		UCSR0A |= _BV(TXC0);
-		UDR0 = 0x55;
-		while (!(UCSR0A & _BV(TXC0)));
-		//_delay_ms(1);
-		TXEN_PORT &= ~_BV(TXEN);
-		_delay_ms(1); 
+	if((BUTTON_PIN & _BV(BUTTON)) == 0) {
+		continues= 0;
+	}
+	if(continues) {
+		LED1_PORT |= _BV(LED1);
+	}
 
-		putch(0x55);
-		_delay_ms(1);
-		putch(0xAA);
-		_delay_ms(1);
-	}*/
-
-
-	/*TXEN_PORT &= ~_BV(TXEN); _delay_ms(1); putch('H');
-	TXEN_PORT &= ~_BV(TXEN); _delay_ms(1); putch('e');
-	TXEN_PORT &= ~_BV(TXEN); _delay_ms(1); putch('l');
-	TXEN_PORT &= ~_BV(TXEN); _delay_ms(1); putch('l');
-	TXEN_PORT &= ~_BV(TXEN); _delay_ms(1); putch('o');
-	TXEN_PORT &= ~_BV(TXEN); _delay_ms(1); putch(' ');
-	TXEN_PORT &= ~_BV(TXEN); _delay_ms(1); putch('W');
-	TXEN_PORT &= ~_BV(TXEN); _delay_ms(1); putch('o');
-	TXEN_PORT &= ~_BV(TXEN); _delay_ms(1); putch('r');
-	TXEN_PORT &= ~_BV(TXEN); _delay_ms(1); putch('l');
-	TXEN_PORT &= ~_BV(TXEN); _delay_ms(1); putch('d');
-	TXEN_PORT &= ~_BV(TXEN); _delay_ms(1); putch('\n');
-	
-	for(;;) {
-		ch = getch();
-		//TXEN_PORT &= ~_BV(TXEN);
-		//_delay_ms(1);
-		putch(ch);
-	}*/
 
 	/* 20050803: by DojoCorp, this is one of the parts provoking the
 		 system to stop listening, cancelled from the original */
@@ -398,8 +250,10 @@ int main(void)
 			putch('P');
 			putch(0x10);
 		} else {
-			if (++error_count == MAX_ERROR_COUNT)
+			if (++error_count == MAX_ERROR_COUNT) {
+				flash_red_led(1);
 				app_start();
+			}
 		}
 	}
 
@@ -447,11 +301,6 @@ int main(void)
 	/* Leave programming mode  */
 	else if(ch=='Q') {
 		nothing_response();
-#ifdef WATCHDOG_MODS
-		// autoreset via watchdog (sneaky!)
-		WDTCSR = _BV(WDE);
-		while (1); // 16 ms
-#endif
 	}
 
 
@@ -487,6 +336,8 @@ int main(void)
 
 	/* Write memory, length is big endian and is in bytes  */
 	else if(ch=='d') {
+		continues = 0;
+		LED2_PORT |= _BV(LED2);
 		length.byte[1] = getch();
 		length.byte[0] = getch();
 		flags.eeprom = 0;
@@ -498,33 +349,22 @@ int main(void)
 			if (flags.eeprom) {		                //Write to EEPROM one byte at a time
 				address.word <<= 1;
 				for(w=0;w<length.word;w++) {
-#if defined(__AVR_ATmega168__)  || defined(__AVR_ATmega328P__) || defined(__AVR_ATmega328__)
 					while(EECR & (1<<EEPE));
 					EEAR = (uint16_t)(void *)address.word;
 					EEDR = buff[w];
 					EECR |= (1<<EEMPE);
 					EECR |= (1<<EEPE);
-#else
-					eeprom_write_byte((void *)address.word,buff[w]);
-#endif
 					address.word++;
 				}			
 			}
 			else {					        //Write to FLASH one page at a time
 				if (address.byte[1]>127) address_high = 0x01;	//Only possible with m128, m256 will need 3rd address byte. FIXME
 				else address_high = 0x00;
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega1281__)
-				RAMPZ = address_high;
-#endif
 				address.word = address.word << 1;	        //address * 2 -> byte location
 				/* if ((length.byte[0] & 0x01) == 0x01) length.word++;	//Even up an odd number of bytes */
 				if ((length.byte[0] & 0x01)) length.word++;	//Even up an odd number of bytes
 				cli();					//Disable interrupts, just to be sure
-#if defined(EEPE)
 				while(bit_is_set(EECR,EEPE));			//Wait for previous EEPROM writes to complete
-#else
-				while(bit_is_set(EECR,EEWE));			//Wait for previous EEPROM writes to complete
-#endif
 				asm volatile(
 					 "clr	r17		\n\t"	//page_word_count
 					 "lds	r30,address	\n\t"	//Address of FLASH location (in bytes)
@@ -544,10 +384,6 @@ int main(void)
 					 "ldi	r16,0x03	\n\t"	//Erase page pointed to by Z
 					 "sts	%0,r16		\n\t"
 					 "spm			\n\t"							 
-#ifdef __AVR_ATmega163__
-					 ".word 0xFFFF		\n\t"
-					 "nop			\n\t"
-#endif
 					 "wait_spm2:		\n\t"
 					 "lds	r16,%0		\n\t"	//Wait for previous spm to complete
 					 "andi	r16,1           \n\t"
@@ -557,10 +393,6 @@ int main(void)
 					 "ldi	r16,0x11	\n\t"	//Re-enable RWW section
 					 "sts	%0,r16		\n\t"						 			 
 					 "spm			\n\t"
-#ifdef __AVR_ATmega163__
-					 ".word 0xFFFF		\n\t"
-					 "nop			\n\t"
-#endif
 					 "no_page_erase:		\n\t"							 
 					 "ld	r0,Y+		\n\t"	//Write 2 bytes into page buffer
 					 "ld	r1,Y+		\n\t"							 
@@ -584,17 +416,9 @@ int main(void)
 					 "andi	r16,1           \n\t"
 					 "cpi	r16,1           \n\t"
 					 "breq	wait_spm4       \n\t"
-#ifdef __AVR_ATmega163__
-					 "andi	r30,0x80	\n\t"	// m163 requires Z6:Z1 to be zero during page write
-#endif							 							 
 					 "ldi	r16,0x05	\n\t"	//Write page pointed to by Z
 					 "sts	%0,r16		\n\t"
 					 "spm			\n\t"
-#ifdef __AVR_ATmega163__
-					 ".word 0xFFFF		\n\t"
-					 "nop			\n\t"
-					 "ori	r30,0x7E	\n\t"	// recover Z6:Z1 state after page write (had to be zero during write)
-#endif
 					 "wait_spm5:		\n\t"
 					 "lds	r16,%0		\n\t"	//Wait for previous spm to complete
 					 "andi	r16,1           \n\t"
@@ -603,10 +427,6 @@ int main(void)
 					 "ldi	r16,0x11	\n\t"	//Re-enable RWW section
 					 "sts	%0,r16		\n\t"						 			 
 					 "spm			\n\t"					 		 
-#ifdef __AVR_ATmega163__
-					 ".word 0xFFFF		\n\t"
-					 "nop			\n\t"
-#endif
 					 "same_page:		\n\t"							 
 					 "adiw	r30,2		\n\t"	//Next word in FLASH
 					 "sbiw	r24,2		\n\t"	//length-2
@@ -619,11 +439,7 @@ int main(void)
 					 "rjmp	write_page	\n\t"
 					 "block_done:		\n\t"
 					 "clr	__zero_reg__	\n\t"	//restore zero register
-#if defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__) || defined(__AVR_ATmega328__) || defined(__AVR_ATmega128__) || defined(__AVR_ATmega1280__) || defined(__AVR_ATmega1281__)
 					 : "=m" (SPMCSR) : "M" (PAGE_SIZE) : "r0","r16","r17","r24","r25","r28","r29","r30","r31"
-#else
-					 : "=m" (SPMCR) : "M" (PAGE_SIZE) : "r0","r16","r17","r24","r25","r28","r29","r30","r31"
-#endif
 					 );
 				/* Should really add a wait for RWW section to be enabled, don't actually need it since we never */
 				/* exit the bootloader without a power cycle anyhow */
@@ -631,20 +447,20 @@ int main(void)
 			putch(0x14);
 			putch(0x10);
 		} else {
-			if (++error_count == MAX_ERROR_COUNT)
+			if (++error_count == MAX_ERROR_COUNT) {
+				flash_red_led(2);
 				app_start();
-		}		
+			}
+		}
+		LED2_PORT &= ~_BV(LED2);
 	}
 
 
 	/* Read memory block mode, length is big endian.  */
 	else if(ch=='t') {
+		LED3_PORT |= _BV(LED3);
 		length.byte[1] = getch();
 		length.byte[0] = getch();
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega1280__)
-		if (address.word>0x7FFF) flags.rampz = 1;		// No go with m256, FIXME
-		else flags.rampz = 0;
-#endif
 		address.word = address.word << 1;	        // address * 2 -> byte location
 		if (getch() == 'E') flags.eeprom = 1;
 		else flags.eeprom = 0;
@@ -652,28 +468,21 @@ int main(void)
 			putch(0x14);
 			for (w=0;w < length.word;w++) {		        // Can handle odd and even lengths okay
 				if (flags.eeprom) {	                        // Byte access EEPROM read
-#if defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__) || defined(__AVR_ATmega328__)
 					while(EECR & (1<<EEPE));
 					EEAR = (uint16_t)(void *)address.word;
 					EECR |= (1<<EERE);
 					putch(EEDR);
-#else
-					putch(eeprom_read_byte((void *)address.word));
-#endif
 					address.word++;
 				}
 				else {
 
 					if (!flags.rampz) putch(pgm_read_byte_near(address.word));
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega1280__)
-					else putch(pgm_read_byte_far(address.word + 0x10000));
-					// Hmmmm, yuck  FIXME when m256 arrvies
-#endif
 					address.word++;
 				}
 			}
 			putch(0x10);
 		}
+		LED3_PORT &= ~_BV(LED3);
 	}
 
 
@@ -686,8 +495,10 @@ int main(void)
 			putch(SIG3);
 			putch(0x10);
 		} else {
-			if (++error_count == MAX_ERROR_COUNT)
+			if (++error_count == MAX_ERROR_COUNT) {
+				flash_red_led(3);
 				app_start();
+			}
 		}
 	}
 
@@ -698,119 +509,8 @@ int main(void)
 	}
 
 
-#if defined MONITOR 
-
-	/* here come the extended monitor commands by Erik Lins */
-
-	/* check for three times exclamation mark pressed */
-	else if(ch=='!') {
-		ch = getch();
-		if(ch=='!') {
-		ch = getch();
-		if(ch=='!') {
-			PGM_P welcome = "";
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega1280__)
-			uint16_t extaddr;
-#endif
-			uint8_t addrl, addrh;
-
-#ifdef CRUMB128
-			welcome = "ATmegaBOOT / Crumb128 - (C) J.P.Kyle, E.Lins - 050815\n\r";
-#elif defined PROBOMEGA128
-			welcome = "ATmegaBOOT / PROBOmega128 - (C) J.P.Kyle, E.Lins - 050815\n\r";
-#elif defined SAVVY128
-			welcome = "ATmegaBOOT / Savvy128 - (C) J.P.Kyle, E.Lins - 050815\n\r";
-#elif defined __AVR_ATmega1280__ 
-			welcome = "ATmegaBOOT / Arduino Mega - (C) Arduino LLC - 090930\n\r";
-#endif
-
-			/* turn on LED */
-			LED_DDR |= _BV(LED);
-			LED_PORT &= ~_BV(LED);
-
-			/* print a welcome message and command overview */
-			for(i=0; welcome[i] != '\0'; ++i) {
-				putch(welcome[i]);
-			}
-
-			/* test for valid commands */
-			for(;;) {
-				putch('\n');
-				putch('\r');
-				putch(':');
-				putch(' ');
-
-				ch = getch();
-				putch(ch);
-
-				/* toggle LED */
-				if(ch == 't') {
-					if(bit_is_set(LED_PIN,LED)) {
-						LED_PORT &= ~_BV(LED);
-						putch('1');
-					} else {
-						LED_PORT |= _BV(LED);
-						putch('0');
-					}
-				} 
-
-				/* read byte from address */
-				else if(ch == 'r') {
-					ch = getch(); putch(ch);
-					addrh = gethex();
-					addrl = gethex();
-					putch('=');
-					ch = *(uint8_t *)((addrh << 8) + addrl);
-					puthex(ch);
-				}
-
-				/* write a byte to address  */
-				else if(ch == 'w') {
-					ch = getch(); putch(ch);
-					addrh = gethex();
-					addrl = gethex();
-					ch = getch(); putch(ch);
-					ch = gethex();
-					*(uint8_t *)((addrh << 8) + addrl) = ch;
-				}
-
-				/* read from uart and echo back */
-				else if(ch == 'u') {
-					for(;;) {
-						putch(getch());
-					}
-				}
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega1280__)
-				/* external bus loop  */
-				else if(ch == 'b') {
-					putch('b');
-					putch('u');
-					putch('s');
-					MCUCR = 0x80;
-					XMCRA = 0;
-					XMCRB = 0;
-					extaddr = 0x1100;
-					for(;;) {
-						ch = *(volatile uint8_t *)extaddr;
-						if(++extaddr == 0) {
-							extaddr = 0x1100;
-						}
-					}
-				}
-#endif
-
-				else if(ch == 'j') {
-					app_start();
-				}
-
-			} /* end of monitor functions */
-
-		}
-		}
-	}
-	/* end of monitor */
-#endif
 	else if (++error_count == MAX_ERROR_COUNT) {
+		flash_red_led(4);
 		app_start();
 	}
 	} /* end of forever loop */
@@ -877,14 +577,20 @@ char getch(void)
 {
 	rx_not_tx = 1;
 	TXEN_PORT &= ~_BV(TXEN);
-
 	uint32_t count = 0;
 	while(!(UCSR0A & _BV(RXC0))){
 		/* 20060803 DojoCorp:: Addon coming from the previous Bootloader*/               
 		/* HACKME:: here is a good place to count times*/
 		count++;
-		if (count > MAX_TIME_COUNT)
-			app_start();
+		if (count > MAX_TIME_COUNT) {
+			if (continues) {
+				flash_led(NUM_LED_FLASHES);
+				count = 0;
+			}
+			else {
+				app_start();
+			}
+		}
 	}
 	return UDR0;
 }
@@ -893,24 +599,7 @@ char getch(void)
 void getNch(uint8_t count)
 {
 	while(count--) {
-#if defined(__AVR_ATmega128__) || defined(__AVR_ATmega1280__)
-		if(bootuart == 1) {
-			while(!(UCSR0A & _BV(RXC0)));
-			UDR0;
-		} 
-		else if(bootuart == 2) {
-			while(!(UCSR1A & _BV(RXC1)));
-			UDR1;
-		}
-#elif defined(__AVR_ATmega168__)  || defined(__AVR_ATmega328P__) || defined (__AVR_ATmega328__)
 		getch();
-#else
-		/* m8,16,32,169,8515,8535,163 */
-		/* 20060803 DojoCorp:: Addon coming from the previous Bootloader*/               
-		//while(!(UCSRA & _BV(RXC)));
-		//UDR;
-		getch(); // need to handle time out
-#endif		
 	}
 }
 
@@ -922,8 +611,10 @@ void byte_response(uint8_t val)
 		putch(val);
 		putch(0x10);
 	} else {
-		if (++error_count == MAX_ERROR_COUNT)
+		if (++error_count == MAX_ERROR_COUNT) {
+			flash_red_led(5);
 			app_start();
+		}
 	}
 }
 
@@ -934,20 +625,33 @@ void nothing_response(void)
 		putch(0x14);
 		putch(0x10);
 	} else {
-		if (++error_count == MAX_ERROR_COUNT)
+		if (++error_count == MAX_ERROR_COUNT) {
+			flash_red_led(6);
 			app_start();
+		}
 	}
 }
 
 void flash_led(uint8_t count)
 {
 	while (count--) {
-		LED_PORT |= _BV(LED);
+		LED1_PORT |= _BV(LED1);
+		_delay_ms(100);
+		LED1_PORT &= ~_BV(LED1);
+		_delay_ms(100);
+	}
+}
+
+void flash_red_led(uint8_t count)
+{
+	while (count--) {
+		LED4_PORT |= _BV(LED4);
 		_delay_ms(500);
-		LED_PORT &= ~_BV(LED);
+		LED4_PORT &= ~_BV(LED4);
 		_delay_ms(500);
 	}
 }
+
 
 
 /* end of file ATmegaBOOT.c */
