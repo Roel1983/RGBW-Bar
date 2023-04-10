@@ -203,6 +203,10 @@ int main(void)
 	LED2_DDR |= _BV(LED2);
 	LED3_DDR |= _BV(LED3);
 	LED4_DDR |= _BV(LED4);
+	LED1_PORT &= ~_BV(LED1);
+	LED2_PORT &= ~_BV(LED2);
+	LED3_PORT &= ~_BV(LED3);
+	LED4_PORT &= ~_BV(LED4);
 
 	continues = (BUTTON_PIN & _BV(BUTTON)) == 0;
 
@@ -583,6 +587,9 @@ char getch(void)
 		/* HACKME:: here is a good place to count times*/
 		count++;
 		if (count > MAX_TIME_COUNT) {
+			if((BUTTON_PIN & _BV(BUTTON)) == 0) {
+				continues= 0;
+			}
 			if (continues) {
 				flash_led(NUM_LED_FLASHES);
 				count = 0;
