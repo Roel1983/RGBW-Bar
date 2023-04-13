@@ -4,6 +4,7 @@
 #include "Bootloader.h"
 #include "Button.h"
 #include "Cron.h"
+#include "I2C.h"
 #include "Led.h"
 #include "LoopMonitor.h"
 #include "PowerMonitor.h"
@@ -15,6 +16,7 @@ void setup() {
   digitalWrite(17, HIGH);
   Serial.println("Test");
 
+  I2cBegin();
   ButtonBegin();
   CronBegin();
   LedBegin();
@@ -28,6 +30,7 @@ void loop() {
   CronLoop();
   ButtonLoop();
   LoopMonitorLoop();
+  PowerMonitorLoop();
   
   if(ButtonIsPressedShort()) {
     LedSet(0, LED_OFF);

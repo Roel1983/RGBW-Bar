@@ -2,6 +2,7 @@
 #include <Wire.h>
 
 #include "PowerMonitor.h"
+#include "I2C.h"
 
 /** bus voltage range values **/
 enum {
@@ -84,9 +85,11 @@ static constexpr uint16_t ina219_config   = INA219_CONFIG_BVOLTAGERANGE_32V |
 static constexpr uint32_t ina219_currentDivider_mA  = 10;
 static constexpr float    ina219_powerMultiplier_mW = 2;
 
-void PowerMonitorBegin() {
-  Wire.begin();
+static float ina219_voltage;
+static float ina219_current;
+static float ina219_power;
 
+void PowerMonitorBegin() {
   Wire.beginTransmission(ina219_i2caddr);
   Wire.write(INA219_REG_CALIBRATION);
   Wire.write((ina219_calValue >> 8) & 0xFF);
@@ -100,30 +103,42 @@ void PowerMonitorBegin() {
   Wire.endTransmission();
 }
 
+void PowerMonitorLoop() {
+  static int state = 0;
+  static long previous_time_stamp;
+
+  long time_stamp = micros();
+  switch(state) {
+  case 0:
+    Wire.beginTransmission(ina219_i2caddr);
+    Wire.write(INA219_REG_BUSVOLTAGE);
+    Wire.endTransmission();
+    previous_time_stamp = micros();
+    state = 1;
+    break;
+  case 1:
+    if ((time_stamp - previous_time_stamp > 586) && I2cLock()) {
+      Wire.requestFrom(ina219_i2caddr, 2);
+      Wire.beginTransmission(ina219_i2caddr);
+      Wire.write(INA219_REG_BUSVOLTAGE);
+      Wire.endTransmission();
+
+      Wire.beginTransmission(ina219_i2caddr);
+      Wire.write(INA219_REG_BUSVOLTAGE);
+      Wire.endTransmission();
+      previous_time_stamp = micros();
+
+      previous_time_stamp = micros();
+      int value      = ((Wire.read() << 8) | Wire.read());
+      ina219_voltage = 0.001 * (int16_t)((value >> 3) * 4);
+      state          = 0;
+      I2cUnlock();
+    }
+  }
+}
+
 void PowerMonitorRead(float& voltage, float& current, float& power) {
-  uint16_t value;
-
-  Wire.beginTransmission(ina219_i2caddr);
-  Wire.write(INA219_REG_BUSVOLTAGE);
-  Wire.endTransmission();
-  delay(1); // Max 12-bit conversion time is 586us per sample
-  Wire.requestFrom(ina219_i2caddr, 2);
-  value   = ((Wire.read() << 8) | Wire.read());
-  voltage = 0.001 * (int16_t)((value >> 3) * 4);
-
-  Wire.beginTransmission(ina219_i2caddr);
-  Wire.write(INA219_REG_CURRENT);
-  Wire.endTransmission();
-  delay(1); // Max 12-bit conversion time is 586us per sample
-  Wire.requestFrom(ina219_i2caddr, 2);
-  value   = ((Wire.read() << 8) | Wire.read());
-  current = 0.001 * value / ina219_currentDivider_mA;
-
-  Wire.beginTransmission(ina219_i2caddr);
-  Wire.write(INA219_REG_POWER);
-  Wire.endTransmission();
-  delay(1); // Max 12-bit conversion time is 586us per sample
-  Wire.requestFrom(ina219_i2caddr, 2);
-  value   = ((Wire.read() << 8) | Wire.read());
-  power = 0.001 * value * ina219_powerMultiplier_mW;
+  voltage = ina219_voltage;
+  current = ina219_current;
+  power   = ina219_power;
 }
