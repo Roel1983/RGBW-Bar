@@ -10,6 +10,20 @@
 #include <Adafruit_INA219.h>
 Adafruit_INA219 ina219;
 
+
+constexpr int analog_out_pin = 5;
+
+void AnalogOutBegin() {
+  pinMode(analog_out_pin, OUTPUT);
+  analogWrite(analog_out_pin, 0);
+}
+
+void AnalogOutSetVoltage(float voltage) {
+  int value = voltage * 255 / 10;
+  if(value > 255) value = 255; else if(value < 0) value = 0;
+  analogWrite(analog_out_pin, value);
+}
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(124929);
@@ -23,6 +37,7 @@ void setup() {
   CronBegin();
   LedBegin();
   LedSet(0, LED_ON);
+  AnalogOutBegin();
   LoopMonitorBegin();
 }
 
@@ -65,6 +80,15 @@ void loop() {
     Serial.print("Load Voltage:  "); Serial.print(loadvoltage); Serial.println(" V");
     Serial.print("Current:       "); Serial.print(current_mA); Serial.println(" mA");
     Serial.println("");
+  }
+
+  if(CronEvery1Second()) {
+    static int voltage = 0;
+
+    voltage++;
+    if(voltage > 10) voltage = 0;
+    Serial.print("AnalogOut: voltage = "); Serial.println(voltage);
+    AnalogOutSetVoltage(voltage);
   }
   
   LedLoop();
