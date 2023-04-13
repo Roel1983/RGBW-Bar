@@ -1,5 +1,6 @@
 #include <Arduino.h>
 
+#include "Cron.h"
 #include "Led.h"
 
 typedef struct LedState {
@@ -13,9 +14,6 @@ typedef struct LedState {
 static constexpr size_t led_count        = 4;
 static constexpr int    led_pinnr[]      = {13, 12, 11, 10};
 static constexpr int    led_active_state = HIGH;
-static constexpr long   led_blink_period = 250;
-
-static long led_last_period_change;
 
 static LedState led_state[led_count];
 
@@ -24,16 +22,13 @@ void LedBegin() {
     pinMode(led_pinnr[i], OUTPUT);    
     led_state[i] = {0, 0, LED_OFF, false, false};
   }
-  led_last_period_change = millis();
 }
 
 void LedLoop() {
   static int cnt = 0;
-  long timestamp = millis();
   
-  bool tick = (timestamp - led_last_period_change > led_blink_period);
+  bool tick = CronEvery4thSecond();
   if (tick) {
-    led_last_period_change = timestamp;
     if(cnt++ > 4) cnt = 0;
   }
   

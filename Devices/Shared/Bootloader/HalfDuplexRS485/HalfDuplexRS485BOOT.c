@@ -162,7 +162,7 @@ uint8_t address_high;
 
 uint8_t pagesz=0x80;
 
-uint8_t i;
+//uint8_t i;
 uint8_t bootuart = 0;
 
 uint8_t error_count = 0;
@@ -178,10 +178,11 @@ int main(void)
 	uint16_t w;
 
 	asm volatile("nop\n\t");
-
+	
 	/* initialize UART(s) depending on CPU defined */
 	UBRR0L = (uint8_t)(F_CPU/(BAUD_RATE*16L)-1);
 	UBRR0H = (F_CPU/(BAUD_RATE*16L)-1) >> 8;
+	UCSR0A = 0;
 	UCSR0B = (1<<RXEN0) | (1<<TXEN0);
 	UCSR0C = (1<<UCSZ00) | (1<<UCSZ01);
 
@@ -219,6 +220,16 @@ int main(void)
 	if(continues) {
 		LED1_PORT |= _BV(LED1);
 	}
+
+putch(0x14);
+			putch('A');
+			putch('V');
+			putch('R');
+			putch(' ');
+			putch('I');
+			putch('S');
+			putch('P');
+			putch(0x10);
 
 
 	/* 20050803: by DojoCorp, this is one of the parts provoking the
