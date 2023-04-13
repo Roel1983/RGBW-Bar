@@ -1,28 +1,12 @@
 //#define F_CPU = 14745600
 
+#include "AnalogOut.h"
 #include "Bootloader.h"
 #include "Button.h"
 #include "Cron.h"
 #include "Led.h"
 #include "LoopMonitor.h"
-
-#include <Wire.h>
-#include <Adafruit_INA219.h>
-Adafruit_INA219 ina219;
-
-
-constexpr int analog_out_pin = 5;
-
-void AnalogOutBegin() {
-  pinMode(analog_out_pin, OUTPUT);
-  analogWrite(analog_out_pin, 0);
-}
-
-void AnalogOutSetVoltage(float voltage) {
-  int value = voltage * 255 / 10;
-  if(value > 255) value = 255; else if(value < 0) value = 0;
-  analogWrite(analog_out_pin, value);
-}
+#include "PowerMonitor.h"
 
 void setup() {
   // put your setup code here, to run once:
@@ -31,14 +15,13 @@ void setup() {
   digitalWrite(17, HIGH);
   Serial.println("Test");
 
-  ina219.begin(0x44);
-  
   ButtonBegin();
   CronBegin();
   LedBegin();
   LedSet(0, LED_ON);
   AnalogOutBegin();
   LoopMonitorBegin();
+  PowerMonitorBegin();
 }
 
 void loop() {
@@ -65,20 +48,15 @@ void loop() {
   }
 
   if(CronEvery1Second()) {
-    float shuntvoltage = 0;
-    float busvoltage = 0;
-    float current_mA = 0;
-    float loadvoltage = 0;
-  
-    shuntvoltage = ina219.getShuntVoltage_mV();
-    busvoltage = ina219.getBusVoltage_V();
-    current_mA = ina219.getCurrent_mA();
-    loadvoltage = busvoltage + (shuntvoltage / 1000);
+    float voltage = 0;
+    float current = 0;
+    float power   = 0;
+
+    PowerMonitorRead(voltage, current, power);
     
-    Serial.print("Bus Voltage:   "); Serial.print(busvoltage); Serial.println(" V");
-    Serial.print("Shunt Voltage: "); Serial.print(shuntvoltage); Serial.println(" mV");
-    Serial.print("Load Voltage:  "); Serial.print(loadvoltage); Serial.println(" V");
-    Serial.print("Current:       "); Serial.print(current_mA); Serial.println(" mA");
+    Serial.print("Voltage:   "); Serial.print(voltage); Serial.println(" V");
+    Serial.print("Current:   "); Serial.print(current); Serial.println(" A");
+    Serial.print("Power:     "); Serial.print(power);   Serial.println(" W");
     Serial.println("");
   }
 
