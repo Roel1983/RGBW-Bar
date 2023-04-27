@@ -1,4 +1,5 @@
 include <../../Config.inc>
+use     <../Shared/CaseBaseShape.scad>
 include <../MainboardKicadPcb.inc>
 use     <../../../../../Shared/3D/Box.scad>
 use     <../../../../../Shared/3D/Shapes.scad>
@@ -13,8 +14,8 @@ function bounds_margin(bounds, margin) = [
     [bounds[1][0] - margin, bounds[1][1] + margin],
 ];
 
-$UNITS_LAYER               = 0.15;
-$UNITS_NOZZLE              = 0.40;
+//$UNITS_LAYER               = 0.15;
+//$UNITS_NOZZLE              = 0.40;
 
 CASE_WALL_THICKNESS_XY     = nozzle(3);
 CASE_WALL_THICKNESS_Z      = layer(5);
@@ -73,8 +74,8 @@ module Bottom() {
     
     module OuterBox() {
         Box(
-            bounds = case_outer_size_xy,
-            z_to   = case_bottom_size_z
+            bounds = CASE_BOUNDS_XY,
+            z_to   = CASE_SEAM_Z
         );
     }
     
