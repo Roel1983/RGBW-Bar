@@ -16,8 +16,8 @@ with open(args.inputfile, 'r') as pcb_file:
 	is_general_section = False;
 	components = []
 	aux_axis_origin = [0.0, 0.0]
-	edge_cut_bounding_box = None
-	board_thickness = None
+	pcb_bounds = None
+	pcb_thickness = None
 	
 	for line in pcb_file.readlines():
 
@@ -28,7 +28,7 @@ with open(args.inputfile, 'r') as pcb_file:
 		else:
 			m = re.match("^[ ]*[(]thickness (\d+(?:.\d+)?)[)].*$", line)
 			if m:
-				board_thickness = float(m.group(1))
+				pcb_thickness = float(m.group(1))
 			if re.match("^[ ]*[)].*$", line):
 				is_general_section = False
 		
@@ -61,15 +61,15 @@ with open(args.inputfile, 'r') as pcb_file:
 			start_y = float(m.group(2))
 			end_x   = float(m.group(3))
 			end_y   = float(m.group(4))
-			if edge_cut_bounding_box:
-				edge_cut_bounding_box[0][0] = min(edge_cut_bounding_box[0][0], start_x, end_x)
-				edge_cut_bounding_box[0][1] = min(edge_cut_bounding_box[0][1], start_y, end_y)
-				edge_cut_bounding_box[1][0] = max(edge_cut_bounding_box[1][0], start_x, end_x)
-				edge_cut_bounding_box[1][1] = max(edge_cut_bounding_box[1][1], start_y, end_y)
+			if pcb_bounds:
+				pcb_bounds[0][0] = min(pcb_bounds[0][0], start_x, end_x)
+				pcb_bounds[0][1] = max(pcb_bounds[0][1], start_x, end_x)
+				pcb_bounds[1][0] = min(pcb_bounds[1][0], start_y, end_y)
+				pcb_bounds[1][1] = max(pcb_bounds[1][1], start_y, end_y)
 			else:
-				edge_cut_bounding_box = [
-					[min(start_x, end_x), min(start_y, end_y)],
-					[max(start_x, end_x), max(start_y, end_y)]]
+				pcb_bounds = [
+					[min(start_x, end_x), max(start_x, end_x)],
+					[min(start_y, end_y), max(start_y, end_y)]]
 
 components.sort(key=lambda component: component["reference"])
 
@@ -101,19 +101,19 @@ with open(args.outputfile, 'w') as scad_file:
 	scad_file.write("\n")
 
 	scad_file.write("// Board size\n")
-	if board_thickness:
-		scad_file.write("PCB_THICKNESS = {};\n".format(board_thickness))
+	if pcb_thickness:
+		scad_file.write("PCB_THICKNESS = {};\n".format(pcb_thickness))
 	else:
 		print("Error: No PCB_THICKNESS detected");
 		exit_code = 1;
-	if edge_cut_bounding_box:
-		scad_file.write("PCB_BOUNDING_BOX = [[{}, {}], [{}, {}]];\n".format(
-			edge_cut_bounding_box[0][0] - aux_axis_origin[0],
-			aux_axis_origin[1] - edge_cut_bounding_box[0][1],
-			edge_cut_bounding_box[1][0] - aux_axis_origin[0],
-			aux_axis_origin[1] - edge_cut_bounding_box[1][1]))
+	if pcb_bounds:
+		scad_file.write("PCB_BOUNDS = [[{}, {}], [{}, {}]];\n".format(
+			pcb_bounds[0][0] - aux_axis_origin[0],
+			pcb_bounds[0][1] - aux_axis_origin[0],
+			aux_axis_origin[1] - pcb_bounds[1][1],
+			aux_axis_origin[1] - pcb_bounds[1][0]))
 	else:
-		print("Error: No PCB_BOUNDING_BOX detected");
+		print("Error: No PCB_BOUNDS detected");
 		exit_code = 2;
 	scad_file.write("\n")
 
@@ -128,7 +128,7 @@ with open(args.outputfile, 'w') as scad_file:
 			component["at"][0] - aux_axis_origin[0],
 			aux_axis_origin[1] - component["at"][1],
 			component["at"][2]))
-		scad_file.write('\t"{}"]\n'.format(component["foot_print"]))
+		scad_file.write('\t"{}"];\n'.format(component["foot_print"]))
 		scad_file.write('\n')
 	if len(components) == 0:
 		print("Error: No components detected");
