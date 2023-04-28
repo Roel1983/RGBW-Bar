@@ -9,6 +9,7 @@ argParser = argparse.ArgumentParser(
 	epilog      = 'Create by: Roel Drost')
 argParser.add_argument("inputfile",      help="The kicad PCB input file")
 argParser.add_argument("outputfile",     help="The openSCAD output file")
+argParser.add_argument("boardname")
 
 args = argParser.parse_args()
 
@@ -107,13 +108,14 @@ with open(args.outputfile, 'w') as scad_file:
 		print("Error: No PCB_THICKNESS detected");
 		exit_code = 1;
 	if pcb_bounds:
-		scad_file.write("PCB_BOUNDS = [[{}, {}], [{}, {}]];\n".format(
+		scad_file.write("PCB_BOUNDS_{} = [[{}, {}], [{}, {}]];\n".format(
+			args.boardname.upper(),
 			pcb_bounds[0][0] - aux_axis_origin[0],
 			pcb_bounds[0][1] - aux_axis_origin[0],
 			aux_axis_origin[1] - pcb_bounds[1][1],
 			aux_axis_origin[1] - pcb_bounds[1][0]))
 	else:
-		print("Error: No PCB_BOUNDS detected");
+		print("Error: No PCB_BOUNDS_{} detected".format(args.boardname.upper()));
 		exit_code = 2;
 	scad_file.write("\n")
 
