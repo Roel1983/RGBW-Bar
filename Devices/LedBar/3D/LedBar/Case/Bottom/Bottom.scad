@@ -1,11 +1,11 @@
 include <../../Config.inc>
 use     <../Shared/CaseBaseShape.scad>
-include <../MainboardKicadPcb.inc>
-use     <../../../../../Shared/3D/Box.scad>
-use     <../../../../../Shared/3D/Shapes.scad>
-use     <../../../../../Shared/3D/LinearExtrude.scad>
-include <../../../../../Shared/3D/Units.inc>
-
+include <../Shared/Boards/Mainboard/MainboardKicadPcb.inc>
+use     <../../../../../Shared/3D/Utils/Box.scad>
+use     <../../../../../Shared/3D/Utils/Shapes.scad>
+use     <../../../../../Shared/3D/Utils/LinearExtrude.scad>
+include <../../../../../Shared/3D/Utils/Units.inc>
+include <../../../../../Shared/3D/KicadPcbComponent.scad>
 
 $fn = 32;
 
@@ -24,27 +24,12 @@ CASE_PCB_WALL_CLEARANCE_XY = mm(1);
 M3_HOLE_DIAMETER           = mm(3.1);
 M3_NUT_SIZE                = [mm(5), m(2.5)]; // Measure
 
-case_inner_size_xy = bounds_margin(PCB_BOUNDS, CASE_PCB_WALL_CLEARANCE_XY);
+case_inner_size_xy = bounds_margin(PCB_BOUNDS_MAINBOARD, CASE_PCB_WALL_CLEARANCE_XY);
 case_outer_size_xy = bounds_margin(case_inner_size_xy, CASE_WALL_THICKNESS_XY);
 
-case_bottom_size_z = CASE_WALL_THICKNESS_Z + CASE_PCB_WALL_CLEARANCE_Z + PCB_THICKNESS;
+case_bottom_size_z = CASE_WALL_THICKNESS_Z + CASE_PCB_WALL_CLEARANCE_Z + PCB_THICKNESS_MAINBOARD;
 
 Bottom();
-
-module CenterBoard_At_2D(component) {
-    translate(component_at_loc(component)) {
-        side = component_at_side(component);
-        if (side == "F") {
-            rotate(component_at_rot(component)) {
-                children();
-            }
-        } else {
-            rotate(-component_at_rot(component)) {
-                children();
-            }
-        }
-    }
-}
 
 module Bottom() {
     
@@ -99,10 +84,10 @@ module Bottom() {
     }
     
     module ScrewHolePilar() {
-        CenterBoard_At_2D(COMPONENT_H201) Pillar();
-        CenterBoard_At_2D(COMPONENT_H202) Pillar();
-        CenterBoard_At_2D(COMPONENT_H203) Pillar();
-        CenterBoard_At_2D(COMPONENT_H204) Pillar();
+        ComponentPosition(COMPONENT_H201) Pillar();
+        ComponentPosition(COMPONENT_H202) Pillar();
+        ComponentPosition(COMPONENT_H203) Pillar();
+        ComponentPosition(COMPONENT_H204) Pillar();
         
         module Pillar() {
             cylinder(
@@ -113,10 +98,10 @@ module Bottom() {
     }
     
     module ScrewHoles() {
-        CenterBoard_At_2D(COMPONENT_H201) Hole();
-        CenterBoard_At_2D(COMPONENT_H202) Hole();
-        CenterBoard_At_2D(COMPONENT_H203) Hole();
-        CenterBoard_At_2D(COMPONENT_H204) Hole();
+        ComponentPosition(COMPONENT_H201) Hole();
+        ComponentPosition(COMPONENT_H202) Hole();
+        ComponentPosition(COMPONENT_H203) Hole();
+        ComponentPosition(COMPONENT_H204) Hole();
         
         module Hole() {
             bias = 0.1;

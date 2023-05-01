@@ -1,1 +1,1 @@
-include <../MainboardKicadPcb.inc>
+include <../Shared/Boards/Mainboard/MainboardKicadPcb.inc>

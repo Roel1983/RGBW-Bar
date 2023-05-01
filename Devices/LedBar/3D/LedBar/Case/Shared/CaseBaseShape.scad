@@ -1,6 +1,6 @@
-use     <../../../../../Shared/3D/Box.scad>
-use     <../../../../../Shared/3D/LinearExtrude.scad>
-use     <../../../../../Shared/3D/Bounds.scad>
+use     <../../../../../Shared/3D/Utils/Box.scad>
+use     <../../../../../Shared/3D/Utils/LinearExtrude.scad>
+use     <../../../../../Shared/3D/Utils/Bounds.scad>
 
 include <../../Config.inc>
 

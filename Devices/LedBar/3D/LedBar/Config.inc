@@ -1,6 +1,6 @@
-include <Case/MainboardKicadPcb.inc>
-use     <../../../Shared/3D/Bounds.scad>
-include <../../../Shared/3D/Units.inc>
+include <Case/Shared/Boards/Mainboard/MainboardKicadPcb.inc>
+use     <../../../Shared/3D/Utils/Bounds.scad>
+include <../../../Shared/3D/Utils/Units.inc>
 
 $UNITS_NOZZLE                     = mm(0.4);
 $UNITS_LAYER                      = mm(0.15);
@@ -21,7 +21,7 @@ CASE_BEVEL                        = mm(2);
 /* Dirived */
 
 CASE_BOUNDS_XY = bounds_margin(
-    bounds = PCB_BOUNDS,
+    bounds = PCB_BOUNDS_MAINBOARD,
     margin = (
         CASE_PCB_WALL_CLEARANCE_HORIZONAL
         + CASE_WALL_THICKNESS_VERTICAL
@@ -37,7 +37,7 @@ CASE_PCB_Z_BACK = (
 );
 CASE_PCB_Z_FRONT = (
     CASE_PCB_Z_BACK
-    + PCB_THICKNESS
+    + PCB_THICKNESS_MAINBOARD
 );
 CASE_HEIGHT_SIDE = (
     CASE_PCB_Z_BACK
