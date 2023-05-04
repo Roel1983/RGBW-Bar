@@ -23,7 +23,7 @@ difference() {
     difference() {
         CaseBasicShapeInner();
         translate([0, 0, CASE_PCB_Z_BACK]) {
-            PlaceFootprints(ALL_COMPONENTS_MAINBOARD, "Case.Bottom.Add.Inner");
+            PlaceFootprints(ALL_COMPONENTS_MAINBOARD, "");
         }
         ScrewHoles("Case.Bottom.Add.Inner");
     }

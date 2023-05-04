@@ -1,32 +1,58 @@
 include <../../Config.inc>
 
+use     <../../../../../Shared/3D/Utils/Box.scad>
+use     <../../../../../Shared/3D/Utils/Hex.scad>
+use     <../../../../../Shared/3D/Utils/LinearExtrude.scad>
 use     <../../../../../Shared/3D/Utils/Units.scad>
 use     <../../../../../Shared/3D/KicadPcbComponent.scad>
 
-ScrewHoles("Case.Remove");
+$fn = 16;
+difference() {
+    ScrewHoles("Case.Bottom.Add.Inner");
+    %ScrewHoles("Case.Remove");
+}
+ScrewHoles("Case.Top.Add.Inner");
 
 module ScrewHoles(layer) {
     
-    ComponentPosition(COMPONENT_H201) ScrewHole();
-    ComponentPosition(COMPONENT_H202) ScrewHole();
-    ComponentPosition(COMPONENT_H203) ScrewHole();
-    ComponentPosition(COMPONENT_H204) ScrewHole();
+    ScrewHole(COMPONENT_H201, 270);
+    ScrewHole(COMPONENT_H202,   0);
+    ScrewHole(COMPONENT_H203, 180);
+    ScrewHole(COMPONENT_H204,  90);
     
-    module ScrewHole() {
-        if (layer == "Case.Remove") {
-            CaseRemove();
+    module ScrewHole(component, angle) {
+        ComponentPosition(component, rotate = false) {
+            rotate(angle) {
+                if (layer == "Case.Remove") {
+                    CaseRemove();
+                } else if (layer == "Case.Bottom.Add.Inner") {
+                    CaseBottomAddInner();
+                } else if (layer == "Case.Top.Add.Inner") {
+                    CaseTopAddInner(
+                        is_modified = (
+                            component_footprint(component)[1]
+                            ==
+                            "MountingHole_4.3mm_M4_modified1"
+                        )
+                    );
+                }
+            }
         }
     }
 
     pillar_hole_clearance = mm(0.15);
-    pillar_wall_thickness = nozzle(2);
-    hole_diameter   = mm(4.3);
+    pillar_wall_thickness = nozzle(1);
+    hole_diameter         = mm(4.3);
     pillar_outer_diameter = hole_diameter - 2 * pillar_hole_clearance;
-    pillar_inner_diameter = pillar_outer_diameter - pillar_wall_thickness;
+    pillar_inner_diameter = pillar_outer_diameter - 2 * pillar_wall_thickness;
     assert(pillar_inner_diameter == mm(3.2));
     
-    screw_length        = mm(9.8);
-    screw_head_diameter = mm(5.5);
+    screw_length           = mm(9.8);
+    screw_head_diameter    = mm(5.5);
+    hex_nut_size           = mm(5.5);
+    hex_nut_height         = mm(2.4);
+    hex_nut_wall_thickness = nozzle(4);
+    support_diameter       = hex_nut_size / cos(degree(30)) + 2 * hex_nut_wall_thickness;
 
     module CaseRemove() {
         BIAS = 0.1;
@@ -39,5 +65,61 @@ module ScrewHoles(layer) {
             [screw_head_diameter / 2, CASE_HEIGHT_SIDE + BIAS],
             [0, CASE_HEIGHT_SIDE + BIAS]
         ]);
+        hull() {
+            LinearExtrude(
+                z_from = -BIAS,
+                z_to   = hex_nut_height
+            ) {
+                Hex(size = hex_nut_size);
+            }
+            cylinder(
+                d = pillar_inner_diameter / 2,
+                h = hex_nut_height + (hex_nut_size - pillar_inner_diameter) / 2
+            );
+        }
+    }
+    
+    
+    module Support2D() {
+        circle(d = support_diameter);
+        difference() {
+            Box(
+                x_to   = support_diameter / 2,
+                x_from = cm(-1),
+                y_to   = support_diameter / 2,
+                y_from = cm(-1)
+            );
+            BIAS = 0.1;
+            Box(
+                x_to = support_diameter / 2 + BIAS,
+                y_to = support_diameter / 2 + BIAS
+            );
+        }
+    }
+    
+    module CaseBottomAddInner() {
+        LinearExtrude(
+            z_to = CASE_PCB_Z_BACK
+        ) {
+            Support2D();
+        }
+        cylinder(
+            d = pillar_outer_diameter,
+            h = CASE_PCB_Z_FRONT
+        );
+    }
+    
+    module CaseTopAddInner(is_modified) {
+        difference() {
+            LinearExtrude(
+                z_from = CASE_PCB_Z_FRONT,
+                z_to   = CASE_HEIGHT_SIDE
+            ) {
+                Support2D();
+            }
+            if (is_modified) {
+                // TODO: Modification
+            }
+        }
     }
 }
