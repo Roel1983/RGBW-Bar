@@ -4,8 +4,11 @@ include <../../Config.inc>
 include <../Shared/Boards/Mainboard/MainboardKicadPcb.inc>
 use     <../Shared/Boards/Mainboard/Mainboard.scad>
 
-use     <../Shared/PlaceFootprints.scad>
 use     <../Shared/CaseBaseShape.scad>
+use     <../Shared/PlaceFootprints.scad>
+use     <../Shared/ScrewHoles.scad>
+
+$fn = 16;
 
 translate([0, 0, CASE_PCB_Z_BACK]) {
     %Mainboard();
@@ -28,8 +31,10 @@ difference() {
         translate([0, 0, CASE_PCB_Z_BACK]) {
             PlaceFootprints(ALL_COMPONENTS_MAINBOARD, "Case.Top.Add.Inner");
         }
+        ScrewHoles("Case.Top.Add.Inner");
     }
     translate([0, 0, CASE_PCB_Z_BACK]) {
         PlaceFootprints(ALL_COMPONENTS_MAINBOARD, "Case.Remove", PCB_THICKNESS_MAINBOARD);
     }
+    ScrewHoles("Case.Remove");
 }

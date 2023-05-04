@@ -4,8 +4,9 @@ include <../../Config.inc>
 include <../Shared/Boards/Mainboard/MainboardKicadPcb.inc>
 use     <../Shared/Boards/Mainboard/Mainboard.scad>
 
-use     <../Shared/PlaceFootprints.scad>
 use     <../Shared/CaseBaseShape.scad>
+use     <../Shared/PlaceFootprints.scad>
+use     <../Shared/ScrewHoles.scad>
 
 translate([0, 0, CASE_PCB_Z_BACK]) {
     %Mainboard();
@@ -13,10 +14,7 @@ translate([0, 0, CASE_PCB_Z_BACK]) {
 
 difference() {
     intersection() {
-        union() {
-            CaseBasicShapeOuter();
-            PlaceFootprints(ALL_COMPONENTS_MAINBOARD, "Case.Bottom.Add.Outer");
-        }
+        CaseBasicShapeOuter();
         Box(
             bounds = CASE_BOUNDS_XY,
             z_to   = CASE_PCB_Z_FRONT
@@ -27,10 +25,12 @@ difference() {
         translate([0, 0, CASE_PCB_Z_BACK]) {
             PlaceFootprints(ALL_COMPONENTS_MAINBOARD, "Case.Bottom.Add.Inner");
         }
+        ScrewHoles("Case.Bottom.Add.Inner");
     }
     translate([0, 0, CASE_PCB_Z_BACK]) {
         PlaceFootprints(ALL_COMPONENTS_MAINBOARD, "Case.Remove", PCB_THICKNESS_MAINBOARD);
     }
+    ScrewHoles("Case.Remove");
 }
 
 //include <../../Config.inc>

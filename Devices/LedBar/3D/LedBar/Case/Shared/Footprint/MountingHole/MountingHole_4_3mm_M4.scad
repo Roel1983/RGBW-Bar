@@ -4,6 +4,10 @@ MountingHole_4_3mm_M4(layer = "Edge.Cuts");
 
 module MountingHole_4_3mm_M4(layer) {
     if(layer == "Edge.Cuts") {
+        EdgeCuts();
+    }
+    
+    module EdgeCuts() {
         circle(d = mm(4.3));
     }
 }
