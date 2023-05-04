@@ -18,6 +18,9 @@ CASE_PCB_WALL_CLEARANCE_TOP       = mm(8);
 
 CASE_BEVEL                        = mm(2);
 
+CASE_LED_WALL_CLEARANCE           = mm(0.1);
+CASE_BUTTON_WALL_CLEARANCE        = mm(0.2);
+
 /* Dirived */
 
 CASE_BOUNDS_XY = bounds_margin(
