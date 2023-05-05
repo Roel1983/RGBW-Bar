@@ -8,10 +8,12 @@ use     <../../../../../Shared/3D/KicadPcbComponent.scad>
 
 $fn = 16;
 difference() {
-    ScrewHoles("Case.Bottom.Add.Inner");
-    %ScrewHoles("Case.Remove");
+    union() {
+        ScrewHoles("Case.Bottom.Add.Inner");
+        ScrewHoles("Case.Top.Add.Inner");
+    }
+    ScrewHoles("Case.Remove");
 }
-ScrewHoles("Case.Top.Add.Inner");
 
 module ScrewHoles(layer) {
     

@@ -1,8 +1,12 @@
 
-function bounds_margin(bounds, margin) = [
-    [bounds[0][0] - margin, bounds[0][1] + margin],
-    [bounds[1][0] - margin, bounds[1][1] + margin],
-];
+function bounds_margin(bounds, margin) = (
+    (is_list(bounds[0])) ? [
+        [bounds[0][0] - margin, bounds[0][1] + margin],
+        [bounds[1][0] - margin, bounds[1][1] + margin]
+    ] : [
+        bounds[0] - margin, bounds[1] + margin
+    ]
+);
 
 assert(
     bounds_margin(
