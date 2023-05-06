@@ -75,7 +75,7 @@ module SW_PUSH_6mm(layer, H=mm(4.3)) {
         
         module Bottom() {
             pin_length = mm(4);
-            LinearExtrude(z_from = -pin_length, z_to=BIAS) {
+            LinearExtrude(z_from = -pin_length, z_to=BIAS, convexity = 2) {
                 mirror_copy(VEC_X) mirror_copy(VEC_Y) {
                     translate([pitch[0]/2, pitch[1]/2]) {
                         circle(d=pad_size + CASE_BUTTON_WALL_CLEARANCE);
