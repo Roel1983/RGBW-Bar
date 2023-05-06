@@ -5,9 +5,11 @@ include <../../../../../../../Shared/3D/Utils/TransformCopy.scad>
 use     <../../../../../../../Shared/3D/Utils/Units.scad>
 include <../../../../Config.inc>
 
-#Perpendicular_pcb_1mm_female_2x6("Edge.Cuts");
+$pcb_thickness = mm(1.6);
+
+%Perpendicular_pcb_1mm_female_2x6("Edge.Cuts");
 difference() {
-    %Perpendicular_pcb_1mm_female_2x6("Case.Bottom.Add.Inner");
+    Perpendicular_pcb_1mm_female_2x6("Case.Bottom.Add.Inner");
     Perpendicular_pcb_1mm_female_2x6("Case.Remove");
 }
 
@@ -40,7 +42,7 @@ module Perpendicular_pcb_1mm_female_2x6(layer = "3D") {
             Box(
                 x_size = support_size[X] + 2 * wall,
                 y_size = support_size[Y] + 2 * wall,
-                z_to   = +BIAS,
+                z_to   = - $pcb_thickness,
                 z_from = -CASE_PCB_Z_FRONT - BIAS
             );
             mirror_copy(VEC_Y) {
@@ -49,7 +51,7 @@ module Perpendicular_pcb_1mm_female_2x6(layer = "3D") {
                     y_from = support_size[Y] / 2,
                     y_to   = support_size[Y] / 2 + wall,
                     
-                    z_to   = -mm(2.5) + PCB_THICKNESS_MAINBOARD,
+                    z_to   = -mm(2.5),
                     z_from = -CASE_PCB_Z_FRONT - BIAS
                 );
             }

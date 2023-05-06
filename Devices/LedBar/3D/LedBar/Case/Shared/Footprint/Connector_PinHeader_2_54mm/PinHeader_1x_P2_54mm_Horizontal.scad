@@ -5,6 +5,7 @@ use     <../../../../../../../Shared/3D/Utils/Units.scad>
 include <../../../../Config.inc>
 
 $fn = 16;
+$pcb_thickness = mm(1.6);
 
 PinHeader_1x_P2_54mm_Horizontal(layer = "3D", pins = 5);
 %difference() {
@@ -127,6 +128,7 @@ module PinHeader_1x_P2_54mm_Horizontal(layer, pins = 5) {
         wall = nozzle(4);
         BIAS = 0.1;
         LinearExtrude(
+            z_to   = -$pcb_thickness,
             z_from = -CASE_PCB_Z_FRONT - BIAS
         ) {
             hull() {

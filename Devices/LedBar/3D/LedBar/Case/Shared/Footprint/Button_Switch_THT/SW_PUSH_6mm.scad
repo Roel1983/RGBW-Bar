@@ -7,6 +7,7 @@ use     <../../../../../../../Shared/3D/Utils/TransformCopy.scad>
 use     <../../../../../../../Shared/3D/Utils/Units.scad>
 
 $fn = 16;
+$pcb_thickness = mm(1.6);
 
 SW_PUSH_6mm(layer = "3D", H=mm(4.3));
 %difference() {
@@ -134,7 +135,10 @@ module SW_PUSH_6mm(layer, H=mm(4.3)) {
         wall = nozzle(3);
         
         translate([pitch[0]/2, -pitch[1]/2]) {
-            LinearExtrude(z_from = -(CASE_PCB_WALL_CLEARANCE_BOTTOM + PCB_THICKNESS_MAINBOARD + BIAS)) {
+            LinearExtrude(
+                z_from = -(CASE_PCB_WALL_CLEARANCE_BOTTOM + PCB_THICKNESS_MAINBOARD + BIAS),
+                z_to   = -$pcb_thickness
+            ) {
                 hull() mirror_copy(VEC_X) mirror_copy(VEC_Y) {
                     translate([pitch[0]/2, pitch[1]/2]) {
                         circle(d=pad_size + CASE_BUTTON_WALL_CLEARANCE + wall);
