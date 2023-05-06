@@ -8,11 +8,19 @@ $fn = 32;
 Mainboard();
 
 module Mainboard() {
-    linear_extrude(PCB_THICKNESS_MAINBOARD) {
-        difference() {
-            Box(bounds = PCB_BOUNDS_MAINBOARD);
-            PlaceFootprints(ALL_COMPONENTS_MAINBOARD, "Edge.Cuts");
-        }
-    }
+    MainboardEdgeCuts();
     PlaceFootprints(ALL_COMPONENTS_MAINBOARD, "3D", PCB_THICKNESS_MAINBOARD);
+}
+
+module MainboardEdgeCuts() {
+    linear_extrude(PCB_THICKNESS_MAINBOARD) {
+        MainboardEdgeCuts2D();
+    }
+}
+
+module MainboardEdgeCuts2D() {
+    difference() {
+        Box(bounds = PCB_BOUNDS_MAINBOARD);
+        PlaceFootprints(ALL_COMPONENTS_MAINBOARD, "Edge.Cuts");
+    }
 }

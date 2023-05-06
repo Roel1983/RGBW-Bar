@@ -11,14 +11,16 @@ use     <../Shared/ScrewHoles.scad>
 $fn = 16;
 
 translate([0, 0, CASE_PCB_Z_BACK]) {
-    %Mainboard();
+    *Mainboard();
 }
 
 difference() {
     intersection() {
         union() {
             CaseBasicShapeOuter();
-            PlaceFootprints(ALL_COMPONENTS_MAINBOARD, "Case.Top.Add.Outer");
+            translate([0, 0, CASE_PCB_Z_BACK]) {
+                PlaceFootprints(ALL_COMPONENTS_MAINBOARD, "Case.Top.Add.Outer", PCB_THICKNESS_MAINBOARD);
+            }
         }
         Box(
             bounds = CASE_BOUNDS_XY,
@@ -29,7 +31,7 @@ difference() {
     difference() {
         CaseBasicShapeInner();
         translate([0, 0, CASE_PCB_Z_BACK]) {
-            PlaceFootprints(ALL_COMPONENTS_MAINBOARD, "");
+            PlaceFootprints(ALL_COMPONENTS_MAINBOARD, "Case.Top.Add.Inner", PCB_THICKNESS_MAINBOARD);
         }
         ScrewHoles("Case.Top.Add.Inner");
     }
