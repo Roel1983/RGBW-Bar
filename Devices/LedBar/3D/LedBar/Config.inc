@@ -21,7 +21,7 @@ CASE_BEVEL                        = mm(2);
 CASE_LED_WALL_CLEARANCE           = mm(0.1);
 CASE_BUTTON_WALL_CLEARANCE        = mm(0.2);
 
-PAD_SIZE_15EDGRC_3_5              = mm(2.4); // TODO measure
+PAD_SIZE_15EDGRC_3_5              = mm(3.2); // TODO measure
 
 /* Dirived */
 
