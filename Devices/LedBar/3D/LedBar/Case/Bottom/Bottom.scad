@@ -8,6 +8,7 @@ use     <../Shared/Boards/Mainboard/Mainboard.scad>
 use     <../Shared/CaseBaseShape.scad>
 use     <../Shared/PlaceFootprints.scad>
 use     <../Shared/ScrewHoles.scad>
+use     <../Shared/Connectors.scad>
 
 translate([0, 0, CASE_PCB_Z_BACK]) {
     *Mainboard();
@@ -24,12 +25,19 @@ difference() {
     difference() {
         CaseBasicShapeInner();
         translate([0, 0, CASE_PCB_Z_BACK]) {
-            PlaceFootprints(ALL_COMPONENTS_MAINBOARD, "Case.Bottom.Add.Inner", PCB_THICKNESS_MAINBOARD);
+            PlaceFootprints(
+                ALL_COMPONENTS_MAINBOARD,
+                "Case.Bottom.Add.Inner",
+                PCB_THICKNESS_MAINBOARD);
         }
         ScrewHoles("Case.Bottom.Add.Inner");
+        Connectors("Case.Bottom.Add.Inner");
     }
     translate([0, 0, CASE_PCB_Z_BACK]) {
-        PlaceFootprints(ALL_COMPONENTS_MAINBOARD, "Case.Remove", PCB_THICKNESS_MAINBOARD);
+        PlaceFootprints(
+            ALL_COMPONENTS_MAINBOARD,
+            "Case.Remove",
+            PCB_THICKNESS_MAINBOARD);
     }
     ScrewHoles("Case.Remove");
 }
