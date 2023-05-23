@@ -13,7 +13,7 @@ module Mainboard() {
 }
 
 module MainboardEdgeCuts() {
-    linear_extrude(PCB_THICKNESS_MAINBOARD) {
+    color("green")linear_extrude(PCB_THICKNESS_MAINBOARD) {
         MainboardEdgeCuts2D();
     }
 }

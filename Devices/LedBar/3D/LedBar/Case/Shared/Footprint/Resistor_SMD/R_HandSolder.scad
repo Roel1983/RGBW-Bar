@@ -3,6 +3,16 @@ include <../../../../../../../Shared/3D/Utils/Constants.inc>
 use     <../../../../../../../Shared/3D/Utils/TransformCopy.scad>
 use     <../../../../../../../Shared/3D/Utils/Units.scad>
 
+R_HandSolder(
+    layer = "3D",
+    l = inch(0.08),
+    w = inch(0.05),
+    h = mm(0.45),
+    
+    solder_l = mm(3.2),
+    solver_w = mm(1.4)
+);
+
 module R_HandSolder(
     layer,
     l,
@@ -16,28 +26,30 @@ module R_HandSolder(
     }
     
     module Layer3D() {
-        Box(
+        color([0.1,0.1,0.1])Box(
             x_size = l,
             y_size = w,
             z_to   = h
         );
         
         BIAS = 0.05;
-        hull() {
-            Box(
-                x_size = solder_l,
-                y_size = w - BIAS,
-                z_to   = BIAS
-            );
-            RoundSolder();
-        }
-        hull() {
-            Box(
-                x_size = l - BIAS,
-                y_size = w - BIAS,
-                z_to   = h - BIAS
-            );
-            RoundSolder();
+        color("silver") {
+            hull() {
+                Box(
+                    x_size = solder_l,
+                    y_size = w - BIAS,
+                    z_to   = BIAS
+                );
+                RoundSolder();
+            }
+            hull() {
+                Box(
+                    x_size = l - BIAS,
+                    y_size = w - BIAS,
+                    z_to   = h - BIAS
+                );
+                RoundSolder();
+            }
         }
     }
     

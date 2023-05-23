@@ -36,13 +36,13 @@ module PinHeader_1x_P2_54mm_Horizontal(layer, pins = 5) {
     hole_clearance = 0.2;
     
     module Layer3D() {
-        Box(
+        color([0.1,0.1,0.1]) Box(
             x_size = pitch,
             y_to   = pitch / 2,
             y_size = pitch * pins,
             z_to   = pitch
         );
-        for(pin=[0:pins-1]) {
+        color("silver")for(pin=[0:pins-1]) {
             translate([0, pin * -pitch]) {
                 Pin();
             }

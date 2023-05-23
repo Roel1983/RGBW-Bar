@@ -11,21 +11,27 @@ module BatteryHolder_LINX_BAT_HLD_012_SMT(layer) {
     h2 = mm( 2.5);
     
     if (layer == "3D") {
-        Battery();
-        linear_extrude(mm(0.25)) square([mm(17), mm(2.5)], center=true);
-        render() difference() {
-            linear_extrude(mm(h2+mm(.5))) {
-                difference() {
-                    r = mm(1.5);
-                    offset(r=r)offset(-r)difference() {
-                        translate([0,mm(1)])square([d1+mm(.5), mm(11.5)], center=true);
-                        translate([0, -d1/4*3]) circle(d=d1);
+        Layer3D();
+    }
+    
+    module Layer3D() {
+        color("silver") {
+            Battery();
+            linear_extrude(mm(0.25)) square([mm(17), mm(2.5)], center=true);
+            render() difference() {
+                linear_extrude(mm(h2+mm(.5))) {
+                    difference() {
+                        r = mm(1.5);
+                        offset(r=r)offset(-r)difference() {
+                            translate([0,mm(1)])square([d1+mm(.5), mm(11.5)], center=true);
+                            translate([0, -d1/4*3]) circle(d=d1);
+                        }
+                        mirror_copy(VEC_X) translate([mm(10),0])rotate(45)square(mm(11));
                     }
-                    mirror_copy(VEC_X) translate([mm(10),0])rotate(45)square(mm(11));
                 }
-            }
-            translate([0,mm(1-.5),-.5])linear_extrude(mm(h2+mm(.5))) {
-                 square([d1-mm(.5), mm(11.5)], center=true);
+                translate([0,mm(1-.5),-.5])linear_extrude(mm(h2+mm(.5))) {
+                     square([d1-mm(.5), mm(11.5)], center=true);
+                }
             }
         }
     }

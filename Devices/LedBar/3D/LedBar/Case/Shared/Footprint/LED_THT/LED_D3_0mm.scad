@@ -30,16 +30,24 @@ module LED_D3_0mm(layer, h) {
     module Layer3D() {
         h_cylinder = h1-d1/2;
         BIAS = 0.1;
-        if(layer == "3D") {
+        color ("red") {
             translate([pitch/2,0]) {
                 translate([0, 0, h]) Head();
             }
-            Pin();
-            translate([pitch, 0 ]) Pin();
         }
+        Pin();
+        translate([pitch, 0 ]) Pin();
         
         module Pin() {
-            Box(x_size = mm(0.5), y_size = mm(0.5), z_from = mm(-3), z_to = h);
+            color("silver") {
+                Box(
+                    x_size = mm(0.5),
+                    y_size = mm(0.5),
+                    z_from = mm(-3),
+                    z_to = h
+                );
+            }
+                
         }
         
         module Head() {
