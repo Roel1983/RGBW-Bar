@@ -13,31 +13,34 @@ use     <../Shared/Connectors.scad>
 translate([0, 0, CASE_PCB_Z_BACK]) {
     *Mainboard();
 }
+Bottom();
 
-difference() {
-    intersection() {
-        CaseBasicShapeOuter();
-        Box(
-            bounds = CASE_BOUNDS_XY,
-            z_to   = CASE_PCB_Z_FRONT
-        );
-    }
+module Bottom() {
     difference() {
-        CaseBasicShapeInner();
+        intersection() {
+            CaseBasicShapeOuter();
+            Box(
+                bounds = CASE_BOUNDS_XY,
+                z_to   = CASE_PCB_Z_FRONT
+            );
+        }
+        difference() {
+            CaseBasicShapeInner();
+            translate([0, 0, CASE_PCB_Z_BACK]) {
+                PlaceFootprints(
+                    ALL_COMPONENTS_MAINBOARD,
+                    "Case.Bottom.Add.Inner",
+                    PCB_THICKNESS_MAINBOARD);
+            }
+            ScrewHoles("Case.Bottom.Add.Inner");
+            Connectors("Case.Bottom.Add.Inner");
+        }
         translate([0, 0, CASE_PCB_Z_BACK]) {
             PlaceFootprints(
                 ALL_COMPONENTS_MAINBOARD,
-                "Case.Bottom.Add.Inner",
+                "Case.Remove",
                 PCB_THICKNESS_MAINBOARD);
         }
-        ScrewHoles("Case.Bottom.Add.Inner");
-        Connectors("Case.Bottom.Add.Inner");
+        ScrewHoles("Case.Remove");
     }
-    translate([0, 0, CASE_PCB_Z_BACK]) {
-        PlaceFootprints(
-            ALL_COMPONENTS_MAINBOARD,
-            "Case.Remove",
-            PCB_THICKNESS_MAINBOARD);
-    }
-    ScrewHoles("Case.Remove");
 }

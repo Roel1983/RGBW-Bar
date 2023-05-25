@@ -13,30 +13,33 @@ $fn = 16;
 translate([0, 0, CASE_PCB_Z_BACK]) {
     *Mainboard();
 }
+Top();
 
-difference() {
-    intersection() {
-        union() {
-            CaseBasicShapeOuter();
-            translate([0, 0, CASE_PCB_Z_BACK]) {
-                PlaceFootprints(ALL_COMPONENTS_MAINBOARD, "Case.Top.Add.Outer", PCB_THICKNESS_MAINBOARD);
-            }
-        }
-        Box(
-            bounds = CASE_BOUNDS_XY,
-            z_from = CASE_PCB_Z_FRONT,
-            z_to   = CASE_HEIGHT_TOP
-        );
-    }
+module Top() {
     difference() {
-        CaseBasicShapeInner();
-        translate([0, 0, CASE_PCB_Z_BACK]) {
-            PlaceFootprints(ALL_COMPONENTS_MAINBOARD, "Case.Top.Add.Inner", PCB_THICKNESS_MAINBOARD);
+        intersection() {
+            union() {
+                CaseBasicShapeOuter();
+                translate([0, 0, CASE_PCB_Z_BACK]) {
+                    PlaceFootprints(ALL_COMPONENTS_MAINBOARD, "Case.Top.Add.Outer", PCB_THICKNESS_MAINBOARD);
+                }
+            }
+            Box(
+                bounds = CASE_BOUNDS_XY,
+                z_from = CASE_PCB_Z_FRONT,
+                z_to   = CASE_HEIGHT_TOP
+            );
         }
-        ScrewHoles("Case.Top.Add.Inner");
+        difference() {
+            CaseBasicShapeInner();
+            translate([0, 0, CASE_PCB_Z_BACK]) {
+                PlaceFootprints(ALL_COMPONENTS_MAINBOARD, "Case.Top.Add.Inner", PCB_THICKNESS_MAINBOARD);
+            }
+            ScrewHoles("Case.Top.Add.Inner");
+        }
+        translate([0, 0, CASE_PCB_Z_BACK]) {
+            PlaceFootprints(ALL_COMPONENTS_MAINBOARD, "Case.Remove", PCB_THICKNESS_MAINBOARD);
+        }
+        ScrewHoles("Case.Remove");
     }
-    translate([0, 0, CASE_PCB_Z_BACK]) {
-        PlaceFootprints(ALL_COMPONENTS_MAINBOARD, "Case.Remove", PCB_THICKNESS_MAINBOARD);
-    }
-    ScrewHoles("Case.Remove");
 }
