@@ -15,7 +15,6 @@ module Connectors(layer) {
     module LayerCaseBottomAddInner() {
         BIAS = 0.1;
         
-        PAD_SIZE_15EDGRC_3_5 = mm(2.0);
         wall                 = nozzle(2);
         
         Box(

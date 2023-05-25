@@ -8,6 +8,7 @@ use     <Button_Switch_SMD/Button_Switch_SMD.scad>
 use     <Crystal/Crystal.scad>
 use     <Connector_PinHeader_2_54mm/Connector_PinHeader_2_54mm.scad>
 use     <Resistor_SMD/Resistor_SMD.scad>
+use     <Capacitor_SMD/Capacitor_SMD.scad>
 
 module Footprint(
     layer = "3D",
@@ -33,5 +34,7 @@ module Footprint(
         Connector_PinHeader_2_54mm(layer = layer, footprint = footprint[1]);
     } else if(footprint[0] == "Resistor_SMD") {
         Resistor_SMD              (layer = layer, footprint = footprint[1]);
+    } else if(footprint[0] == "Capacitor_SMD") {
+        Capacitor_SMD             (layer = layer, footprint = footprint[1]);
     }
 }

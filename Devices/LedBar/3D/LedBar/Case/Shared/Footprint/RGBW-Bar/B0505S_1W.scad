@@ -19,7 +19,7 @@ module B0505S_1W(layer) {
             translate([px, py]) cube([w, d, h]);
         }
         color("silver") {
-            for(x=[0:3]) translate([x * pitch ])
+            for(x=[0:3]) translate([x * pitch, 0]);
         }
     }
 }

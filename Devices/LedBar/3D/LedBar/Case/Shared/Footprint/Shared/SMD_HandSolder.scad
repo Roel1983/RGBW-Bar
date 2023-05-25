@@ -3,23 +3,23 @@ include <../../../../../../../Shared/3D/Utils/Constants.inc>
 use     <../../../../../../../Shared/3D/Utils/TransformCopy.scad>
 use     <../../../../../../../Shared/3D/Utils/Units.scad>
 
-R_HandSolder(
+SMD_HandSolder(
     layer = "3D",
     l = inch(0.08),
     w = inch(0.05),
     h = mm(0.45),
     
     solder_l = mm(3.2),
-    solver_w = mm(1.4)
+    solder_w = mm(1.4)
 );
 
-module R_HandSolder(
+module SMD_HandSolder(
     layer,
     l,
     w,
     h,   
     solder_l,
-    solver_w
+    solder_w
 ) {
     if (layer == "3D") {
         Layer3D();
