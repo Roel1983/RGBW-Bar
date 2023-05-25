@@ -5,7 +5,7 @@ use     <../../../../../Shared/3D/Utils/Bounds.scad>
 include <../../Config.inc>
 
 difference() {
-    CaseBasicShape();
+    CaseBasicShape(no_bevel=true);
     Box(
         x_to   =  100,
         y_to   =  100,
@@ -14,18 +14,19 @@ difference() {
     );
 }
 
-module CaseBasicShape() {
+module CaseBasicShape(no_bevel = false) {
     difference() {
-        CaseBasicShapeOuter();
+        CaseBasicShapeOuter(no_bevel = no_bevel);
         CaseBasicShapeInner();
     }
 }
 
-module CaseBasicShapeOuter() {
+module CaseBasicShapeOuter(no_bevel = false) {
     _CaseBasicShape(
         offset_horizontal = 0,
         offset_bottom     = 0,
-        offset_top        = 0
+        offset_top        = 0,
+        no_bevel          = no_bevel
     );
 }
 
@@ -40,20 +41,22 @@ module CaseBasicShapeInner() {
 module _CaseBasicShape(
     offset_horizontal,
     offset_bottom,
-    offset_top
+    offset_top,
+    no_bevel
 ) {
+    bevel = no_bevel ? 0 : CASE_BEVEL;
     hull() {
         Box(
             bounds = bounds_margin(
                 CASE_BOUNDS_XY,
                 offset_horizontal),
             z_from = -offset_bottom,
-            z_to   = CASE_HEIGHT_SIDE - CASE_BEVEL
+            z_to   = CASE_HEIGHT_SIDE - bevel
         );
         Box(
             bounds = bounds_margin(
                 CASE_BOUNDS_XY,
-                -CASE_BEVEL
+                -bevel
                 + offset_horizontal - offset_top),
             z_from = -offset_bottom,
             z_to   = CASE_HEIGHT_SIDE + offset_top
