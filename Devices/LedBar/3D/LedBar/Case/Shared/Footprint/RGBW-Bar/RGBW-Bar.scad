@@ -7,6 +7,7 @@ use <Fuseholder_Cylinder_5x20mm_BLX_A_Horizontal.scad>
 use <ISP_single_row.scad>
 use <MountingHole_4_3mm_M4_modified1.scad>
 use <Perpendicular_pcb_1mm_female_2x6.scad>
+use <PinHeader_2x06_P200mm_PCB_edge.scad>
 use <TestPoint_Pad.scad>
 
 module RGBW_Bar(layer, footprint) {
@@ -28,5 +29,7 @@ module RGBW_Bar(layer, footprint) {
         15EDGRC_3_5(layer = layer, pins = 3);
     } else if(footprint == "2EDGRC-5.08-2P") {
         2EDGRC_5_08_2P(layer = layer, pins = 2);
+    } else if(footprint == "PinHeader_2x06_P200mm_PCB_edge") {
+        PinHeader_2x06_P200mm_PCB_edge(layer = layer);
     }
 }

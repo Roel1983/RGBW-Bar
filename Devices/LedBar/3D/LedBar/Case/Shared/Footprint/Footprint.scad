@@ -6,6 +6,7 @@ use     <Battery/Battery.scad>
 use     <Button_Switch_THT/Button_Switch_THT.scad>
 use     <Button_Switch_SMD/Button_Switch_SMD.scad>
 use     <Crystal/Crystal.scad>
+use     <Connector_PinHeader_2_00mm/Connector_PinHeader_2_00mm.scad>
 use     <Connector_PinHeader_2_54mm/Connector_PinHeader_2_54mm.scad>
 use     <Resistor_SMD/Resistor_SMD.scad>
 use     <Capacitor_SMD/Capacitor_SMD.scad>
@@ -30,6 +31,8 @@ module Footprint(
         Button_Switch_SMD         (layer = layer, footprint = footprint[1]);
     } else if(footprint[0] == "Crystal") {
         Crystal                   (layer = layer, footprint = footprint[1]);
+    } else if(footprint[0] == "Connector_PinHeader_2.00mm") {
+        Connector_PinHeader_2_00mm(layer = layer, footprint = footprint[1]);
     } else if(footprint[0] == "Connector_PinHeader_2.54mm") {
         Connector_PinHeader_2_54mm(layer = layer, footprint = footprint[1]);
     } else if(footprint[0] == "Resistor_SMD") {
