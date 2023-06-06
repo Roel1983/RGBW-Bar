@@ -26,21 +26,20 @@ module Bottom() {
         }
         difference() {
             CaseBasicShapeInner();
-            translate([0, 0, CASE_PCB_Z_BACK]) {
-                PlaceFootprints(
-                    ALL_COMPONENTS_MAINBOARD,
-                    "Case.Bottom.Add.Inner",
-                    PCB_THICKNESS_MAINBOARD);
-            }
-            ScrewHoles("Case.Bottom.Add.Inner");
-            Connectors("Case.Bottom.Add.Inner");
+            Modifications("Case.Bottom.Add.Inner");
         }
+        Modifications("Case.Remove");
+        Modifications("Case.Bottom.Remove");
+    }
+    
+    module Modifications(layer) {
+        ScrewHoles(layer);
+        Connectors(layer);
         translate([0, 0, CASE_PCB_Z_BACK]) {
             PlaceFootprints(
                 ALL_COMPONENTS_MAINBOARD,
-                "Case.Remove",
+                layer,
                 PCB_THICKNESS_MAINBOARD);
         }
-        ScrewHoles("Case.Remove");
     }
 }
