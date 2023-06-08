@@ -7,6 +7,7 @@ use     <../Shared/Boards/Mainboard/Mainboard.scad>
 use     <../Shared/CaseBaseShape.scad>
 use     <../Shared/PlaceFootprints.scad>
 use     <../Shared/ScrewHoles.scad>
+use     <../Shared/Guides.scad>
 
 $fn = 16;
 
@@ -55,5 +56,6 @@ module Top() {
             );
         }
         ScrewHoles(layer);
+        Guides(layer);
     }
 }

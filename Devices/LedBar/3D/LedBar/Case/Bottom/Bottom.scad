@@ -9,6 +9,7 @@ use     <../Shared/CaseBaseShape.scad>
 use     <../Shared/PlaceFootprints.scad>
 use     <../Shared/ScrewHoles.scad>
 use     <../Shared/Connectors.scad>
+use     <../Shared/Guides.scad>
 
 translate([0, 0, CASE_PCB_Z_BACK]) {
     *Mainboard();
@@ -31,6 +32,7 @@ module Bottom() {
         Modifications("Case.Remove");
         Modifications("Case.Bottom.Remove");
     }
+    Modifications("Case.Bottom.Add");
     
     module Modifications(layer) {
         ScrewHoles(layer);
@@ -41,5 +43,6 @@ module Bottom() {
                 layer,
                 PCB_THICKNESS_MAINBOARD);
         }
+        Guides(layer);
     }
 }
