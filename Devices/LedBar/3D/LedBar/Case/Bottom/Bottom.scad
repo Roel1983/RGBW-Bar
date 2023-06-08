@@ -1,4 +1,5 @@
 use     <../../../../../Shared/3D/Utils/Box.scad>
+use     <../../../../../Shared/3D/Utils/Git.scad>
 use     <../../../../../Shared/3D/Utils/LinearExtrude.scad>
 include <../../Config.inc>
 
@@ -44,5 +45,18 @@ module Bottom() {
                 PCB_THICKNESS_MAINBOARD);
         }
         Guides(layer);
+        GitRevision(layer);
+    }
+    
+    module GitRevision(layer) {
+        if (layer == "Case.Bottom.Remove") {
+            LayerCaseBottomRemove();
+        }
+        module LayerCaseBottomRemove() {
+            translate([0,mm(-15), CASE_WALL_THICKNESS_BOTTOM]) {
+                linear_extrude(layer(2), center=true) CommitText();
+            }
+        }
     }
 }
+

@@ -1,4 +1,7 @@
 use     <../../../../../Shared/3D/Utils/Box.scad>
+include <../../../../../Shared/3D/Utils/Constants.inc>
+use     <../../../../../Shared/3D/Utils/Git.scad>
+
 include <../../Config.inc>
 
 include <../Shared/Boards/Mainboard/MainboardKicadPcb.inc>
@@ -57,5 +60,23 @@ module Top() {
         }
         ScrewHoles(layer);
         Guides(layer);
+        GitRevision(layer);
+    }
+    
+    module GitRevision(layer) {
+        if (layer == "Case.Top.Add.Inner") {
+            LayerCaseTopAddInner();
+        }
+        module LayerCaseTopAddInner() {
+            translate([
+                CASE_BOUNDS_XY[X][0] + CASE_WALL_THICKNESS_VERTICAL,
+                0,
+                CASE_PCB_Z_FRONT + mm(13)
+            ]) {
+                rotate(90) rotate(90, VEC_X) {
+                    linear_extrude(nozzle(2), center = true) CommitText();
+                }
+            }
+        }
     }
 }
