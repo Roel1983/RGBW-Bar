@@ -1,2 +1,2 @@
-bar:
-	echo "foo"
+PARTS  += Case/Bottom/Bottom
+
