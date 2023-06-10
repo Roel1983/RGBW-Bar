@@ -11,6 +11,7 @@ use     <../Shared/PlaceFootprints.scad>
 use     <../Shared/ScrewHoles.scad>
 use     <../Shared/Connectors.scad>
 use     <../Shared/Guides.scad>
+use     <../Shared/MountingFeet.scad>
 
 translate([0, 0, CASE_PCB_Z_BACK]) {
     *Mainboard();
@@ -46,6 +47,7 @@ module Bottom() {
         }
         Guides(layer);
         GitRevision(layer);
+        MountingFeet(layer);
     }
     
     module GitRevision(layer) {
