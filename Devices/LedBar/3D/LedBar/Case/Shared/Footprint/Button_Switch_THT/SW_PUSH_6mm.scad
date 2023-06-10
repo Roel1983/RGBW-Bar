@@ -131,7 +131,7 @@ module SW_PUSH_6mm(layer, H=mm(4.3)) {
     }
     
     module LayerCaseBottomAddInner() {
-        wall = nozzle(3);
+        wall = nozzle(2);
         
         translate([pitch[0]/2, -pitch[1]/2]) {
             LinearExtrude(
@@ -140,7 +140,7 @@ module SW_PUSH_6mm(layer, H=mm(4.3)) {
             ) {
                 hull() mirror_copy(VEC_X) mirror_copy(VEC_Y) {
                     translate([pitch[0]/2, pitch[1]/2]) {
-                        circle(d=pad_size + CASE_BUTTON_WALL_CLEARANCE + wall);
+                        circle(d=pad_size + CASE_BUTTON_WALL_CLEARANCE + 2 * wall);
                     }
                 }
             }
