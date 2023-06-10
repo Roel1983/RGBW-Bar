@@ -54,7 +54,14 @@ module Bottom() {
         }
         module LayerCaseBottomRemove() {
             translate([0,mm(-15), CASE_WALL_THICKNESS_BOTTOM]) {
-                linear_extrude(layer(2), center=true) CommitText();
+                linear_extrude(layer(2), center=true) borderize() CommitText();
+            }
+        }
+        module borderize() {
+            $fn = 32;
+            difference() {
+                hull() offset(2) offset(-2) offset(mm(1.0)) hull() children();
+                children();
             }
         }
     }

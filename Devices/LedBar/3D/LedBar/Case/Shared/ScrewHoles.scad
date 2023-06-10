@@ -6,7 +6,7 @@ use     <../../../../../Shared/3D/Utils/LinearExtrude.scad>
 use     <../../../../../Shared/3D/Utils/Units.scad>
 use     <../../../../../Shared/3D/KicadPcbComponent.scad>
 
-$fn = 16;
+$fn = $preview?16:64;
 difference() {
     union() {
         ScrewHoles("Case.Bottom.Add.Inner");

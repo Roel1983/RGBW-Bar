@@ -31,16 +31,27 @@ module Guides(layer) {
     power_connector_pitch   = mm(5.8);
     
     guide_positions_left  = [
+        component_at_loc(COMPONENT_H201)[Y],
         -side_connector_to_guide + component_at_loc(COMPONENT_J501)[Y],
-         side_connector_to_guide + component_at_loc(COMPONENT_J501)[Y] + 4 * side_connector_pitch
+         side_connector_to_guide + component_at_loc(COMPONENT_J501)[Y] + 4 * side_connector_pitch,
+        component_at_loc(COMPONENT_H202)[Y]
     ];
     guide_positions_right = [
+        component_at_loc(COMPONENT_H203)[Y],
         -side_connector_to_guide + component_at_loc(COMPONENT_J503)[Y] - 4 * side_connector_pitch,
-         side_connector_to_guide + component_at_loc(COMPONENT_J503)[Y]
+         side_connector_to_guide + component_at_loc(COMPONENT_J503)[Y],
+        component_at_loc(COMPONENT_H204)[Y]
     ];
-    guide_positions_front = [mm(-9), mm(9)];
+    guide_positions_front = [
+        component_at_loc(COMPONENT_H201)[X],
+        mm(-9),
+        mm(9),
+        component_at_loc(COMPONENT_H203)[X]
+    ];
     guide_positions_back  = [
-        (component_at_loc(COMPONENT_J601)[X] + component_at_loc(COMPONENT_J301)[X] - power_connector_pitch) / 2
+        component_at_loc(COMPONENT_H202)[X],
+        (component_at_loc(COMPONENT_J601)[X] + component_at_loc(COMPONENT_J301)[X] - power_connector_pitch) / 2,
+        component_at_loc(COMPONENT_H204)[X],
     ];
     
     // TODO asserts

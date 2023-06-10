@@ -38,7 +38,7 @@ module 2EDGRC_5_08_2P(layer, pins = 3) {
     }
     
     module LayerCaseRemove() {
-        pin_length = mm(3.0); // TODO measure
+        pin_length = mm(4.25);
         LinearExtrude(
             z_from = -pin_length
         ) {
