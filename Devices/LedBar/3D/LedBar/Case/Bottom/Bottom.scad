@@ -13,6 +13,8 @@ use     <../Shared/Connectors.scad>
 use     <../Shared/Guides.scad>
 use     <../Shared/MountingFeet.scad>
 
+
+
 translate([0, 0, CASE_PCB_Z_BACK]) {
     *Mainboard();
 }
@@ -20,21 +22,25 @@ Bottom();
 
 module Bottom() {
     difference() {
-        intersection() {
-            CaseBasicShapeOuter();
-            Box(
-                bounds = CASE_BOUNDS_XY,
-                z_to   = CASE_PCB_Z_FRONT
-            );
-        }
-        difference() {
-            CaseBasicShapeInner();
-            Modifications("Case.Bottom.Add.Inner");
+        union() {
+            difference() {
+                intersection() {
+                    CaseBasicShapeOuter();
+                    Box(
+                        bounds = CASE_BOUNDS_XY,
+                        z_to   = CASE_PCB_Z_FRONT
+                    );
+                }
+                difference() {
+                    CaseBasicShapeInner();
+                    Modifications("Case.Bottom.Add.Inner");
+                }
+            }
+            Modifications("Case.Bottom.Add");
         }
         Modifications("Case.Remove");
         Modifications("Case.Bottom.Remove");
     }
-    Modifications("Case.Bottom.Add");
     
     module Modifications(layer) {
         ScrewHoles(layer);

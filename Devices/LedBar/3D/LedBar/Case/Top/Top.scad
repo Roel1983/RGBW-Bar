@@ -21,33 +21,37 @@ Top();
 
 module Top() {
     difference() {
-        intersection() {
-            union() {
-                CaseBasicShapeOuter();
-                Modifications("Case.Top.Add.Outer");
+        union() {
+            difference() {
+                intersection() {
+                    union() {
+                        CaseBasicShapeOuter();
+                        Modifications("Case.Top.Add.Outer");
+                    }
+                    Box(
+                        bounds = CASE_BOUNDS_XY,
+                        z_from = CASE_PCB_Z_FRONT,
+                        z_to   = CASE_HEIGHT_TOP
+                    );
+                }
+                difference() {
+                    CaseBasicShapeInner();
+                    Modifications("Case.Top.Add.Inner");
+                }
             }
-            Box(
-                bounds = CASE_BOUNDS_XY,
-                z_from = CASE_PCB_Z_FRONT,
-                z_to   = CASE_HEIGHT_TOP
-            );
-        }
-        difference() {
-            CaseBasicShapeInner();
-            Modifications("Case.Top.Add.Inner");
+            intersection() {
+                translate([0, 0, CASE_PCB_Z_BACK]) {
+                    PlaceFootprints(
+                        ALL_COMPONENTS_MAINBOARD,
+                        "Case.Top.Add.Outer.NoBevel",
+                        PCB_THICKNESS_MAINBOARD
+                    );
+                }
+                CaseBasicShapeOuter(no_bevel = true);
+            }
         }
         Modifications("Case.Remove");
         Modifications("Case.Top.Remove");
-    }
-    intersection() {
-        translate([0, 0, CASE_PCB_Z_BACK]) {
-            PlaceFootprints(
-                ALL_COMPONENTS_MAINBOARD,
-                "Case.Top.Add.Outer.NoBevel",
-                PCB_THICKNESS_MAINBOARD
-            );
-        }
-        CaseBasicShapeOuter(no_bevel = true);
     }
     
     module Modifications(layer) {
