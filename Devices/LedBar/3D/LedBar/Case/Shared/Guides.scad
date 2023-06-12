@@ -22,7 +22,7 @@ module Guides(layer) {
     guide_pcb_clearance    = mm(0.1);
     guide_pcb_clearance_z  = mm(1.5);
     guide_wall_clearance   = mm(0.1);
-    guide_wall_clearance_z = layer(1);
+    guide_wall_clearance_z = mm(0.5);
     guide_wall_thickness   = nozzle(2);
     guide_wall_thickness_z = nozzle(5);
     

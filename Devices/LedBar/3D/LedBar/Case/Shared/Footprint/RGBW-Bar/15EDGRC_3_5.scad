@@ -21,6 +21,8 @@ module 15EDGRC_3_5(layer = "3D", pins) {
         LayerCaseTopRemove();
     } else if (layer == "Case.Top.Add.Outer.NoBevel") {
         LayerCaseTopAddOuterNoBevel();
+    } else if (layer == "Smd.Back.1mm") {
+        LayerSmdBack1mm();
     }
     
     pitch = mm(3.5);
@@ -37,15 +39,19 @@ module 15EDGRC_3_5(layer = "3D", pins) {
         }
     }
     
+    module LayerSmdBack1mm() {
+        hull() {
+            circle(d = PAD_SIZE_15EDGRC_3_5);
+            translate([(pins - 1) * pitch, 0]) circle(d = PAD_SIZE_15EDGRC_3_5);
+        }
+    }
+    
     module LayerCaseRemove() {
-        pin_length = mm(3.0); // TODO measure
+        pin_length = mm(3.0);
         LinearExtrude(
             z_from = -pin_length
         ) {
-            hull() {
-                circle(d = PAD_SIZE_15EDGRC_3_5);
-                translate([(pins - 1) * pitch, 0]) circle(d = PAD_SIZE_15EDGRC_3_5);
-            }
+           LayerSmdBack1mm(); 
         }
     }
     

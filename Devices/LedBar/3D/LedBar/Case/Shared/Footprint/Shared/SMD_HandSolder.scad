@@ -12,6 +12,15 @@ SMD_HandSolder(
     solder_l = mm(3.2),
     solder_w = mm(1.4)
 );
+#linear_extrude(mm(1.0)) SMD_HandSolder(
+    layer = "Smd.Back.1mm",
+    l = inch(0.08),
+    w = inch(0.05),
+    h = mm(0.45),
+    
+    solder_l = mm(3.2),
+    solder_w = mm(1.4)
+);
 
 module SMD_HandSolder(
     layer,
@@ -23,6 +32,8 @@ module SMD_HandSolder(
 ) {
     if (layer == "3D") {
         Layer3D();
+    } else if (layer == "Smd.Back.1mm") {
+        LayerSmdBack1mm();
     }
     
     module Layer3D() {
@@ -51,6 +62,17 @@ module SMD_HandSolder(
                 RoundSolder();
             }
         }
+    }
+    
+    module LayerSmdBack1mm() {
+        BIAS = 0.1;
+        clearance_x = mm(.28);
+        clearance_y = mm(.34);
+        clearance_z = mm(.25);
+        Box(
+            x_size = solder_l + 2 * clearance_x,
+            y_size = w + 2 * clearance_y
+        );
     }
     
     module RoundSolder() {

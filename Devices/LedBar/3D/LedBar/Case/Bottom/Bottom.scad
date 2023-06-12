@@ -54,6 +54,26 @@ module Bottom() {
         Guides(layer);
         GitRevision(layer);
         MountingFeet(layer);
+        SmdBack(layer);
+    }
+    
+    module SmdBack(layer) {
+        if(layer=="Case.Bottom.Remove") {
+            translate([0, 0, CASE_PCB_Z_BACK]) {
+                BIAS = 0.01;
+                LinearExtrude(
+                    z_to   = BIAS,
+                    z_from = -mm(1.0)
+                ) {
+                    glue = nozzle(2);
+                    offset(delta=-glue) offset(delta=glue) {
+                        PlaceFootprints(
+                            ALL_COMPONENTS_MAINBOARD,
+                            "Smd.Back.1mm");
+                    }
+                }
+            }
+        }
     }
     
     module GitRevision(layer) {

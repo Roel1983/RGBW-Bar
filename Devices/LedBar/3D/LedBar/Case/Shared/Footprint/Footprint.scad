@@ -10,6 +10,8 @@ use     <Connector_PinHeader_2_00mm/Connector_PinHeader_2_00mm.scad>
 use     <Connector_PinHeader_2_54mm/Connector_PinHeader_2_54mm.scad>
 use     <Resistor_SMD/Resistor_SMD.scad>
 use     <Capacitor_SMD/Capacitor_SMD.scad>
+use     <Jumper/Jumper.scad>
+use     <Diode_SMD/Diode_SMD.scad>
 
 module Footprint(
     layer = "3D",
@@ -39,5 +41,9 @@ module Footprint(
         Resistor_SMD              (layer = layer, footprint = footprint[1]);
     } else if(footprint[0] == "Capacitor_SMD") {
         Capacitor_SMD             (layer = layer, footprint = footprint[1]);
+    } else if(footprint[0] == "Jumper") {
+        Jumper                    (layer = layer, footprint = footprint[1]);
+    } else if(footprint[0] == "Diode_SMD") {
+        Diode_SMD                 (layer = layer, footprint = footprint[1]);
     }
 }
