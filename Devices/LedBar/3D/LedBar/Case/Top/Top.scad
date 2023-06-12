@@ -7,6 +7,7 @@ include <../../Config.inc>
 include <../Shared/Boards/Mainboard/MainboardKicadPcb.inc>
 use     <../Shared/Boards/Mainboard/Mainboard.scad>
 
+use     <../Shared/Bridge.scad>
 use     <../Shared/CaseBaseShape.scad>
 use     <../Shared/PlaceFootprints.scad>
 use     <../Shared/ScrewHoles.scad>
@@ -52,6 +53,10 @@ module Top() {
         }
         Modifications("Case.Remove");
         Modifications("Case.Top.Remove");
+        intersection() {
+            Modifications("Case.Top.Remove.Inner");
+            CaseBasicShapeInner();
+        }
     }
     
     module Modifications(layer) {
@@ -64,6 +69,7 @@ module Top() {
         }
         ScrewHoles(layer);
         Guides(layer);
+        Bridge(layer);
         GitRevision(layer);
     }
     
@@ -74,8 +80,8 @@ module Top() {
         module LayerCaseTopAddInner() {
             translate([
                 CASE_BOUNDS_XY[X][0] + CASE_WALL_THICKNESS_VERTICAL,
-                0,
-                CASE_PCB_Z_FRONT + mm(13)
+                mm(-17),
+                CASE_PCB_Z_FRONT + mm(3)
             ]) {
                 rotate(90) rotate(90, VEC_X) {
                     linear_extrude(nozzle(2), center = true) CommitText();
