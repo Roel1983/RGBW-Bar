@@ -28,6 +28,10 @@ module Top() {
                     union() {
                         CaseBasicShapeOuter();
                         Modifications("Case.Top.Add.Outer");
+                        intersection() {
+                            CaseBasicShapeOuterRelief();
+                            Modifications("Case.Top.Relief");
+                        }
                     }
                     Box(
                         bounds = CASE_BOUNDS_XY,
@@ -70,7 +74,29 @@ module Top() {
         ScrewHoles(layer);
         Guides(layer);
         Bridge(layer);
+        ProductDescription(layer);
         GitRevision(layer);
+    }
+    
+    module ProductDescription(layer) {
+        if (layer == "Case.Top.Relief") {
+            linear_extrude(CASE_HEIGHT_TOP) {
+                translate([
+                    0,
+                    mm(26)
+                ]) {
+                    rotate(180) {
+                        offset(mm(.1)) text(
+                            "LedBar",
+                            size = 8,
+                            font = "Arial",
+                            halign = "center",
+                            valign = "center"
+                        );
+                    }
+                }
+            }
+        }
     }
     
     module GitRevision(layer) {
@@ -80,11 +106,13 @@ module Top() {
         module LayerCaseTopAddInner() {
             translate([
                 CASE_BOUNDS_XY[X][0] + CASE_WALL_THICKNESS_VERTICAL,
-                mm(-17),
-                CASE_PCB_Z_FRONT + mm(3)
+                mm(0),
+                CASE_PCB_Z_FRONT + mm(12)
             ]) {
                 rotate(90) rotate(90, VEC_X) {
-                    linear_extrude(nozzle(2), center = true) CommitText();
+                    linear_extrude(nozzle(2), center = true) {
+                        offset(mm(.1)) CommitText(size=mm(5));
+                    }
                 }
             }
         }

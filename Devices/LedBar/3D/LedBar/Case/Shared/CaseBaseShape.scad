@@ -5,7 +5,7 @@ use     <../../../../../Shared/3D/Utils/Bounds.scad>
 include <../../Config.inc>
 
 difference() {
-    CaseBasicShape(no_bevel=true);
+    CaseBasicShape(no_bevel=false);
     Box(
         x_to   =  100,
         y_to   =  100,
@@ -35,6 +35,15 @@ module CaseBasicShapeInner() {
         offset_horizontal = -CASE_WALL_THICKNESS_VERTICAL,
         offset_bottom     = -CASE_WALL_THICKNESS_BOTTOM,
         offset_top        = -CASE_WALL_THICKNESS_TOP
+    );
+}
+
+module CaseBasicShapeOuterRelief() {
+    _CaseBasicShape(
+        offset_horizontal = nozzle(1),
+        offset_bottom     = 0,
+        offset_top        = nozzle(1),
+        no_bevel          = false
     );
 }
 
