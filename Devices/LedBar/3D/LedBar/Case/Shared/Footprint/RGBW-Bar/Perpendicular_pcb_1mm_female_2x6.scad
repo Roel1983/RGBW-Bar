@@ -4,11 +4,14 @@ include <../../../../../../../Shared/3D/Utils/Constants.inc>
 include <../../../../../../../Shared/3D/Utils/TransformCopy.scad>
 use     <../../../../../../../Shared/3D/Utils/Units.scad>
 include <../../../../Config.inc>
+use     <../../Boards/Subboards/PerpendicularBoard.scad>
+include <../../Boards/Subboards/SubboardsKicadPcb.inc>
 
+Perpendicular_pcb_1mm_female_2x6("3D");
 %Perpendicular_pcb_1mm_female_2x6("Edge.Cuts");
 difference() {
     Perpendicular_pcb_1mm_female_2x6("Case.Bottom.Add.Inner");
-    Perpendicular_pcb_1mm_female_2x6("Case.Remove");
+    #Perpendicular_pcb_1mm_female_2x6("Case.Remove");
 }
 
 module Perpendicular_pcb_1mm_female_2x6(layer = "3D") {
@@ -18,6 +21,11 @@ module Perpendicular_pcb_1mm_female_2x6(layer = "3D") {
         LayerCaseBottomAddInner();
     } else if (layer == "Case.Remove") {
         LayerCaseRemove();
+    }
+    rotate(90, VEC_Y) rotate(-90) {
+        translate([0, 0, -PCB_THICKNESS_SUBBOARDS / 2]) {
+            PerpendicularBoard(layer);
+        }
     }
     
     module LayerEdgeCuts() {

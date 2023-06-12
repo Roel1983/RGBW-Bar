@@ -9,9 +9,9 @@ ALL_COMPONENTS_PERPENDICULAR = [COMPONENT_J1001, COMPONENT_J1002];
 $fn = 32;
 PerpendicularBoard();
 
-module PerpendicularBoard() {
+module PerpendicularBoard(layer = "3D") {
     PerpendicularBoardEdgeCuts();
-    PlaceFootprints(ALL_COMPONENTS_PERPENDICULAR, "3D", PCB_THICKNESS_SUBBOARDS,
+    PlaceFootprints(ALL_COMPONENTS_PERPENDICULAR, layer, PCB_THICKNESS_SUBBOARDS,
         relative_to_component = COMPONENT_J1001);
 }
 

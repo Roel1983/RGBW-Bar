@@ -5,10 +5,13 @@ use     <../../../../../../../Shared/3D/Utils/Box.scad>
 $fn = 32;
 
 PinHeader_2x6_P2_00mm_Horizontal(layer = "3D");
+#PinHeader_2x6_P2_00mm_Horizontal(layer = "Case.Remove");
 
 module PinHeader_2x6_P2_00mm_Horizontal(layer) {
     if (layer == "3D") {
         Layer3D();
+    } else if (layer == "Case.Remove") {
+        LayerCaseRemove();
     }
     
     module Layer3D() {
@@ -35,5 +38,16 @@ module PinHeader_2x6_P2_00mm_Horizontal(layer) {
                 z_from = mm(-2.5)
             );
         }
+    }
+    
+    module LayerCaseRemove() {
+        clearance = mm(.1);
+        Box(
+            x_from = mm(-1.25) - clearance,
+            x_size = mm(4.5) + clearance,
+            y_to   = mm(1.25) + clearance,
+            y_size = mm(12.5) + 2 * clearance,
+            z_to   = mm(10.0)
+        );
     }
 }
