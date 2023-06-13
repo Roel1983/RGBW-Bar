@@ -30,7 +30,7 @@ module 15EDGRC_3_5(layer = "3D", pins) {
     b     = mm(4.4);
     w     = a + b;
     d     = mm(9.2);
-    h     = mm(7.25);
+    h     = mm(7.0);
     front_to_pin = mm(8.0);
     
     module Layer3D() {
