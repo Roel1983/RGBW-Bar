@@ -12,6 +12,7 @@ use     <Resistor_SMD/Resistor_SMD.scad>
 use     <Capacitor_SMD/Capacitor_SMD.scad>
 use     <Jumper/Jumper.scad>
 use     <Diode_SMD/Diode_SMD.scad>
+use     <Capacitor_Tantalum_SMD/Capacitor_Tantalum_SMD.scad>
 
 module Footprint(
     layer = "3D",
@@ -45,5 +46,7 @@ module Footprint(
         Jumper                    (layer = layer, footprint = footprint[1]);
     } else if(footprint[0] == "Diode_SMD") {
         Diode_SMD                 (layer = layer, footprint = footprint[1]);
+    } else if(footprint[0] == "Capacitor_Tantalum_SMD") {
+        Capacitor_Tantalum_SMD    (layer = layer, footprint = footprint[1]);
     }
 }
