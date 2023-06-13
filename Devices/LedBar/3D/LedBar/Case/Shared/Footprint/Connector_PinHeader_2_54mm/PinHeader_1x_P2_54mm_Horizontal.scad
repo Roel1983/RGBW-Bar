@@ -24,6 +24,8 @@ module PinHeader_1x_P2_54mm_Horizontal(layer, pins = 5) {
         LayerCaseBottomAddInner();
     } else if (layer == "Case.Top.Add.Inner") {
         LayerCaseTopAddInner();
+    } else if (layer == "Case.Top.Relief") {
+        LayerCaseTopRelief();
     }
     
     pitch = mill(100);
@@ -173,6 +175,18 @@ module PinHeader_1x_P2_54mm_Horizontal(layer, pins = 5) {
                     z_to   = b + pitch / 2 + roof_clearance
                 );
             }
+        }
+    }
+    
+    module LayerCaseTopRelief() {
+        border = nozzle(2);
+        translate([0, 0, b]) {
+            Box(
+                x_to   = d + cm(1),
+                y_to   = pitch / 2 + hole_clearance + border,
+                y_size = pitch * pins + 2 * hole_clearance + 2 * + border,
+                z_size = pitch + 2 * hole_clearance + 2 * + border
+            );
         }
     }
 }

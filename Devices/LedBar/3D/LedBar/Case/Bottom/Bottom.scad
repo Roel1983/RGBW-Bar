@@ -13,8 +13,6 @@ use     <../Shared/Connectors.scad>
 use     <../Shared/Guides.scad>
 use     <../Shared/MountingFeet.scad>
 
-
-
 translate([0, 0, CASE_PCB_Z_BACK]) {
     *Mainboard();
 }
