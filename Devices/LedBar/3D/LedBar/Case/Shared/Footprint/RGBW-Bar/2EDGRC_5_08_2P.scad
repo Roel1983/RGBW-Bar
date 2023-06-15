@@ -51,7 +51,7 @@ module 2EDGRC_5_08_2P(layer, pins = 3) {
     
     module LayerCaseTopRemove() {
         tolerance_xy = mm(.1);
-        tolerance_z  = layer(.5);
+        tolerance_z  = mm(.1) + layer(1);
         BIAS = .1;
         
         translate([
