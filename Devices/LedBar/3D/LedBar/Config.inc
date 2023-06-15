@@ -1,6 +1,9 @@
 include <Case/Shared/Boards/Mainboard/MainboardKicadPcb.inc>
+include <Case/Shared/Boards/Subboards/SubboardsKicadPcb.inc>
 use     <../../../Shared/3D/Utils/Bounds.scad>
+include <../../../Shared/3D/Utils/Constants.inc>
 include <../../../Shared/3D/Utils/Units.inc>
+use     <../../../Shared/3D/KicadPcbComponent.scad>
 
 $UNITS_NOZZLE                     = mm(0.4);
 $UNITS_LAYER                      = mm(0.15);
@@ -21,7 +24,10 @@ CASE_BEVEL                        = mm(2);
 CASE_LED_WALL_CLEARANCE           = mm(0.1);
 CASE_BUTTON_WALL_CLEARANCE        = mm(0.2);
 
-PAD_SIZE_15EDGRC_3_5              = mm(3.2); // TODO measure
+ANGLE_PROFILE_WIDTH               = mm(24.5); // TODO measure
+ANGLE_PROFILE_THICKENS            = mm(1.0);  // TODO measure
+
+PAD_SIZE_15EDGRC_3_5              = mm(3.2);
 
 /* Dirived */
 
@@ -50,4 +56,22 @@ CASE_HEIGHT_SIDE = (
     + CASE_PCB_WALL_CLEARANCE_TOP
     + CASE_WALL_THICKNESS_TOP
 );
-CASE_HEIGHT_TOP = mm(35); // TODO calculate
+
+CENTER_BOARD_SIZE = [
+    mm(18.462),
+    PCB_BOUNDS_SUBBOARDS[Y][1]-PCB_BOUNDS_SUBBOARDS[Y][0]
+];
+
+COMPONENT_J1002_POSITION=[
+    component_at_loc(COMPONENT_J502)[X],
+    component_at_loc(COMPONENT_J502)[Y] + (
+        component_at_loc(COMPONENT_J1002)[X]
+        - component_at_loc(COMPONENT_J1001)[X]
+    ),
+    CASE_PCB_Z_FRONT + (
+        component_at_loc(COMPONENT_J1001)[Y]
+        - component_at_loc(COMPONENT_J1002)[Y]
+    )
+];
+
+CASE_HEIGHT_TOP = COMPONENT_J1002_POSITION[Z] + (component_at_loc(COMPONENT_J1202)[Y] - PCB_BOUNDS_SUBBOARDS[Y][0] + (ANGLE_PROFILE_WIDTH - CENTER_BOARD_SIZE[Y]) / 2 - ANGLE_PROFILE_THICKENS) * sqrt(2) - COMPONENT_J1002_POSITION[X];
