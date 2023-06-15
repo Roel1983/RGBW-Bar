@@ -84,7 +84,7 @@ module Top() {
         ScrewHoles(layer);
         Guides(layer);
         Bridge(layer);
-        Relief(layer);
+        render()Relief(layer);
         GitRevision(layer);
     }
     
