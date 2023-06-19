@@ -270,11 +270,6 @@ module Top() {
                             PCB_THICKNESS_SUBBOARDS
                         );
                     }
-//                    translate(-CENTER_BOARD_CENTER) ComponentPosition(
-//                        COMPONENT_H1204, pcb_thickness = PCB_THICKNESS_SUBBOARDS
-//                    ) {
-//                        #cube(2, center=true);
-//                    }
                 }
             }
         }
