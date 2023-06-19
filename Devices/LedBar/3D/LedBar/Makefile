@@ -21,7 +21,7 @@ include ../../../Shared/3D/build.mk
 
 LedBar.png: $(IMAGESDIR)/LedBar.png
 	cp $(IMAGESDIR)/LedBar.png LedBar.png
-all: Case.png
+all: LedBar.png
 
 Case.png: $(IMAGESDIR)/Case/Case.png
 	cp $(IMAGESDIR)/Case/Case.png Case.png

@@ -81,6 +81,7 @@ module Top() {
                 PCB_THICKNESS_MAINBOARD
             );
         }
+        CenterBoard(layer);
         ScrewHoles(layer);
         Guides(layer);
         Bridge(layer);
@@ -101,12 +102,12 @@ module Top() {
             linear_extrude(CASE_HEIGHT_TOP) {
                 translate([
                     0,
-                    mm(26)
+                    mm(27)
                 ]) {
                     rotate(180) {
-                        offset(mm(.1)) text(
+                        offset(mm(.12)) text(
                             "LedBar",
-                            size = 8,
+                            size = 5,
                             font = "Arial",
                             halign = "center",
                             valign = "center"
@@ -250,6 +251,30 @@ module Top() {
                     linear_extrude(nozzle(2), center = true) {
                         offset(mm(.1)) CommitText(size=mm(5));
                     }
+                }
+            }
+        }
+    }
+    module CenterBoard(layer) {
+        translate([0, 0, CASE_HEIGHT_TOP]) {
+            rotate(-45, VEC_X) {
+                translate([
+                    0,
+                    -ANGLE_PROFILE_THICKENS + ANGLE_PROFILE_WIDTH / 2
+                ]) {
+
+                    translate(-CENTER_BOARD_CENTER) {
+                        PlaceFootprints(
+                            [COMPONENT_H1204, COMPONENT_J1202],
+                            layer,
+                            PCB_THICKNESS_SUBBOARDS
+                        );
+                    }
+//                    translate(-CENTER_BOARD_CENTER) ComponentPosition(
+//                        COMPONENT_H1204, pcb_thickness = PCB_THICKNESS_SUBBOARDS
+//                    ) {
+//                        #cube(2, center=true);
+//                    }
                 }
             }
         }
