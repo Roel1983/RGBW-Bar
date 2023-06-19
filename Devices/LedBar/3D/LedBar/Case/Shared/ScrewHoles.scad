@@ -79,7 +79,7 @@ module ScrewHoles(layer) {
         module nut() {
             clearance_xy1 = mm(.05);
             clearance_xy2 = mm(.1);
-            clearance_z   = mm(.1) + layer(.5);
+            clearance_z   = mm(.1) + layer(1);
             LinearExtrude(
                 z_to   = screw_head_embed + screw_length,
                 z_size = hex_nut_height + clearance_z
