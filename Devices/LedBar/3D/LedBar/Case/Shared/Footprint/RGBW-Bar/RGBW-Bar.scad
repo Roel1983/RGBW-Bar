@@ -9,6 +9,8 @@ use <MountingHole_4_3mm_M4_modified1.scad>
 use <Perpendicular_pcb_1mm_female_2x6.scad>
 use <PinHeader_2x06_P200mm_PCB_edge.scad>
 use <TestPoint_Pad.scad>
+use <MountingHole_3_2mm_Wall_0_8mm.scad>
+use <Color_wire_solder_pads.scad>
 
 module RGBW_Bar(layer, footprint) {
     if(footprint == "perpendicular_pcb_1mm_female_2x6") {
@@ -31,5 +33,15 @@ module RGBW_Bar(layer, footprint) {
         2EDGRC_5_08_2P(layer = layer, pins = 2);
     } else if(footprint == "PinHeader_2x06_P200mm_PCB_edge") {
         PinHeader_2x06_P200mm_PCB_edge(layer = layer);
+    } else if(footprint == "MountingHole_3.2mm_Wall_0.8mm") {
+        MountingHole_3_2mm_Wall_0_8mm(layer = layer);
+    } else if(footprint == "RGBW-wire-solder-pads-R") {
+        Color_wire_solder_pads(layer = layer, channels = "RGBW", side = "R", pitch = mm(2.0));
+    }  else if(footprint == "RGBW-wire-solder-pads-L") {
+        Color_wire_solder_pads(layer = layer, channels = "RGBW", side = "L", pitch = mm(2.0));
+    } else if(footprint == "BRG-wire-solder-pads-R") {
+        Color_wire_solder_pads(layer = layer, channels = "BRG", side = "R", pitch = mm(2.33));
+    }  else if(footprint == "BRG-wire-solder-pads-L") {
+        Color_wire_solder_pads(layer = layer, channels = "BRG", side = "L", pitch = mm(2.33));
     }
 }
