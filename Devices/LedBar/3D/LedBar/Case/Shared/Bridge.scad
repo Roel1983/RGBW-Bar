@@ -6,6 +6,8 @@ include <../../../../../Shared/3D/Utils/Constants.inc>
 use     <../../../../../Shared/3D/Utils/TransformCopy.scad>
 use     <../../../../../Shared/3D/Utils/Units.scad>
 
+use     <../Top/ProfileScrewHoles.scad>
+
 Bridge("Case.Top.Add.Inner");
 
 module Bridge(layer) {
@@ -14,30 +16,32 @@ module Bridge(layer) {
     }
     
     module LayerCaseTopAddInner() {
-        pos_z          = mm(23);
-        width          = mm(7.5);
+        width          = CASE_BRIDGE_WIDTH;
         beam_thickness = nozzle(2);
         beam_height    = layer(2);
         
-        translate([
-            component_at_loc(COMPONENT_J502)[X],
-            0
-        ]) {
-            mirror_copy(VEC_X) {
+        for(i = [0 : profile_screw_hole_count() - 1]) {
+            pos_z = profile_screw_hole_bridge_pos_z(i);
+            translate([
+                profile_screw_hole_loc_x(i),
+                0
+            ]) {
+                mirror_copy(VEC_X) {
+                    Box(
+                        x_to     = width / 2,
+                        x_size   = beam_thickness,
+                        y_bounds = CASE_BOUNDS_XY[Y],
+                        z_from   = pos_z,
+                        z_to     = CASE_HEIGHT_TOP
+                    );
+                }
                 Box(
-                    x_to     = width / 2,
-                    x_size   = beam_thickness,
+                    x_size   = width,
                     y_bounds = CASE_BOUNDS_XY[Y],
-                    z_from   = pos_z,
+                    z_from   = pos_z + beam_height,
                     z_to     = CASE_HEIGHT_TOP
                 );
             }
-            Box(
-                x_size   = width,
-                y_bounds = CASE_BOUNDS_XY[Y],
-                z_from   = pos_z + beam_height,
-                z_to     = CASE_HEIGHT_TOP
-            );
         }
     }
 }

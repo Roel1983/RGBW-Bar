@@ -8,13 +8,11 @@ Relief("Case.Top.Relief");
 
 module Relief(layer) {
     if (layer == "Case.Top.Relief") {
-        render() {
-            ProductTitle();
-            SideConnectorLabels();
-            RS485ConnectorLabel();
-            AuxConnectorLabel();
-            PowerConnectorLabel();
-        }
+        ProductTitle();
+        SideConnectorLabels();
+        RS485ConnectorLabel();
+        AuxConnectorLabel();
+        PowerConnectorLabel();
     }
     
     module ProductTitle() {

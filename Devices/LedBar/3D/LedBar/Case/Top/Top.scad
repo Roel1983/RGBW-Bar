@@ -10,6 +10,7 @@ use     <../Shared/Guides.scad>
 use     <Relief.scad>
 use     <GitRevision.scad>
 use     <CenterBoard.scad>
+use     <ProfileScrewHoles.scad>
 
 $fn = 16;
 
@@ -34,7 +35,7 @@ module Top() {
                             z_to   = CASE_HEIGHT_TOP
                         );
                     }
-                    intersection() {
+                    render() intersection() {
                         CaseBasicShapeOuterRelief();
                         Modifications("Case.Top.Relief");
                         Box(
@@ -85,5 +86,6 @@ module Top() {
         Bridge(layer);
         Relief(layer);
         GitRevision(layer);
+        ProfileScrewHoles(layer);
     }
 }

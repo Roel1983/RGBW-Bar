@@ -13,16 +13,16 @@ module CenterBoard(layer) {
             );
         }
     }
-    
-    module TranslateToCenterBoardCenter() {
-        translate([0, 0, CASE_HEIGHT_TOP]) {
-            rotate(-45, VEC_X) {
-                translate([
-                    0,
-                    -ANGLE_PROFILE_THICKENS + ANGLE_PROFILE_WIDTH / 2
-                ]) {
-                    children();
-                }
+}
+
+module TranslateToCenterBoardCenter() {
+    translate([0, 0, CASE_HEIGHT_TOP]) {
+        rotate(-45, VEC_X) {
+            translate([
+                0,
+                -ANGLE_PROFILE_THICKENS + ANGLE_PROFILE_WIDTH / 2
+            ]) {
+                children();
             }
         }
     }

@@ -54,10 +54,8 @@ module ScrewHoles(layer) {
     screw_length           = mm(10.0);
     screw_head_diameter    = mm(5.5);
     screw_head_embed       = mm(0.8);
-    hex_nut_size           = mm(5.5);
-    hex_nut_height         = mm(2.4);
     hex_nut_wall_thickness = nozzle(4);
-    support_diameter       = hex_nut_size / cos(degree(30)) + 2 * hex_nut_wall_thickness;
+    support_diameter       = HEX_NUT_DIAMETER / cos(degree(30)) + 2 * hex_nut_wall_thickness;
 
     module CaseRemove() {
         BIAS = 0.1;
@@ -82,36 +80,15 @@ module ScrewHoles(layer) {
             clearance_z   = mm(.1) + layer(1);
             LinearExtrude(
                 z_to   = screw_head_embed + screw_length,
-                z_size = hex_nut_height + clearance_z
+                z_size = HEX_NUT_HEIGHT + clearance_z
             ) {
-                Hex(size = hex_nut_size + 2 * clearance_xy2);
+                Hex(size = HEX_NUT_DIAMETER + 2 * clearance_xy2);
                 Box(
-                    x_size = hex_nut_size + 2 * clearance_xy1,
+                    x_size = HEX_NUT_DIAMETER + 2 * clearance_xy1,
                     y_to   = support_diameter / 2 + BIAS
                 );
             }
         }
-        
-        /*rotate_extrude() polygon(points = [
-            [0, -BIAS],
-            [pillar_inner_diameter / 2, 0],
-            [pillar_inner_diameter / 2, screw_length - (screw_head_diameter - pillar_inner_diameter) / 3],
-            [screw_head_diameter / 2, screw_length],
-            [screw_head_diameter / 2, CASE_HEIGHT_SIDE + BIAS],
-            [0, CASE_HEIGHT_SIDE + BIAS]
-        ]);
-        hull() {
-            LinearExtrude(
-                z_from = -BIAS,
-                z_to   = hex_nut_height
-            ) {
-                Hex(size = hex_nut_size);
-            }
-            cylinder(
-                d = pillar_inner_diameter / 2,
-                h = hex_nut_height + (hex_nut_size - pillar_inner_diameter) / 2
-            );
-        }*/
     }
     
     
