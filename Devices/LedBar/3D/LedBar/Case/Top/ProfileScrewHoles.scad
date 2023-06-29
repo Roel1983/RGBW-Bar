@@ -1,4 +1,5 @@
 use     <../../../../../Shared/3D/KicadPcbComponent.scad>
+use     <../../../../../Shared/3D/Utils/Box.scad>
 include <../../../../../Shared/3D/Utils/Constants.inc>
 use     <../../../../../Shared/3D/Utils/TransformIf.scad>
 use     <../../../../../Shared/3D/Utils/LinearExtrude.scad>
@@ -9,6 +10,8 @@ include <../Shared/Boards/Subboards/SubboardsKicadPcb.inc>
 
 include <../../Config.inc>
 use     <CenterBoard.scad>
+
+$fn = $preview?16:64;
 
 LOC_X        = 0;
 MIRROR_Y     = 1;
@@ -69,11 +72,33 @@ module ProfileScrewHoles(layer) {
         translate([0,0,-screw_length + ANGLE_PROFILE_THICKENS]) {
             cylinder(d = screw_diameter, h = screw_length + BIAS);
         }
-        LinearExtrude(z_size=mm(HEX_NUT_HEIGHT), z_to = mm(-3.5)) {
-            hull() {
-                Hex(HEX_NUT_DIAMETER);
-                translate([0, -10]) Hex(HEX_NUT_DIAMETER);
+        render() {
+            LinearExtrude(z_size=mm(HEX_NUT_HEIGHT), z_to = mm(-3.5)) {
+                Hex(HEX_NUT_DIAMETER + 2 * HEX_NUT_TOLERANCE);
+                translate([0, HEX_NUT_DIAMETER * -.8]) {
+                    Hex(HEX_NUT_DIAMETER + 2 * HEX_NUT_TOLERANCE);
+                    Box(
+                        x_size = HEX_NUT_DIAMETER + 2 * HEX_NUT_TOLERANCE,
+                        y_from = mm(-10)
+                    );
+                }
             }
+            notch = 0.07;
+            Box(
+                x_size = HEX_NUT_DIAMETER + 2 * (HEX_NUT_TOLERANCE - notch),
+                y_from = mm(-10),
+                z_size=mm(HEX_NUT_HEIGHT), z_to = mm(-3.5)
+            );
+            Box(
+                x_size = HEX_NUT_DIAMETER + 2 * (HEX_NUT_TOLERANCE),
+                y_from = mm(-10),
+                z_size=mm(HEX_NUT_HEIGHT / 3), z_to = mm(-3.5)
+            );
+            Box(
+                x_size = HEX_NUT_DIAMETER + 2 * (HEX_NUT_TOLERANCE),
+                y_from = mm(-10),
+                z_size=mm(HEX_NUT_HEIGHT / 3), z_from = mm(-3.5) - HEX_NUT_HEIGHT
+            );
         }
     }
 }

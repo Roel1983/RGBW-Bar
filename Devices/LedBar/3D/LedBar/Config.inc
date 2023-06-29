@@ -26,8 +26,9 @@ CASE_BUTTON_WALL_CLEARANCE        = mm(0.2);
 
 HEX_NUT_DIAMETER                  = mm(5.45);
 HEX_NUT_HEIGHT                    = mm(2.3);
+HEX_NUT_TOLERANCE                 = mm(0.05);
 
-CASE_BRIDGE_WIDTH                 = HEX_NUT_DIAMETER + 2 * nozzle(2);
+CASE_BRIDGE_WIDTH                 = HEX_NUT_DIAMETER + 2 * (nozzle(2) + HEX_NUT_TOLERANCE);
 
 ANGLE_PROFILE_WIDTH               = mm(25.2); // TODO measure
 ANGLE_PROFILE_THICKENS            = mm(1.1);  // TODO measure
