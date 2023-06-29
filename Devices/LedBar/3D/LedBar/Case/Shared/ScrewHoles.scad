@@ -10,10 +10,12 @@ use     <../../../../../Shared/3D/KicadPcbComponent.scad>
 
 $fn = $preview?16:64;
 difference() {
-    union() {
-        ScrewHoles("Case.Bottom.Add.Inner");
-        ScrewHoles("Case.Top.Add.Inner");
-    }
+    ScrewHoles("Case.Bottom.Add.Inner");
+    ScrewHoles("Case.Remove");
+}
+
+difference() {
+    ScrewHoles("Case.Top.Add.Inner");
     ScrewHoles("Case.Remove");
 }
 
@@ -51,9 +53,12 @@ module ScrewHoles(layer) {
     pillar_inner_diameter = pillar_outer_diameter - 2 * pillar_wall_thickness;
     assert(pillar_inner_diameter == mm(3.2));
     
-    screw_length           = mm(10.0);
-    screw_head_diameter    = mm(5.5);
     screw_head_embed       = mm(0.8);
+    wall_thickness_z        = layer(5);
+    screw_length           = CASE_HEIGHT_SIDE - screw_head_embed - wall_thickness_z;
+    assert(screw_length > mm(10.1));
+    screw_head_diameter    = mm(5.5);
+    
     hex_nut_wall_thickness = nozzle(4);
     support_diameter       = HEX_NUT_DIAMETER / cos(degree(30)) + 2 * hex_nut_wall_thickness;
 
@@ -75,18 +80,30 @@ module ScrewHoles(layer) {
             ]);
         }
         module nut() {
-            clearance_xy1 = mm(.05);
-            clearance_xy2 = mm(.1);
-            clearance_z   = mm(.1) + layer(1);
-            LinearExtrude(
-                z_to   = screw_head_embed + screw_length,
-                z_size = HEX_NUT_HEIGHT + clearance_z
-            ) {
-                Hex(size = HEX_NUT_DIAMETER + 2 * clearance_xy2);
+            clearance_xy = mm(.05);
+            clearance_z  = layer(.5 );
+            translate([0, 0, CASE_PCB_Z_FRONT + mm(1.5)]) {
+                LinearExtrude(
+                    z_to   = HEX_NUT_HEIGHT + clearance_z
+                ) {
+                    Hex(size = HEX_NUT_DIAMETER + 2 * clearance_xy);
+                }
                 Box(
-                    x_size = HEX_NUT_DIAMETER + 2 * clearance_xy1,
-                    y_to   = support_diameter / 2 + BIAS
+                    x_size = HEX_NUT_DIAMETER + 2 * clearance_xy,
+                    y_size = pillar_inner_diameter,
+                    z_to   = HEX_NUT_HEIGHT + clearance_z + layer(1.1)
                 );
+                hull() {
+                    Box(
+                        x_size = pillar_inner_diameter,
+                        y_size = pillar_inner_diameter,
+                        z_to   = HEX_NUT_HEIGHT + clearance_z + layer(2.1)
+                    );
+                    cylinder(
+                        d = pillar_inner_diameter,
+                        h = HEX_NUT_HEIGHT + clearance_z + layer(5.1)
+                    );
+                }
             }
         }
     }
