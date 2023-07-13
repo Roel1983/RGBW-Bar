@@ -11,6 +11,7 @@ use     <Relief.scad>
 use     <GitRevision.scad>
 use     <CenterBoard.scad>
 use     <ProfileScrewHoles.scad>
+use     <RoofSupport.scad>
 
 $fn = 16;
 
@@ -87,5 +88,6 @@ module Top() {
         Relief(layer);
         GitRevision(layer);
         ProfileScrewHoles(layer);
+        RoofSupport(layer);
     }
 }
