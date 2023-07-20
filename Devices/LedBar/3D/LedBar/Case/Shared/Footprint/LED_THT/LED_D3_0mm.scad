@@ -106,13 +106,12 @@ module LED_D3_0mm(layer, h) {
     
     module Tube_2D() {
         translate([pitch/2,0]) {
-            circle(d= d2 + 1.5 * CASE_LED_WALL_CLEARANCE);
+            circle(d= d2 + 2.5 * CASE_LED_WALL_CLEARANCE);
         }
-        hull() {
-            square(mm(1.8) + CASE_LED_WALL_CLEARANCE, center = true);
-            translate([pitch, 0]) {
-                circle(d=mm(1.8));
-            }
+        pad_size= mm(1.8) + 2.5 * CASE_LED_WALL_CLEARANCE;
+        square(pad_size, center = true);
+        translate([pitch, 0]) {
+            circle(d=pad_size);
         }
     }
 }

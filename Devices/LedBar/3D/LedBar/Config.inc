@@ -21,7 +21,7 @@ CASE_PCB_WALL_CLEARANCE_TOP       = mm(9.5);
 
 CASE_BEVEL                        = mm(2);
 
-CASE_LED_WALL_CLEARANCE           = mm(0.1);
+CASE_LED_WALL_CLEARANCE           = mm(0.15);
 CASE_BUTTON_WALL_CLEARANCE        = mm(0.2);
 
 HEX_NUT_DIAMETER                  = mm(5.45);
