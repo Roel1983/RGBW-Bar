@@ -11,7 +11,7 @@ $fn = 16;
 SW_PUSH_6mm(layer = "3D", H=mm(4.3));
 %difference() {
     union() {
-        *SW_PUSH_6mm(layer = "Case.Top.Add.Inner", H=mm(4.3));
+        SW_PUSH_6mm(layer = "Case.Top.Add.Inner", H=mm(4.3));
         SW_PUSH_6mm(layer = "Case.Bottom.Add.Inner", H=mm(4.3));
     }
     SW_PUSH_6mm(layer = "Case.Remove", H=mm(4.3));
@@ -87,7 +87,7 @@ module SW_PUSH_6mm(layer, H=mm(4.3)) {
             intersection() {
                 LinearExtrude(z_from=-BIAS, z_to=h1+h2 + layer(2 + 4)) {
                     hull() mirror_copy(VEC_X) mirror_copy(VEC_Y) {
-                        translate([pitch[0]/2, pitch[1]/2]) circle(d=pad_size + CASE_BUTTON_WALL_CLEARANCE);
+                        translate([pitch[0]/2, pitch[1]/2]) circle(d=pad_size + 2 * CASE_BUTTON_WALL_CLEARANCE);
                     }
                 }
                 union() {
@@ -123,7 +123,7 @@ module SW_PUSH_6mm(layer, H=mm(4.3)) {
             LinearExtrude(z_to = H + mm(5)) {
                 hull() mirror_copy(VEC_X) mirror_copy(VEC_Y) {
                     translate([pitch[0]/2, pitch[1]/2]) {
-                        circle(d=pad_size + CASE_BUTTON_WALL_CLEARANCE + wall);
+                        circle(d=pad_size + 2 * CASE_BUTTON_WALL_CLEARANCE + wall);
                     }
                 }
             }
