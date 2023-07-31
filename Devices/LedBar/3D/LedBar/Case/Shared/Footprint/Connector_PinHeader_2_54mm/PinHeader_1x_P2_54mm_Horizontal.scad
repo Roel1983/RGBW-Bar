@@ -34,7 +34,7 @@ module PinHeader_1x_P2_54mm_Horizontal(layer, pins = 5) {
     d = mm(7);
     r = mm(.75);
     t = mm(0.64);
-    hole_clearance = 0.2;
+    hole_clearance = 0.5;
     
     module Layer3D() {
         color([0.1,0.1,0.1]) Box(
