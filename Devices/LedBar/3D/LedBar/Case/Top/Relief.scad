@@ -96,9 +96,9 @@ module Relief(layer) {
         translate(component_at_loc(component)) {
             translate([-($children - 1) / 2 * pitch, mm(2)]) {
                 linear_extrude(CASE_HEIGHT_TOP) {
-                    offset(delta=mm(.19)) text(
+                    offset(delta=mm(.20)) text(
                         label,
-                        size = mm(3.5),
+                        size = mm(3.0),
                         font = "Arial",
                         halign = "center",
                         valign = "center"
@@ -116,9 +116,9 @@ module Relief(layer) {
     }
     
     module Pin(text) {
-        offset(delta=mm(.18)) text(
+        offset(delta=mm(.20)) text(
             text,
-            size = mm(3.5),
+            size = mm(3.0),
             font = "Arial",
             halign = "center",
             valign = "center"
