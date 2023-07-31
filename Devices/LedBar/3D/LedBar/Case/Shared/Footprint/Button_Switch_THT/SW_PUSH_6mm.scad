@@ -113,6 +113,12 @@ module SW_PUSH_6mm(layer, H=mm(4.3)) {
                 cylinder(d = d1 + CASE_BUTTON_WALL_CLEARANCE, h1+h2 + layer(12));
             }
             cylinder(d = d1 + CASE_BUTTON_WALL_CLEARANCE, h = H + mm(5) + BIAS);
+            
+            button_hole_bevel = [mm(1), mm(.5)];
+            l1 = CASE_HEIGHT_SIDE - CASE_PCB_Z_FRONT - button_hole_bevel[1];
+            translate([0,0, l1]) {
+                cylinder(d = d1 + 2 * button_hole_bevel[0], h = 2 * button_hole_bevel[1]);
+            }
         }
     }
     
