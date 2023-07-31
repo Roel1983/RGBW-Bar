@@ -67,9 +67,13 @@ module Top() {
         }
         Modifications("Case.Remove");
         Modifications("Case.Top.Remove");
-        intersection() {
+        render() intersection() {
             Modifications("Case.Top.Remove.Inner");
             CaseBasicShapeInner();
+        }
+        render() intersection() {
+            Modifications("Case.Top.Remove.Inner.NoBevel");
+            CaseBasicShapeInner(no_bevel = true);
         }
     }
     

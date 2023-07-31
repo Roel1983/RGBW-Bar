@@ -17,7 +17,7 @@ difference() {
 module CaseBasicShape(no_bevel = false) {
     difference() {
         CaseBasicShapeOuter(no_bevel = no_bevel);
-        CaseBasicShapeInner();
+        CaseBasicShapeInner(no_bevel = no_bevel);
     }
 }
 
@@ -30,11 +30,12 @@ module CaseBasicShapeOuter(no_bevel = false) {
     );
 }
 
-module CaseBasicShapeInner() {
+module CaseBasicShapeInner(no_bevel = false) {
     _CaseBasicShape(
         offset_horizontal = -CASE_WALL_THICKNESS_VERTICAL,
         offset_bottom     = -CASE_WALL_THICKNESS_BOTTOM,
-        offset_top        = -CASE_WALL_THICKNESS_TOP
+        offset_top        = -CASE_WALL_THICKNESS_TOP,
+        no_bevel          = no_bevel
     );
 }
 
@@ -53,23 +54,33 @@ module _CaseBasicShape(
     offset_top,
     no_bevel
 ) {
-    bevel = no_bevel ? 0 : CASE_BEVEL;
-    hull() {
+    if(no_bevel) {
         Box(
             bounds = bounds_margin(
                 CASE_BOUNDS_XY,
                 offset_horizontal),
             z_from = -offset_bottom,
-            z_to   = CASE_HEIGHT_SIDE - bevel
-        );
-        Box(
-            bounds = bounds_margin(
-                CASE_BOUNDS_XY,
-                -bevel
-                + offset_horizontal - offset_top),
-            z_from = -offset_bottom,
             z_to   = CASE_HEIGHT_SIDE + offset_top
         );
+    } else {
+        bevel = CASE_BEVEL;        
+        hull() {
+            Box(
+                bounds = bounds_margin(
+                    CASE_BOUNDS_XY,
+                    offset_horizontal),
+                z_from = -offset_bottom,
+                z_to   = CASE_HEIGHT_SIDE - bevel
+            );
+            Box(
+                bounds = bounds_margin(
+                    CASE_BOUNDS_XY,
+                    -bevel
+                    + offset_horizontal - offset_top),
+                z_from = -offset_bottom,
+                z_to   = CASE_HEIGHT_SIDE + offset_top
+            );
+        }
     }
     LinearExtrude(
         x_from = CASE_BOUNDS_XY[0][0] - offset_horizontal,
