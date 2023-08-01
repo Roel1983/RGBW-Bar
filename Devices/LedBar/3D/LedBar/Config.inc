@@ -30,10 +30,12 @@ HEX_NUT_TOLERANCE                 = mm(0.05);
 
 CASE_BRIDGE_WIDTH                 = HEX_NUT_DIAMETER + 2 * (nozzle(2) + HEX_NUT_TOLERANCE);
 
-ANGLE_PROFILE_WIDTH               = mm(25.2); // TODO measure
-ANGLE_PROFILE_THICKENS            = mm(1.1);  // TODO measure
+ANGLE_PROFILE_WIDTH               = mm(25.2);
+ANGLE_PROFILE_THICKENS            = mm(1.1);
 
 PAD_SIZE_15EDGRC_3_5              = mm(3.2);
+
+PCB_THICKNESS_MAINBOARD_TOLERANCE = mm(.1);
 
 /* Dirived */
 
@@ -55,6 +57,7 @@ CASE_PCB_Z_BACK = (
 CASE_PCB_Z_FRONT = (
     CASE_PCB_Z_BACK
     + PCB_THICKNESS_MAINBOARD
+    + PCB_THICKNESS_MAINBOARD_TOLERANCE
 );
 CASE_HEIGHT_SIDE = (
     CASE_PCB_Z_BACK
