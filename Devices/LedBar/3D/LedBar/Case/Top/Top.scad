@@ -55,6 +55,7 @@ module Top() {
                 }
             }
             intersection() {
+                CaseBasicShapeOuter(no_bevel = true);
                 translate([0, 0, CASE_PCB_Z_BACK]) {
                     PlaceFootprints(
                         ALL_COMPONENTS_MAINBOARD,
@@ -62,7 +63,14 @@ module Top() {
                         PCB_THICKNESS_MAINBOARD
                     );
                 }
-                CaseBasicShapeOuter(no_bevel = true);
+                Box(
+                    bounds = bounds_margin(
+                                bounds = CASE_BOUNDS_XY,
+                                margin = mm(5)
+                    ),
+                    z_from = CASE_PCB_Z_FRONT,
+                    z_to   = CASE_HEIGHT_TOP
+                );
             }
         }
         Modifications("Case.Remove");
