@@ -78,11 +78,11 @@ rgbwbar_isp: TARGET = rgbwbar
 rgbwbar_isp: MCU_TARGET = atmega328p
 rgbwbar_isp: HFUSE = DA
 rgbwbar_isp: LFUSE = FF
-rgbwbar_isp: EFUSE = 05
+rgbwbar_isp: EFUSE = FD
 rgbwbar_isp: isp
 
 isp: $(TARGET)
-	#$(ISPFUSES)
+	$(ISPFUSES)
 	$(ISPFLASH)
 
 isp-stk500: $(PROGRAM)_$(TARGET).hex
