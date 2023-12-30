@@ -4,4 +4,6 @@
 void LoopMonitorBegin();
 void LoopMonitorLoop();
 
+void LoopMonitorGet(long &last, long &min, long &max);
+
 #endif
