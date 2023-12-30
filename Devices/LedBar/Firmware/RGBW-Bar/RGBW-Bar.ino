@@ -21,11 +21,11 @@ void setup() {
   ButtonBegin();
   CronBegin();
   LedBegin();
-  LedSet(0, LED_ON);
   AnalogOutBegin();
   LoopMonitorBegin();
   PowerMonitorBegin();
 
+  LedSet(0, LED_ON);
   LedBlinkCount(0, DeviceIdGet(), false);
 }
 
@@ -37,6 +37,10 @@ void loop() {
   ReportLoop();
   CommandLoop();
   LedLoop();
+
+  if(ButtonIsPressedShort()) {
+    LedBlinkCount(LED_GREEN,  3, false);
+  }
 
   if(ButtonIsPressedVeryLong()) {
     LogPrintln("Start bootloader");
