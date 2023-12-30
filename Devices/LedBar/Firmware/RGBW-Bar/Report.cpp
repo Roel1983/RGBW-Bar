@@ -4,6 +4,7 @@
 #include "Log.h"
 #include "LoopMonitor.h"
 #include "PowerMonitor.h"
+#include "MemoryMonitor.h"
 
 #include "Report.h"
 
@@ -20,15 +21,18 @@ void ReportLog() {
   float current = 0;
   float power   = 0;
   PowerMonitorRead(voltage, current, power);
-
   LogPrintln("Voltage: %d mV", (int)(voltage * 1000));
   LogPrintln("Current: %d mA", (int)(current * 1000));
   LogPrintln("Power  : %d mW", (int)(power   * 1000));
 
   long last, min, max;
   LoopMonitorGet(last, min, max);
-   
   LogPrintln("FPS (last, min, max): %ld, %ld, %ld",last, min, max);
+
+  unsigned int heap, stack, free;
+  MemoryMonitorGet(heap, stack, free);
+  LogPrintln("heap: %u, stack: %u, free: %u",  heap, stack, free);
+  
 }
 
 void ReportPeriodically(bool enabled) {
