@@ -1,7 +1,3 @@
-//include <../../../../Shared/3D/Utils/Constants.inc>
-//use     <../../../../Shared/3D/Utils/Git.scad>
-//use     <../../../../Shared/3D/Utils/TransformCopy.scad>
-//use     <../../../../Shared/3D/Utils/Units.scad>
 use     <../../../../Shared/3D/KicadPcbComponent.scad>
 use     <../Case/Shared/Boards/Subboards/LeftBoard.scad>
 use     <../Shared/ScrewHole.scad>
@@ -12,7 +8,7 @@ include <../Config.inc>
 
 $fn = 64;
 
-MiddleSupportLeft();
+MiddleSupport();
 
 *translate([0,0,CASE_HEIGHT_TOP]) rotate(-45, VEC_X) {
     translate([0, -ANGLE_PROFILE_THICKENS, ANGLE_PROFILE_THICKENS]) {
@@ -22,7 +18,7 @@ MiddleSupportLeft();
     }
 }
 
-module MiddleSupportLeft() {
+module MiddleSupport() {
     difference() {
         Support(
             height  = CASE_HEIGHT_TOP,
