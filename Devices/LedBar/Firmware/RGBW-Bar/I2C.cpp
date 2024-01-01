@@ -6,6 +6,9 @@ bool is_locked = false;
 
 void I2cBegin() {
   Wire.begin();
+#ifdef TWBR    
+  TWBR = 12; // upgrade to 400KHz!
+#endif
 }
 
 bool I2cLock() {
