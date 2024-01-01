@@ -31,6 +31,10 @@ void setup() {
   LedBlinkCount(0, DeviceIdGet(), false);
 }
 
+void end() {
+  StripEnd();
+}
+
 static bool led_overide = false;
 
 void loop() {
@@ -45,6 +49,7 @@ void loop() {
 
   if(ButtonIsPressedVeryLong()) {
     LogPrintln("Start bootloader");
+    end();
     BootloaderExecute();
   }
 

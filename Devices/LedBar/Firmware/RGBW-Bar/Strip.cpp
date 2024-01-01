@@ -13,6 +13,7 @@ static constexpr uint8_t pca9685_led0_l   = 0x06;
 static void InitPca();
 static void StripAllOff();
 static void PcaReady();
+static void Disable();
 static void OnError();
 
 static bool error = false;
@@ -86,6 +87,10 @@ static void PcaReady() {
   
 }
 
+void StripEnd() {
+  Disable();
+}
+
 void StripLoop() {
   static int index = 0;
   Wire.beginTransmission(pca9685_i2caddr);
@@ -111,9 +116,13 @@ void StripLoop() {
   if (index > 4) index = 0;
 }
 
-static void OnError() {
+static void Disable() {
   pinMode(2, OUTPUT); // pca_oe
-  digitalWrite(2, HIGH);
+  digitalWrite(2, HIGH); 
+}
+
+static void OnError() {
+  Disable();
   error = true;
 }
 

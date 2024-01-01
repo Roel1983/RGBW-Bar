@@ -5,6 +5,7 @@ typedef uint16_t color_t[4];
 
 void StripBegin();
 void StripLoop();
+void StripEnd();
 
 bool StripHasError();
 void StripResetError();
