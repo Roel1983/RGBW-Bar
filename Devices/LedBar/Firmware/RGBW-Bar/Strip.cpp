@@ -17,7 +17,7 @@ static void Disable();
 static void OnError();
 
 static bool error = false;
-static color_t colors[4];
+static strip_color_t colors[4];
 
 void StripBegin() {
   InitPca();
@@ -135,7 +135,7 @@ void StripResetError() {
   error = false;
 }
 
-void StripSet(int index, color_t color) {
+void StripSet(int index, strip_color_t color) {
   colors[index][0] = color[0];
   colors[index][1] = color[1];
   colors[index][2] = color[2];
