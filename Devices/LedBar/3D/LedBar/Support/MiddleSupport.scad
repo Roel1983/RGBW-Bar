@@ -1,6 +1,8 @@
 use     <../../../../Shared/3D/KicadPcbComponent.scad>
+use     <../../../../Shared/3D/Utils/TransformCopy.scad>
 use     <../Case/Shared/Boards/Subboards/LeftBoard.scad>
 use     <../Shared/ScrewHole.scad>
+
 
 use <../Shared/Support.scad>
 
@@ -36,8 +38,10 @@ module MiddleSupport() {
             rotate(-90, VEC_X) linear_extrude(10, center=true) {
                 difference() {
                     translate([0, -19/2-5.4])square([12, 19], true);
-                    translate([0, -20]) square([6,3], true);
-                    translate([0, -15]) square([4,2], true);
+                    translate([0, -20]) hull() {mirror_copy(VEC_X) translate([-1.5,0]) circle(d=3);}
+                    translate([0, -15]) hull() {mirror_copy(VEC_X) translate([-1,0]) circle(d=2);}
+                    //translate([0, -20]) square([6,3], true);
+                    //translate([0, -15]) square([4,2], true);
                 }
             }
         }
