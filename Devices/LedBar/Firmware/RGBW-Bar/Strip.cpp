@@ -15,11 +15,14 @@ static constexpr uint8_t pca9685_led0_l   = 0x06;
 static void InitPca();
 static void StripAllOff();
 static void PcaReady();
+static void Enable();
 static void Disable();
 static void OnError();
 
 static bool error = false;
-static strip_color_t colors[4];
+static strip_color_t colors[4] = {0};
+static bool power_valid = false;
+static bool is_enabled = false;
 
 void StripBegin() {
   InitPca();
@@ -74,17 +77,15 @@ static void StripAllOff() {
 }
 
 static void PcaReady() {
-  pinMode( 2, INPUT);  // pca_oe
+  Enable();
   pinMode(16, OUTPUT); // pca_ready
   digitalWrite(16, LOW);
 
-  delay(5);
-  
   if(digitalRead(2) == HIGH) {
     OnError();
   }
   attachInterrupt(digitalPinToInterrupt(2), [](){
-    OnError();
+    if (is_enabled) OnError();
   }, RISING);
   
 }
@@ -118,7 +119,13 @@ void StripLoop() {
   if (index > 4) index = 0;
 }
 
+static void Enable() {
+  is_enabled = true;
+  pinMode(2, INPUT); // pca_oe
+}
+
 static void Disable() {
+  is_enabled = false;
   pinMode(2, OUTPUT); // pca_oe
   digitalWrite(2, HIGH); 
 }
@@ -134,7 +141,7 @@ bool StripHasError() {
 }
 
 void StripResetError() {
-  pinMode(2, INPUT); // pca_oe
+  if(power_valid) Enable();
   error = false;
   ErrorDeactivate(ERROR_LED_STRIP_ERROR);
 }
@@ -144,5 +151,15 @@ void StripSet(int index, const strip_color_t color) {
   colors[index][1] = color[1];
   colors[index][2] = color[2];
   colors[index][3] = color[3];
+}
+
+void StripPowerInvalid() {
+  Disable();
+  power_valid = false;
+}
+
+void StripPowerValid() {
+  if(!error) Enable();
+  power_valid = true;
 }
 

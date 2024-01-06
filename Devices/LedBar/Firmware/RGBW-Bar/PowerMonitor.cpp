@@ -1,8 +1,12 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#include "PowerMonitor.h"
 #include "I2C.h"
+#include "Error.h"
+#include "Settings.h"
+#include "Strip.h"
+
+#include "PowerMonitor.h"
 
 /** bus voltage range values **/
 enum {
@@ -133,6 +137,14 @@ void PowerMonitorLoop() {
       ina219_voltage = 0.001 * (int16_t)((value >> 3) * 4);
       state          = 0;
       I2cUnlock();
+
+      if(ina219_voltage >= SettingsGetOverVoltage()) {
+        StripPowerInvalid();
+        ErrorActivate(ERROR_OVER_VOLTAGE);
+      } else {
+        StripPowerValid();
+        ErrorDeactivate(ERROR_OVER_VOLTAGE);
+      }
     }
   }
 }
