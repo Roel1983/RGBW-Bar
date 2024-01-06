@@ -5,6 +5,7 @@
 #include "DeviceId.h"
 #include "Error.h"
 #include "Fade.h"
+#include "Led.h"
 #include "Log.h"
 #include "Report.h"
 #include "Strobe.h"
@@ -25,7 +26,7 @@ void CommandLoop() {
 
     switch(state) {
     case -1:
-      if (b == '\r' || b == '\n' || b == ';') {
+      if (b == '\r' || b == '\n' || b == ';' || (b >= '0' && b <= '9')) {
         return;
       }
       state = 0;
@@ -36,7 +37,7 @@ void CommandLoop() {
       bool is_alpha = (b >= 'a' && b <= 'z') || (b > 'A' && b <= 'Z');
       if (is_alpha) {
         if(pos >= sizeof(buffer) - 1) {
-          LogPrintln("Command too long");
+          ErrorRaise(ERROR_COMMUNICATION);
           state = 2; // skip till end
           return;
         }
@@ -45,26 +46,56 @@ void CommandLoop() {
       } else {
         if (b != '(') {
           ErrorRaise(ERROR_COMMUNICATION);
-          LogPrintln("did expect '(' got '%c'", b);
           state = 2; // skip till end
           return;
         }
         buffer[pos] = '\0';
         if (!strcmp(buffer, "echo")) {
           cmd = [](char* args, size_t len) {
-            LogPrintln("echo(%s)", args);
+            int device_id;
             char msg[40];
-            int res = sscanf(args, "%s", msg);
-            if(1 == res) {;
-              LogPrintln("echoing: \"%s\"", msg);
+            int res = sscanf(args, "%d,%s", &device_id, msg);
+            if(2 == res) {;
+              if(DeviceIdGet() == device_id) {
+                LogPrintln("echoing: \"%s\"", msg);
+              }
             } else {
               ErrorRaise(ERROR_COMMUNICATION);
-              LogPrintln("invalid args. res=%d, len=%d, args=\"%s\"",res, len, args);
+            }
+          };
+        } else if (!strcmp(buffer, "boot")) {
+          cmd = [](char* args, size_t len) {
+            int device_id;
+            int res = sscanf(args, "%d", &device_id);
+            if(1 == res) {
+              if(DeviceIdGet() == device_id) {
+                LogPrintln("bootloader in 3 seconds (silent)");
+                delay(1000);
+                BootloaderExecute();
+              } else {
+                Serial.end();
+                delay(1000);
+                long b = (long)57600 * 1600 / 1475;
+                Serial.begin(b);
+                delay(2000);
+
+                while(Serial.available()) {
+                  while(Serial.read() != -1);
+                  delay(1000);
+                } // Wail till the bus is idle for at least 1 second
+
+                Serial.end();
+                delay(1000);
+                b = (long)115200 * 1600 / 1475; // 
+                Serial.begin(b);
+                delay(1000);
+              }
+            } else {
+              ErrorRaise(ERROR_COMMUNICATION);
             }
           };
         } else if(!strcmp(buffer, "fade")) {
           cmd = [](char* args, size_t len) {
-            LogPrintln("fade(%s)", args);
             int factor;
             int duration = 0;
             int res = sscanf(args, "%d, %d", &factor, &duration);
@@ -72,33 +103,30 @@ void CommandLoop() {
               FadeSetTargetFactor(factor, (ms_t)duration * 1000);
             } else {
               ErrorRaise(ERROR_COMMUNICATION);
-              LogPrintln("invalid args. res=%d, len=%d, args=\"%s\"",res, len, args);
             }
           };
         } else if(!strcmp(buffer, "set")) {
           cmd = [](char* args, size_t len) {
-            LogPrintln("set(%s)", args);
+            int device_id;
             int index;
             color_t c;
-            int res = sscanf(args, "%d,%d,%d,%d,%d", &index, &c[0], &c[1], &c[2], &c[3]);
-            if(res == 2) {
+            int res = sscanf(args, "%d,%d,%d,%d,%d,%d", &device_id, &index, &c[0], &c[1], &c[2], &c[3]);
+            if(res == 3) {
               c[1] = c[0];
               c[2] = c[0];
               c[3] = c[0];
-              FadeSetTargetColor(index, c);
-            } else if (res == 4) {
-              c[3] = 0;
-              FadeSetTargetColor(index, c);
+              if(DeviceIdGet() == device_id) FadeSetTargetColor(index, c);
             } else if (res == 5) {
-              FadeSetTargetColor(index, c);
+              c[3] = 0;
+              if(DeviceIdGet() == device_id) FadeSetTargetColor(index, c);
+            } else if (res == 6) {
+              if(DeviceIdGet() == device_id) FadeSetTargetColor(index, c);
             } else {
               ErrorRaise(ERROR_COMMUNICATION);
-              LogPrintln("invalid args. res=%d, len=%d, args=\"%s\"",res, len, args);
             }
           };
         } else if(!strcmp(buffer, "report")) {
           cmd = [](char* args, size_t len) {
-            LogPrintln("report(%s)", args);
             int device_id;
             int res = sscanf(args, "%d", &device_id);
             if(res == 1) {
@@ -109,7 +137,6 @@ void CommandLoop() {
           };
         } else if(!strcmp(buffer, "strobe")) {
           cmd = [](char* args, size_t len) {
-            LogPrintln("strobe(%s)", args);
             int on;
             int off;
             int count;
@@ -122,40 +149,37 @@ void CommandLoop() {
           };
         } else if(!strcmp(buffer, "strobeColor")) {
           cmd = [](char* args, size_t len) {
-            LogPrintln("strobeColor(%s)", args);
+            int device_id;
             int index;
             color_t c;
-            int res = sscanf(args, "%d,%d,%d,%d,%d", &index, &c[0], &c[1], &c[2], &c[3]);
-            if(res == 2) {
+            int res = sscanf(args, "%d,%d,%d,%d,%d,%d", &device_id, &index, &c[0], &c[1], &c[2], &c[3]);
+            if(res == 3) {
               c[1] = c[0];
               c[2] = c[0];
               c[3] = c[0];
-              StrobeSetStripColor(index, c);
-            } else if (res == 4) {
-              c[3] = 0;
-              StrobeSetStripColor(index, c);
+              if(DeviceIdGet() == device_id) StrobeSetStripColor(index, c);
             } else if (res == 5) {
-              StrobeSetStripColor(index, c);
+              c[3] = 0;
+              if(DeviceIdGet() == device_id) StrobeSetStripColor(index, c);
+            } else if (res == 6) {
+              if(DeviceIdGet() == device_id) StrobeSetStripColor(index, c);
             } else {
               ErrorRaise(ERROR_COMMUNICATION);
-              LogPrintln("invalid args. res=%d, len=%d, args=\"%s\"",res, len, args);
             }
           };
         } else if(!strcmp(buffer, "strobeWeight")) {
           cmd = [](char* args, size_t len) {
-            LogPrintln("strobeWeight(%s)", args);
+            int device_id;
             factor_t weights[4];
-            int res = sscanf(args, "%d,%d,%d,%d,%d", &weights[0], &weights[1], &weights[2], &weights[3]);
-            if(res == 4) {
-              StrobeSetStripWeights(weights);
+            int res = sscanf(args, "%d,%d,%d,%d,%d", &device_id, &weights[0], &weights[1], &weights[2], &weights[3]);
+            if(res == 5) {
+              if(DeviceIdGet() == device_id) StrobeSetStripWeights(weights);
             } else {
               ErrorRaise(ERROR_COMMUNICATION);
-              LogPrintln("invalid args. res=%d, len=%d, args=\"%s\"",res, len, args);
             }
           };
         } else {
           ErrorRaise(ERROR_COMMUNICATION);
-          LogPrintln("unknown command");
           state = 2; // skip till end
           return;
         }

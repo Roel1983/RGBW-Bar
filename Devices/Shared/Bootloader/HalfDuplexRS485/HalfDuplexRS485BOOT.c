@@ -221,17 +221,6 @@ int main(void)
 		LED1_PORT |= _BV(LED1);
 	}
 
-putch(0x14);
-			putch('A');
-			putch('V');
-			putch('R');
-			putch(' ');
-			putch('I');
-			putch('S');
-			putch('P');
-			putch(0x10);
-
-
 	/* 20050803: by DojoCorp, this is one of the parts provoking the
 		 system to stop listening, cancelled from the original */
 	//putch('\0');

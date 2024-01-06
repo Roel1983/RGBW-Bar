@@ -71,7 +71,7 @@ void loop() {
       }
     }
   }
-
+  
   if(led_overide) {
     static constexpr strip_color_t WHITE = {4093, 4093, 4093, 4093};
     StripSet(0, WHITE);
