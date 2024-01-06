@@ -9,6 +9,7 @@
 #include "I2C.h"
 #include "DeviceId.h"
 #include "Fade.h"
+#include "Gamma.h"
 #include "Led.h"
 #include "Log.h"
 #include "LoopMonitor.h"
@@ -85,10 +86,9 @@ void loop() {
     internal_color_t color;
     FadeGetColor(i, color);
     MixColor(StrobeGetStripFactor(i), color, StrobeGetStripColor(i), color);
+    GammaColorCorrection(color);
     StripSet(i, color);
   }  
  }
 }
-
-
 
