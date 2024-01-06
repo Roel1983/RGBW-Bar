@@ -4,6 +4,8 @@
 #include "Color.h"
 #include "Types.h"
 
+void FadeLoop();
+
 void FadeSetTargetColor(int index, internal_color_t c);
 void FadeSetTargetFactor(factor_t factor, ms_t duration);
 

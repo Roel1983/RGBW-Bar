@@ -49,6 +49,7 @@ void loop() {
   CommandLoop();
   LedLoop();
   StripLoop();
+  FadeLoop();
 
   if(ButtonIsPressedVeryLong()) {
     LogPrintln("Start bootloader");

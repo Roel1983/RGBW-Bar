@@ -5,12 +5,17 @@ static ms_t     fade_duration = MS_INDEFINETE;
 static ms_t     fade_till;
 static factor_t fade_factor_from;
 static factor_t fade_factor_to;
+static factor_t fade_current_factor = FACTOR_MIN;
 
 static internal_color_t from_color[4] = {0};
 static internal_color_t to_color[4] = {0};
 
-static void FadeSetFactor(factor_t factor, ms_t duration);
-static factor_t FadeGetFactor();
+static void     FadeSetFactor(factor_t factor, ms_t duration);
+static factor_t FadeCalculateFactor();
+
+void FadeLoop() {
+  fade_current_factor = FadeCalculateFactor();
+}
 
 void FadeSetTargetColor(int index, internal_color_t c) {
   for (int i = 0; i < 4; i++) {
@@ -22,7 +27,7 @@ void FadeSetTargetColor(int index, internal_color_t c) {
 }
 
 void FadeSetTargetFactor(factor_t factor, ms_t duration) {
-  fade_factor_from = FadeGetFactor();
+  fade_factor_from = fade_current_factor;
   fade_factor_to   = factor;
 
   const ms_t      timestamp = millis();
@@ -31,10 +36,10 @@ void FadeSetTargetFactor(factor_t factor, ms_t duration) {
 }
 
 void FadeGetColor(int index, internal_color_t& out) {
-  MixColor(FadeGetFactor(), from_color[index], to_color[index], out);
+  MixColor(fade_current_factor, from_color[index], to_color[index], out);
 }
 
-static factor_t FadeGetFactor() {
+static factor_t FadeCalculateFactor() {
   using duration_t = int32_t;
   
   const ms_t       timestamp    = millis();
@@ -45,7 +50,7 @@ static factor_t FadeGetFactor() {
     return fade_factor_from;
   }
   if (time_left <= 0) {
-    fade_till = timestamp; // TODO make sure FadeGetFactor is called every loop
+    fade_till = timestamp;
     return fade_factor_to;
   }
   
