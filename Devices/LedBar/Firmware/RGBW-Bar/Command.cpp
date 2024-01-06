@@ -66,7 +66,7 @@ void CommandLoop() {
             int duration = 0;
             int res = sscanf(args, "%d, %d", &factor, &duration);
             if(res >= 1) {
-              FadeSetTargetFactor(factor, duration * 1000);
+              FadeSetTargetFactor(factor, (ms_t)duration * 1000);
             } else {
               LogPrintln("invalid args. res=%d, len=%d, args=\"%s\"",res, len, args);
             }
