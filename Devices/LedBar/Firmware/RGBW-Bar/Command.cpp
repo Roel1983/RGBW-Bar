@@ -93,6 +93,7 @@ void CommandLoop() {
           };
         } else if(!strcmp(buffer, "report")) {
           cmd = [](char* args, size_t len) {
+            LogPrintln("report(%s)", args);
             int device_id;
             int res = sscanf(args, "%d", &device_id);
             if(res == 1) {
@@ -101,12 +102,44 @@ void CommandLoop() {
           };
         } else if(!strcmp(buffer, "strobe")) {
           cmd = [](char* args, size_t len) {
+            LogPrintln("strobe(%s)", args);
             int on;
             int off;
             int count;
             int res = sscanf(args, "%d,%d,%d", &on,&off,&count);
             if(res == 3) {
               Strobe(on, off, count);
+            }
+          };
+        } else if(!strcmp(buffer, "strobeColor")) {
+          cmd = [](char* args, size_t len) {
+            LogPrintln("strobeColor(%s)", args);
+            int index;
+            color_t c;
+            int res = sscanf(args, "%d,%d,%d,%d,%d", &index, &c[0], &c[1], &c[2], &c[3]);
+            if(res == 2) {
+              c[1] = c[0];
+              c[2] = c[0];
+              c[3] = c[0];
+              StrobeSetStripColor(index, c);
+            } else if (res == 4) {
+              c[3] = 0;
+              StrobeSetStripColor(index, c);
+            } else if (res == 5) {
+              StrobeSetStripColor(index, c);
+            } else {
+              LogPrintln("invalid args. res=%d, len=%d, args=\"%s\"",res, len, args);
+            }
+          };
+        } else if(!strcmp(buffer, "strobeWeight")) {
+          cmd = [](char* args, size_t len) {
+            LogPrintln("strobeWeight(%s)", args);
+            factor_t weights[4];
+            int res = sscanf(args, "%d,%d,%d,%d,%d", &weights[0], &weights[1], &weights[2], &weights[3]);
+            if(res == 4) {
+              StrobeSetStripWeights(weights);
+            } else {
+              LogPrintln("invalid args. res=%d, len=%d, args=\"%s\"",res, len, args);
             }
           };
         } else {

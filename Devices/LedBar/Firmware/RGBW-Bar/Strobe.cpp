@@ -3,12 +3,14 @@
 // TODO: Set strobe color per strip
 // TODO: Set factor per strip
 
-static factor_t     strobe_strip_weight[4];
-static ms_t         strobe_on;
-static ms_t         strobe_off;
-static uint8_t      strobe_count=0; // 0xFF is endless
-static bool         strobe_toggle;
-static ms_t         strobe_next_change;
+static factor_t      strobe_strip_weight[4];
+static ms_t          strobe_on;
+static ms_t          strobe_off;
+static uint8_t       strobe_count=0;
+static bool          strobe_toggle;
+static ms_t          strobe_next_change;
+static strip_color_t strobe_colors[4]  = {{4094, 4094, 4094, 4094},{4094, 4094, 4094, 4094},{4094, 4094, 4094, 4094},{4094, 4094, 4094, 4094}};
+static factor_t      strobe_weights[4] = {FACTOR_MAX, FACTOR_MAX, FACTOR_MAX, FACTOR_MAX};
 
 void Strobe(ms_t on, ms_t off, uint8_t count) {
   strobe_on    = on;
@@ -29,15 +31,29 @@ factor_t StrobeGetStripFactor(int index) {
       strobe_next_change += strobe_on;
     } else {
       strobe_next_change += strobe_off;
-      if (strobe_count != 0xFF) {
+      if (strobe_count != COUNT_INFINITE) {
         strobe_count--;
       }
     }
   }
-  return strobe_toggle?10000:0;  
+  return strobe_toggle?strobe_weights[index]:0;  
 }
 
 internal_color_t& StrobeGetStripColor(int index) {
-  static internal_color_t c = {4000,4000,4000,4000};
-  return c;
+  return strobe_colors[index];
 }
+
+void StrobeSetStripColor (int index, internal_color_t color) {
+  strobe_colors[index][0] = color[0];
+  strobe_colors[index][1] = color[1];
+  strobe_colors[index][2] = color[2];
+  strobe_colors[index][3] = color[3]; 
+}
+
+void StrobeSetStripWeights(factor_t weights[4]) {
+  strobe_weights[0] = weights[0];
+  strobe_weights[1] = weights[1];
+  strobe_weights[2] = weights[2];
+  strobe_weights[3] = weights[3];
+}
+
