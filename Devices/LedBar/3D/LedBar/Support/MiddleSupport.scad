@@ -32,13 +32,14 @@ module MiddleSupport() {
         MiddleSupportHolePos() ScrewHole();
         MiddleSupportConnectorCenterPos() {
             linear_extrude(5.5)square([2.7, 11.1], true);
-                rotate(-90, VEC_X) linear_extrude(10, center=true) {
-                    difference() {
-                        translate([0, -19/2-5.4])square([12, 19], true);
-                        translate([0, -20]) square([6,3], true);
-                        translate([0, -15]) square([4,2], true);
-                    }
+            linear_extrude(1, center=true)square([2.7 + 1, 11.1 + 1], true);
+            rotate(-90, VEC_X) linear_extrude(10, center=true) {
+                difference() {
+                    translate([0, -19/2-5.4])square([12, 19], true);
+                    translate([0, -20]) square([6,3], true);
+                    translate([0, -15]) square([4,2], true);
                 }
+            }
         }
 
         rotate(-90, VEC_Y)linear_extrude(12, center=true)
