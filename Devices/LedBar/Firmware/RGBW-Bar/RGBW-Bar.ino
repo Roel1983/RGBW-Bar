@@ -57,15 +57,12 @@ void loop() {
     end();
     BootloaderExecute();
   }
-
   
   if(StripHasError()) {
-    LedBlinkCount(LED_RED, 2, true);
     if(ButtonIsPressedShort()) {
       StripResetError();
     }
   } else {
-    LedSet(LED_RED, LED_OFF);
     if(ButtonIsPressedShort()) {
       if(!led_overide) {
         led_overide = true;//led_overide;

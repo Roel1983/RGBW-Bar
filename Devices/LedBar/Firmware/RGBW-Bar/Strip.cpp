@@ -2,6 +2,8 @@
 
 #include <Wire.h>
 
+#include "Error.h"
+
 #include "Strip.h"
 
 static constexpr int     pca9685_i2caddr  = 0x40;
@@ -124,6 +126,7 @@ static void Disable() {
 static void OnError() {
   Disable();
   error = true;
+  ErrorActivate(ERROR_LED_STRIP_ERROR);
 }
 
 bool StripHasError() {
@@ -133,6 +136,7 @@ bool StripHasError() {
 void StripResetError() {
   pinMode(2, INPUT); // pca_oe
   error = false;
+  ErrorDeactivate(ERROR_LED_STRIP_ERROR);
 }
 
 void StripSet(int index, const strip_color_t color) {

@@ -1,13 +1,14 @@
 #include <Arduino.h>
 
 #include "Bootloader.h"
+#include "Color.h"
 #include "DeviceId.h"
+#include "Error.h"
+#include "Fade.h"
 #include "Log.h"
 #include "Report.h"
-#include "Color.h"
-#include "Types.h"
 #include "Strobe.h"
-#include "Fade.h"
+#include "Types.h"
 
 #include "Command.h"
 
@@ -43,6 +44,7 @@ void CommandLoop() {
         return;
       } else {
         if (b != '(') {
+          ErrorRaise(ERROR_COMMUNICATION);
           LogPrintln("did expect '(' got '%c'", b);
           state = 2; // skip till end
           return;
@@ -56,6 +58,7 @@ void CommandLoop() {
             if(1 == res) {;
               LogPrintln("echoing: \"%s\"", msg);
             } else {
+              ErrorRaise(ERROR_COMMUNICATION);
               LogPrintln("invalid args. res=%d, len=%d, args=\"%s\"",res, len, args);
             }
           };
@@ -68,6 +71,7 @@ void CommandLoop() {
             if(res >= 1) {
               FadeSetTargetFactor(factor, (ms_t)duration * 1000);
             } else {
+              ErrorRaise(ERROR_COMMUNICATION);
               LogPrintln("invalid args. res=%d, len=%d, args=\"%s\"",res, len, args);
             }
           };
@@ -88,6 +92,7 @@ void CommandLoop() {
             } else if (res == 5) {
               FadeSetTargetColor(index, c);
             } else {
+              ErrorRaise(ERROR_COMMUNICATION);
               LogPrintln("invalid args. res=%d, len=%d, args=\"%s\"",res, len, args);
             }
           };
@@ -98,6 +103,8 @@ void CommandLoop() {
             int res = sscanf(args, "%d", &device_id);
             if(res == 1) {
               ReportPeriodically(DeviceIdGet() == device_id);
+            } else {
+              ErrorRaise(ERROR_COMMUNICATION);
             }
           };
         } else if(!strcmp(buffer, "strobe")) {
@@ -109,6 +116,8 @@ void CommandLoop() {
             int res = sscanf(args, "%d,%d,%d", &on,&off,&count);
             if(res == 3) {
               Strobe(on, off, count);
+            } else {
+              ErrorRaise(ERROR_COMMUNICATION);
             }
           };
         } else if(!strcmp(buffer, "strobeColor")) {
@@ -128,6 +137,7 @@ void CommandLoop() {
             } else if (res == 5) {
               StrobeSetStripColor(index, c);
             } else {
+              ErrorRaise(ERROR_COMMUNICATION);
               LogPrintln("invalid args. res=%d, len=%d, args=\"%s\"",res, len, args);
             }
           };
@@ -139,10 +149,12 @@ void CommandLoop() {
             if(res == 4) {
               StrobeSetStripWeights(weights);
             } else {
+              ErrorRaise(ERROR_COMMUNICATION);
               LogPrintln("invalid args. res=%d, len=%d, args=\"%s\"",res, len, args);
             }
           };
         } else {
+          ErrorRaise(ERROR_COMMUNICATION);
           LogPrintln("unknown command");
           state = 2; // skip till end
           return;
@@ -159,6 +171,7 @@ void CommandLoop() {
         state = -1;
       } else if (b == '\r' || b == '\n') {
         LogPrintln("args incomplete");
+        ErrorRaise(ERROR_COMMUNICATION);
         state = -1;
         return;
       } else {
