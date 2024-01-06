@@ -10,6 +10,6 @@ void StripEnd();
 bool StripHasError();
 void StripResetError();
 
-void StripSet(int index, strip_color_t color);
+void StripSet(int index, const strip_color_t color);
 
 #endif

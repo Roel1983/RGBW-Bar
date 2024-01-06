@@ -1,16 +1,12 @@
 #include "Strobe.h"
 
-// TODO: Set strobe color per strip
-// TODO: Set factor per strip
-
-static factor_t      strobe_strip_weight[4];
 static ms_t          strobe_on;
 static ms_t          strobe_off;
 static uint8_t       strobe_count=0;
 static bool          strobe_toggle;
 static ms_t          strobe_next_change;
 static strip_color_t strobe_colors[4]  = {{4094, 4094, 4094, 4094},{4094, 4094, 4094, 4094},{4094, 4094, 4094, 4094},{4094, 4094, 4094, 4094}};
-static factor_t      strobe_weights[4] = {FACTOR_MAX, FACTOR_MAX, FACTOR_MAX, FACTOR_MAX};
+static factor_t      strobe_strip_weight[4] = {FACTOR_MAX, FACTOR_MAX, FACTOR_MAX, FACTOR_MAX};
 
 void Strobe(ms_t on, ms_t off, uint8_t count) {
   strobe_on    = on;
@@ -36,7 +32,7 @@ factor_t StrobeGetStripFactor(int index) {
       }
     }
   }
-  return strobe_toggle?strobe_weights[index]:0;  
+  return strobe_toggle?strobe_strip_weight[index]:0;  
 }
 
 internal_color_t& StrobeGetStripColor(int index) {
@@ -51,9 +47,9 @@ void StrobeSetStripColor (int index, internal_color_t color) {
 }
 
 void StrobeSetStripWeights(factor_t weights[4]) {
-  strobe_weights[0] = weights[0];
-  strobe_weights[1] = weights[1];
-  strobe_weights[2] = weights[2];
-  strobe_weights[3] = weights[3];
+  strobe_strip_weight[0] = weights[0];
+  strobe_strip_weight[1] = weights[1];
+  strobe_strip_weight[2] = weights[2];
+  strobe_strip_weight[3] = weights[3];
 }
 
