@@ -13,6 +13,7 @@
 #include "Led.h"
 #include "Log.h"
 #include "LoopMonitor.h"
+#include "LightControl.h"
 #include "Mix.h"
 #include "PowerMonitor.h"
 #include "Report.h"
@@ -30,9 +31,12 @@ void setup() {
   LoopMonitorBegin();
   PowerMonitorBegin();
   StripBegin();
+  LightControlBegin();
   
   LedSet(0, LED_ON);
   LedBlinkCount(0, DeviceIdGet(), false);
+
+  LightControlSetOn(true);
 }
 
 void end() {
@@ -49,43 +53,28 @@ void loop() {
   ReportLoop();
   CommandLoop();
   LedLoop();
-  StripLoop();
   FadeLoop();
+  LightControlLoop();
+  StripLoop();
 
+  if(StripHasError()) {
+    if(ButtonIsPressedShort()) {
+      StripResetError();
+    }    
+  } else {
+    if(ButtonIsPressedShort()) {
+      LightControlSetFlut(!LightControlGetFlut());
+    }
+    if(ButtonIsPressedLong()) {
+      LightControlSetFollow(!LightControlGetFollow());
+    }
+  }
+  
   if(ButtonIsPressedVeryLong()) {
     LogPrintln("Start bootloader");
     end();
     BootloaderExecute();
   }
-  
-  if(StripHasError()) {
-    if(ButtonIsPressedShort()) {
-      StripResetError();
-    }
-  } else {
-    if(ButtonIsPressedShort()) {
-      if(!led_overide) {
-        led_overide = true;//led_overide;
-      } else {
-        led_overide = false;
-      }
-    }
-  }
-  
-  if(led_overide) {
-    static constexpr strip_color_t WHITE = {4093, 4093, 4093, 4093};
-    StripSet(0, WHITE);
-    StripSet(1, WHITE);
-    StripSet(2, WHITE);
-    StripSet(3, WHITE);
- } else {
-   for(int i = 0; i < 4; i++) {
-    internal_color_t color;
-    FadeGetColor(i, color);
-    MixColor(StrobeGetStripFactor(i), color, StrobeGetStripColor(i), color);
-    GammaColorCorrection(color);
-    StripSet(i, color);
-  }  
- }
+
 }
 

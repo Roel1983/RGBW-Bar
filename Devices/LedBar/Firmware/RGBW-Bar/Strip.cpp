@@ -3,6 +3,7 @@
 #include <Wire.h>
 
 #include "Error.h"
+#include "LightControl.h"
 
 #include "Strip.h"
 
@@ -134,6 +135,7 @@ static void OnError() {
   Disable();
   error = true;
   ErrorActivate(ERROR_LED_STRIP_ERROR);
+  LightControlRaiseError();
 }
 
 bool StripHasError() {
@@ -144,6 +146,7 @@ void StripResetError() {
   if(power_valid) Enable();
   error = false;
   ErrorDeactivate(ERROR_LED_STRIP_ERROR);
+  LightControlClearError();
 }
 
 void StripSet(int index, const strip_color_t color) {
@@ -154,12 +157,18 @@ void StripSet(int index, const strip_color_t color) {
 }
 
 void StripPowerInvalid() {
-  Disable();
-  power_valid = false;
+  if(power_valid) {
+    Disable();
+    power_valid = false;
+    LightControlRaiseError();
+  }
 }
 
 void StripPowerValid() {
   if(!error) Enable();
-  power_valid = true;
+  if(!power_valid) {
+    power_valid = true;
+    LightControlClearError();
+  }
 }
 

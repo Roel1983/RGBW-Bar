@@ -1,6 +1,6 @@
 #include "Mix.h"
 
-void MixColor(factor_t factor, internal_color_t from, internal_color_t to, internal_color_t& out) {
+void MixColor(factor_t factor, const internal_color_t from, const internal_color_t to, internal_color_t& out) {
   uint32_t c;
   const factor_t inv_factor = (10000 - factor);
   for(int i; i < 4; i++) {

@@ -4,6 +4,6 @@
 #include "Color.h"
 #include "Types.h"
 
-void MixColor(factor_t factor, internal_color_t from, internal_color_t to, internal_color_t& out);
+void MixColor(factor_t factor, const internal_color_t from, const internal_color_t to, internal_color_t& out);
 
 #endif // MIX_H_

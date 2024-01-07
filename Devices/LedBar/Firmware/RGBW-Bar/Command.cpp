@@ -6,6 +6,7 @@
 #include "Error.h"
 #include "Fade.h"
 #include "Led.h"
+#include "LightControl.h"
 #include "Log.h"
 #include "Report.h"
 #include "Strobe.h"
@@ -174,6 +175,41 @@ void CommandLoop() {
             int res = sscanf(args, "%d,%d,%d,%d,%d", &device_id, &weights[0], &weights[1], &weights[2], &weights[3]);
             if(res == 5) {
               if(DeviceIdGet() == device_id) StrobeSetStripWeights(weights);
+            } else {
+              ErrorRaise(ERROR_COMMUNICATION);
+            }
+          };
+        } else if(!strcmp(buffer, "off")) {
+          cmd = [](char* args, size_t len) {
+            int device_id;
+            int res = sscanf(args, "%d", &device_id);
+            if(res != 1 || DeviceIdGet() == device_id) {
+              LightControlSetOn(false);
+            }
+          };
+        } else if(!strcmp(buffer, "on")) {
+          cmd = [](char* args, size_t len) {
+            int device_id;
+            int res = sscanf(args, "%d", &device_id);
+            if(res != 1 || DeviceIdGet() == device_id) {
+              LightControlSetOn(true);
+            }
+          };
+        } else if(!strcmp(buffer, "follow")) {
+          cmd = [](char* args, size_t len) {
+            LightControlSetFollow(true);
+          };
+        } else if(!strcmp(buffer, "work")) {
+          cmd = [](char* args, size_t len) {
+            LightControlSetFollow(false);
+          };
+        } else if(!strcmp(buffer, "flut")) {
+          cmd = [](char* args, size_t len) {
+            int device_id;
+            int value;
+            int res = sscanf(args, "%d,%d", &device_id, &value);
+            if(res == 2) {
+              if(DeviceIdGet() == device_id) LightControlSetFlut(value);
             } else {
               ErrorRaise(ERROR_COMMUNICATION);
             }
