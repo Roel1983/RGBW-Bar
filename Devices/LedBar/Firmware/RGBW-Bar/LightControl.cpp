@@ -44,16 +44,18 @@ void LightControlLoop() {
     strip_color_t color;
 
     static constexpr strip_color_t BLACK = {0, 0, 0, 0};
-    
-    // Calculate follow color
-    FadeGetColor(i, color);
-    MixColor(StrobeGetStripFactor(i), color, StrobeGetStripColor(i), color);
 
-    // Mix with work light
-    MixColor(is_follow.factor, SettingsGetWorkLightColor(), color, color);
-
-    // Mix with flut light
-    MixColor(is_flut.factor, color, SettingsGetFlutLightColor(), color);
+    //if(effective_on_factor != FACTOR_MIN) {
+      // Calculate follow color
+      FadeGetColor(i, color);
+      MixColor(StrobeGetStripFactor(i), color, StrobeGetStripColor(i), color);
+  
+      // Mix with work light
+      MixColor(is_follow.factor, SettingsGetWorkLightColor(), color, color);
+  
+      // Mix with flut light
+      MixColor(is_flut.factor, color, SettingsGetFlutLightColor(), color);
+   // }
 
     // Mix with off / error
     MixColor(effective_on_factor, BLACK, color, color);

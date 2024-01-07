@@ -2,6 +2,7 @@
 
 #include "Bootloader.h"
 #include "Color.h"
+#include "Comm.h"
 #include "DeviceId.h"
 #include "Error.h"
 #include "Fade.h"
@@ -16,11 +17,43 @@
 
 using color_t = color_rgbw_t;
 
+static size_t (*send_cb)(char* buffer, size_t size);
+
+static ms_t   last_talk_to_me_timestamp;
+static bool   talk_at_will;
+
+void CommandBegin() {
+  last_talk_to_me_timestamp = millis();
+  talk_at_will = false;
+}
+
+static bool CommandSendCb() {
+  if(send_cb) {
+    char buffer[20];
+    size_t s = send_cb(buffer, 18);
+    buffer[s]     = '\n';
+    buffer[s + 1] = '\0';
+    CommSend(buffer, s + 1);
+    send_cb = nullptr;
+    return true;
+  } else {
+    return false;
+  }
+}
+
 void CommandLoop() {
   static byte buffer[40];
   static unsigned int pos = 0;
   static int state = -1;
   static void (*cmd)(char*, size_t);
+
+  static ms_t timestamp;
+  timestamp= millis();
+  
+  if (talk_at_will || ((unsigned)timestamp - last_talk_to_me_timestamp) > 1000) {
+    talk_at_will = true;
+    (void)CommandSendCb();
+  }
   
   while (Serial.available()) {
     uint8_t b = Serial.read();
@@ -56,9 +89,25 @@ void CommandLoop() {
             int device_id;
             char msg[40];
             int res = sscanf(args, "%d,%s", &device_id, msg);
-            if(2 == res) {;
+            if(2 == res) {
               if(DeviceIdGet() == device_id) {
                 LogPrintln("echoing: \"%s\"", msg);
+              }
+            } else {
+              ErrorRaise(ERROR_COMMUNICATION);
+            }
+          };
+        } else if (!strcmp(buffer, "talkToMe")) {
+          cmd = [](char* args, size_t len) {
+            int device_id;
+            int res = sscanf(args, "%d", &device_id);
+            if(1 == res) {
+              talk_at_will = false;
+              last_talk_to_me_timestamp = timestamp;
+              if(DeviceIdGet() == device_id) {
+                if(!CommandSendCb()) {
+                  CommSend("none\n", 5);
+                }
               }
             } else {
               ErrorRaise(ERROR_COMMUNICATION);
@@ -250,3 +299,12 @@ void CommandLoop() {
     }
   }
 }
+
+bool CommandCanSend() {
+  return send_cb == nullptr;
+}
+
+void CommandSend(size_t(*cb)(char* buffer, size_t size)) {
+  send_cb = cb;
+}
+

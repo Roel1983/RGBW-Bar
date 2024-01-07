@@ -32,6 +32,7 @@ void setup() {
   PowerMonitorBegin();
   StripBegin();
   LightControlBegin();
+  CommandBegin();
   
   LedSet(0, LED_ON);
   LedBlinkCount(0, DeviceIdGet(), false);
@@ -66,7 +67,17 @@ void loop() {
       LightControlSetFlut(!LightControlGetFlut());
     }
     if(ButtonIsPressedLong()) {
-      LightControlSetFollow(!LightControlGetFollow());
+      CommandSend([](char* buffer, size_t size) -> size_t {
+        bool is_follow = !LightControlGetFollow();
+        size_t s = snprintf ( buffer, size, is_follow?"follow()":"work()");
+        if(s <= size) {
+          LightControlSetFollow(is_follow);
+          LightControlSetFlut(false);
+          return s;
+        } else {
+          return 0;
+        }
+      });
     }
   }
   
