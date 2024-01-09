@@ -4,9 +4,9 @@ use     <../../../../Shared/3D/Utils/TransformCopy.scad>
 use     <../../../../Shared/3D/Utils/Units.scad>
 
 $fn = $preview?16:64;
-ScrewFoot();
+ScrewFoot(slide = 2);
 
-module ScrewFoot(align = 0) {
+module ScrewFoot(align = 0, slide = 0) {
     wall_thickness       = nozzle(4);
     bottom_thickness     = mm(2.0);
     height               = CASE_PCB_Z_FRONT;
@@ -16,7 +16,7 @@ module ScrewFoot(align = 0) {
     extra                = mm(1.0);
     
     width  = screw_head_diameter + 2 * (clearance + wall_thickness);
-    length = screw_head_diameter + clearance + extra;
+    length = screw_head_diameter + clearance +slide + extra;
     
     BIAS = 0.01;
 
@@ -29,11 +29,15 @@ module ScrewFoot(align = 0) {
                 z_to   = bottom_thickness
             );
             translate([0, clearance + screw_head_diameter / 2, -BIAS]) {
-                cylinder(
-                    d1 = screw_shaft_diameter,
-                    d2 = screw_head_diameter,
-                    h  = bottom_thickness + 2 * BIAS
-                );
+                hull() {
+                    for (y=(slide==0)?[0]:[0,slide]) translate([0,y]) {
+                        cylinder(
+                            d1 = screw_shaft_diameter,
+                            d2 = screw_head_diameter,
+                            h  = bottom_thickness + 2 * BIAS
+                        );
+                    }
+                }
             }
         }
         mirror_copy(VEC_X) {

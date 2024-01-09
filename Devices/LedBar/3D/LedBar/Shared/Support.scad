@@ -13,13 +13,15 @@ Support(
     height  = CASE_HEIGHT_TOP,
     width   = 2 * sqrt(.5) * (ANGLE_PROFILE_WIDTH - ANGLE_PROFILE_THICKENS),
     angle   = 45,
-    is_open = true);
+    is_open = true,
+    foot_slide = 2);
 
 module Support(
     height,
     width,
     angle = 0,
-    is_open = false
+    is_open = false,
+    foot_slide = 0
 ) {
     thickness = mm(10);
     
@@ -98,11 +100,11 @@ module Support(
             mirror(VEC_Y) Feet(-angle);
         } else {
             translate([-thickness / 2, 0]) {
-                rotate(90) ScrewFoot(align = 0);
+                rotate(90) ScrewFoot(align = 0, slide = foot_slide);
             }
             translate([0, -width/2]) rotate(-angle) {
                 translate([thickness / 2, width/2]) {
-                    rotate(-90) ScrewFoot(align = 0);
+                    rotate(-90) ScrewFoot(align = 0, slide = foot_slide);
                 }
             }
         }

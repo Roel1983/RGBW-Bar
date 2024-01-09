@@ -3,7 +3,6 @@ use     <../../../../Shared/3D/Utils/TransformCopy.scad>
 use     <../Case/Shared/Boards/Subboards/LeftBoard.scad>
 use     <../Shared/ScrewHole.scad>
 
-
 use <../Shared/Support.scad>
 
 include <../Config.inc>
@@ -26,7 +25,8 @@ module MiddleSupport() {
             height  = CASE_HEIGHT_TOP,
             width   = 2 * sqrt(.5) * (ANGLE_PROFILE_WIDTH - ANGLE_PROFILE_THICKENS),
             angle   = 0,
-            is_open = false
+            is_open = false,
+            foot_slide = mm(2)
         );
         
         /* We want the hole on the same position as for the
@@ -40,8 +40,6 @@ module MiddleSupport() {
                     translate([0, -19/2-5.4])square([12, 19], true);
                     translate([0, -20]) hull() {mirror_copy(VEC_X) translate([-1.5,0]) circle(d=3);}
                     translate([0, -15]) hull() {mirror_copy(VEC_X) translate([-1,0]) circle(d=2);}
-                    //translate([0, -20]) square([6,3], true);
-                    //translate([0, -15]) square([4,2], true);
                 }
             }
         }
