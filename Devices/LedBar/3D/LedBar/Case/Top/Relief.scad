@@ -51,6 +51,20 @@ module Relief(layer) {
                     );
                 }
             }
+            translate([
+                0,
+                -pitch * 4.5 - mm(3.5),
+                CASE_PCB_Z_FRONT  + mm(3.5)
+            ]) {
+                rotate(90, VEC_Y) rotate(90) {
+                    linear_extrude(mm(20)) offset(mm(.1)) text(
+                        "+",size = 3.5,
+                        font = "Arial",
+                        halign = "center",
+                        valign = "center"
+                    );
+                }
+            }
         }
         translate(component_at_loc(COMPONENT_J501)) {
             translate([
@@ -61,6 +75,20 @@ module Relief(layer) {
                 rotate(-90, VEC_Y) rotate(-90) {
                     linear_extrude(mm(20)) text(
                         "L",size = 8,
+                        font = "Arial",
+                        halign = "center",
+                        valign = "center"
+                    );
+                }
+            }
+            translate([
+                0,
+                -pitch * .5 - mm(3.5),
+                CASE_PCB_Z_FRONT + mm(3.5)
+            ]) {
+                rotate(-90, VEC_Y) rotate(-90) {
+                    linear_extrude(mm(20)) offset(mm(.1)) text(
+                        "+",size = 3.5,
                         font = "Arial",
                         halign = "center",
                         valign = "center"
