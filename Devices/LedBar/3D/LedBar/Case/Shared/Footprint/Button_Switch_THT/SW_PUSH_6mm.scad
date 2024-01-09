@@ -84,8 +84,9 @@ module SW_PUSH_6mm(layer, H=mm(4.3)) {
         }
         
         module Top() {
+            clearance = mm(1.5);
             intersection() {
-                LinearExtrude(z_from=-BIAS, z_to=h1+h2 + layer(2 + 4)) {
+                LinearExtrude(z_from=-BIAS, z_to=h1+h2 + clearance + layer(2 + 4)) {
                     hull() mirror_copy(VEC_X) mirror_copy(VEC_Y) {
                         translate([pitch[0]/2, pitch[1]/2]) circle(d=pad_size + 2 * CASE_BUTTON_WALL_CLEARANCE);
                     }
@@ -95,12 +96,12 @@ module SW_PUSH_6mm(layer, H=mm(4.3)) {
                         x_size = pitch[0] + pad_size + CASE_BUTTON_WALL_CLEARANCE + BIAS,
                         y_size = pitch[1] + pad_size + CASE_BUTTON_WALL_CLEARANCE + BIAS,
                         z_from = -BIAS,
-                        z_to   = h1+h2 + layer(2)
+                        z_to   = h1+h2 + clearance + layer(2)
                     );
                     Box(
                         x_size = d1 + CASE_BUTTON_WALL_CLEARANCE,
                         y_size = pitch[1] + pad_size + CASE_BUTTON_WALL_CLEARANCE + BIAS,
-                        z_to   = h1+h2 + layer(4)
+                        z_to   = h1+h2 + clearance + layer(4)
                     );
                 }
             }
@@ -108,9 +109,9 @@ module SW_PUSH_6mm(layer, H=mm(4.3)) {
                 Box(
                     x_size = d1 + CASE_BUTTON_WALL_CLEARANCE,
                     y_size = d1 + CASE_BUTTON_WALL_CLEARANCE,
-                    z_to   = h1+h2 + layer(6)
+                    z_to   = h1+h2 + clearance + layer(6)
                 );
-                cylinder(d = d1 + CASE_BUTTON_WALL_CLEARANCE, h1+h2 + layer(12));
+                cylinder(d = d1 + CASE_BUTTON_WALL_CLEARANCE, h1+h2 + clearance + layer(12));
             }
             cylinder(d = d1 + CASE_BUTTON_WALL_CLEARANCE, h = H + mm(5) + BIAS);
             
