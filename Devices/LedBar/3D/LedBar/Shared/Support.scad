@@ -55,7 +55,7 @@ module Support(
                         SideSketch();
                     }
                 }
-                linear_extrude(CASE_HEIGHT_TOP) polygon([
+                linear_extrude(height) polygon([
                     [0, width / 2],
                     [thickness / 2 + tan(angle/2) * width, width / 2],
                     [thickness / 2, -width / 2],

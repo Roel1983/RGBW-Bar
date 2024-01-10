@@ -1,0 +1,5 @@
+   0.0 mm // outer left end of profile
+ 636.0 mm // center of hole of left support
+1271.5 mm // center of hole of center board
+1907.0 mm // center of hole of right support
+2543.0 mm // outer right end of profile
