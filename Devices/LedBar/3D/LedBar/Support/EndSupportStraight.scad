@@ -16,7 +16,8 @@ module EndSupportStraight(angle = 0) {
             height  = CASE_HEIGHT_TOP +  (ANGLE_PROFILE_THICKENS + profile_thickness_clearance) / sqrt(.5) + diagonal_wall,
             width   = width,
             angle   = angle,
-            is_open = true
+            is_open = true,
+            foot_slide = mm(2)
         );
         translate([0,0,CASE_HEIGHT_TOP]) {
             mirror(VEC_X) {
