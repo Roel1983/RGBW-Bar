@@ -57,7 +57,7 @@ module Relief(layer) {
                 CASE_PCB_Z_FRONT  + mm(3.5)
             ]) {
                 rotate(90, VEC_Y) rotate(90) {
-                    linear_extrude(mm(20)) offset(mm(.1)) text(
+                    linear_extrude(mm(20)) offset(mm(.25)) text(
                         "+",size = 3.5,
                         font = "Arial",
                         halign = "center",
@@ -87,7 +87,7 @@ module Relief(layer) {
                 CASE_PCB_Z_FRONT + mm(3.5)
             ]) {
                 rotate(-90, VEC_Y) rotate(-90) {
-                    linear_extrude(mm(20)) offset(mm(.1)) text(
+                    linear_extrude(mm(20)) offset(mm(.25)) text(
                         "+",size = 3.5,
                         font = "Arial",
                         halign = "center",
