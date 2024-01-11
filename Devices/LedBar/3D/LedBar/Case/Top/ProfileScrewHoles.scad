@@ -45,23 +45,27 @@ module ProfileScrewHoles(layer) {
     }
     
     module LayerCaseTopRemove() {
-        for(i = [0 : profile_screw_hole_count() - 1]) {     
-            translate([
-                profile_screw_hole_loc_x(i),
-                0
-            ]) {
-                mirror_if(profile_screw_hole_mirror_y(i), VEC_Y) {
-                    TranslateToCenterBoardCenter() {
-                        translate([
-                            0,
-                            (component_at_loc(COMPONENT_H1204)[Y] - 
-                             CENTER_BOARD_CENTER[Y])
-                        ]) {
-                            ScrewHole();
-                        }
+        ProfileScrewHoles_positions() ScrewHole();
+    }
+}
+
+module ProfileScrewHoles_positions() {
+    for(i = [0 : profile_screw_hole_count() - 1]) {     
+        translate([
+            profile_screw_hole_loc_x(i),
+            0
+        ]) {
+            mirror_if(profile_screw_hole_mirror_y(i), VEC_Y) {
+                TranslateToCenterBoardCenter() {
+                    translate([
+                        0,
+                        (component_at_loc(COMPONENT_H1204)[Y] - 
+                         CENTER_BOARD_CENTER[Y])
+                    ]) {
+                        children($children==3?i:0);
                     }
                 }
-            }           
-        }
+            }
+        }           
     }
 }
