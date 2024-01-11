@@ -19,6 +19,7 @@
 #include "Report.h"
 #include "Strip.h"
 #include "Strobe.h"
+#include "TimeProfiler.h"
 
 void setup() {
   CommStart();
@@ -33,10 +34,12 @@ void setup() {
   StripBegin();
   LightControlBegin();
   CommandBegin();
+  TimeProfilerBegin();
   
   LedSet(0, LED_ON);
   LedBlinkCount(0, DeviceIdGet(), false);
 
+  LightControlSetFollow(false);
   LightControlSetOn(true);
 }
 
@@ -44,20 +47,38 @@ void end() {
   StripEnd();
 }
 
-static bool led_overide = false;
-
 void loop() {
+  TimeProfilerTrace(TP_CRON);
   CronLoop();
+  
+  TimeProfilerTrace(TP_BUTTON);
   ButtonLoop();
+  
+  TimeProfilerTrace(TP_LOOP_MONITOR);
   LoopMonitorLoop();
+  
+  TimeProfilerTrace(TP_POWER_MONITOR);
   PowerMonitorLoop();
+
+  TimeProfilerTrace(TP_REPORT);
   ReportLoop();
+
+  TimeProfilerTrace(TP_COMMAND);
   CommandLoop();
+
+  TimeProfilerTrace(TP_LED);
   LedLoop();
+
+  TimeProfilerTrace(TP_FADE);
   FadeLoop();
+
+  TimeProfilerTrace(TP_LIGHT_CONTROL);
   LightControlLoop();
+
+  TimeProfilerTrace(TP_STRIP);
   StripLoop();
 
+  TimeProfilerTrace(TP_LOOP);
   if(StripHasError()) {
     if(ButtonIsPressedShort()) {
       StripResetError();

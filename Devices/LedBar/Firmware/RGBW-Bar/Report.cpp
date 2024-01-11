@@ -5,6 +5,7 @@
 #include "LoopMonitor.h"
 #include "PowerMonitor.h"
 #include "MemoryMonitor.h"
+#include "TimeProfiler.h"
 
 #include "Report.h"
 
@@ -32,7 +33,8 @@ void ReportLog() {
   unsigned int heap, stack, free;
   MemoryMonitorGet(heap, stack, free);
   LogPrintln("heap: %u, stack: %u, free: %u",  heap, stack, free);
-  
+
+  TimeProfilerReport();
 }
 
 void ReportPeriodically(bool enabled) {
