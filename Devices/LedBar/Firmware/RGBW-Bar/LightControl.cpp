@@ -53,67 +53,66 @@ void LightControlLoop() {
   LightControlUpdateSoftBooleans(delta_time);
   fade_current_factor = LightControlCalculateFadeFactor(timestamp);
 
-  if (is_error || is_on.factor == FACTOR_MIN) {
-    static constexpr color_t COLOR_BLACK = {0,0,0,0};
-    for (int strip_index = 0; strip_index < 4; strip_index++) {
-      StripSet(strip_index, COLOR_BLACK);
-    }
-  } else if (is_flut.factor == FACTOR_MAX) {
-    const color_t& flut_color(SettingsGetFlutLightColor());
-    for (int strip_index = 0; strip_index < 4; strip_index++) {
-      StripSet(strip_index, flut_color);
-    }
-  } else if (is_follow.factor == FACTOR_MAX) {
-    const unsigned int fade_from_weight_when_no_strobe = (FACTOR_MAX - fade_current_factor);
-    for (int strip_index = 0; strip_index < 4; strip_index++) {
-      const color_t& color_from(fade.from.colors[strip_index]);
-      const color_t& color_to  (fade.to.colors[strip_index]);
-      color_t  color_out;
+  const unsigned int fade_from_weight_when_no_strobe = (FACTOR_MAX - fade_current_factor);
+  for (int strip_index = 0; strip_index < 4; strip_index++) {
+    const color_t& color_from(fade.from.colors[strip_index]);
+    const color_t& color_to  (fade.to.colors[strip_index]);
+    color_t  color_out;
 
-      factor_t strobe_factor = StrobeGetStripFactor(strip_index);
-      if (strobe_factor == FACTOR_MIN) {
-        for (int i = 0; i < 4; i++) {
-          uint32_t c;
-          c  = (uint32_t)color_from[i] * fade_from_weight_when_no_strobe;
-          c += (uint32_t)color_to[i]   * fade_current_factor;
-          c /= (uint32_t)FACTOR_MAX;
-          color_out[i] = c;// * c /4094;
-        }
-      } else {
-        const color_t& strobe_color(StrobeGetStripColor(strip_index));
-        const factor_t non_strobe_weight = (FACTOR_MAX - strobe_factor);
-        for (int i = 0; i < 4; i++) {
-          uint32_t c;
-          c  = (uint32_t)color_from[i]   * fade_from_weight_when_no_strobe;
-          c += (uint32_t)color_to[i]     * fade_current_factor;
-          c += (uint32_t)strobe_color[i] * strobe_factor;
-          c /= (uint32_t)FACTOR_MAX;
-          if (c > 4094) c = 4094;
-          color_out[i] = c;// * c /4094;
-        }
+    factor_t strobe_factor = StrobeGetStripFactor(strip_index);
+    if (strobe_factor == FACTOR_MIN) {
+      for (int i = 0; i < 4; i++) {
+        uint32_t c;
+        c  = (uint32_t)color_from[i] * fade_from_weight_when_no_strobe;
+        c += (uint32_t)color_to[i]   * fade_current_factor;
+        c /= (uint32_t)FACTOR_MAX;
+        color_out[i] = c;
       }
-      if (is_flut.factor != FACTOR_MIN) {
-        const factor_t non_flut_weight = FACTOR_MAX - is_flut.factor;
-        const color_t& flut_color(SettingsGetFlutLightColor());
-        for (int i = 0; i < 4; i++) {
-          uint32_t c;
-          c  = (uint32_t)color_out[i]  * non_flut_weight;
-          c += (uint32_t)flut_color[i] * is_flut.factor;
-          c /= (uint32_t)FACTOR_MAX;
-          color_out[i] = c;
-        }
+    } else {
+      const color_t& strobe_color(StrobeGetStripColor(strip_index));
+      for (int i = 0; i < 4; i++) {
+        uint32_t c;
+        c  = (uint32_t)color_from[i]   * fade_from_weight_when_no_strobe;
+        c += (uint32_t)color_to[i]     * fade_current_factor;
+        c += (uint32_t)strobe_color[i] * strobe_factor;
+        c /= (uint32_t)FACTOR_MAX;
+        if (c > 4094) c = 4094;
+        color_out[i] = c;
       }
+    }
+    if (is_follow.factor != FACTOR_MAX) {
+      const factor_t non_follow_weight = FACTOR_MAX - is_follow.factor;
+      const color_t& work_color(SettingsGetWorkLightColor());
+      for (int i = 0; i < 4; i++) {
+        uint32_t c;
+        c  = (uint32_t)work_color[i] * non_follow_weight;
+        c += (uint32_t)color_out[i]  * is_follow.factor;
+        c /= (uint32_t)FACTOR_MAX;
+        color_out[i] = c;
+      }
+    }
+    if (is_flut.factor != FACTOR_MIN) {
+      const factor_t non_flut_weight = FACTOR_MAX - is_flut.factor;
+      const color_t& flut_color(SettingsGetFlutLightColor());
+      for (int i = 0; i < 4; i++) {
+        uint32_t c;
+        c  = (uint32_t)color_out[i]  * non_flut_weight;
+        c += (uint32_t)flut_color[i] * is_flut.factor;
+        c /= (uint32_t)FACTOR_MAX;
+        color_out[i] = c;
+      }
+    }
+    if (is_on.factor != FACTOR_MAX) {
       for (int i = 0; i < 4; i++) {
         uint32_t c = color_out[i];
-        color_out[i] = c * c / 4094; // Gamma correction
-      }
-      StripSet(strip_index, color_out);
+        color_out[i] = c * is_on.factor / FACTOR_MAX;
+      } 
     }
-  } else {
-    static constexpr color_t COLOR_DARK_BLUE = {0,0,1000,0};
-    for (int strip_index = 0; strip_index < 4; strip_index++) {
-      StripSet(strip_index, COLOR_DARK_BLUE);
+    for (int i = 0; i < 4; i++) {
+      uint32_t c = color_out[i];
+      color_out[i] = c * c / 4094; // Gamma correction
     }
+    StripSet(strip_index, color_out);
   }
 
   

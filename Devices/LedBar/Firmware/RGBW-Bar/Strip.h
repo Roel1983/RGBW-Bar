@@ -13,6 +13,7 @@ void StripResetError();
 void StripPowerInvalid();
 void StripPowerValid();
 
-void StripSet(int index, const strip_color_t& color);
+void StripSet(int strip_index, const strip_color_t& color);
+void StripSet(const strip_color_t& color);
 
 #endif

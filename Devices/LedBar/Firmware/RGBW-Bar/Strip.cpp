@@ -149,8 +149,14 @@ void StripResetError() {
   LightControlClearError();
 }
 
-void StripSet(int index, const strip_color_t& color) {
-  memcpy(&colors[index][0], &color[0], sizeof(color));
+void StripSet(int strip_index, const strip_color_t& color) {
+  memcpy(&colors[strip_index][0], &color[0], sizeof(color));
+}
+
+void StripSet(const strip_color_t& color) {
+  for (int strip_index = 0; strip_index < 4; strip_index++) {
+    StripSet(strip_index, color);
+  }
 }
 
 void StripPowerInvalid() {

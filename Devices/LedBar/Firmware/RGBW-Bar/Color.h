@@ -9,4 +9,6 @@ using color_t          = color_rgbw_t;
 using strip_color_t    = color_rgbw_t; // TODO remove
 using internal_color_t = color_rgbw_t; // TODO remove
 
+static constexpr color_t COLOR_BLACK = {0,0,0,0};
+
 #endif // COLOR_H_
