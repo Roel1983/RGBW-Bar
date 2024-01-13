@@ -8,6 +8,7 @@
 #include "Cron.h"
 #include "I2C.h"
 #include "DeviceId.h"
+#include "Error.h"
 #include "Led.h"
 #include "Log.h"
 #include "LoopMonitor.h"
@@ -44,7 +45,22 @@ void end() {
   StripEnd();
 }
 
+static bool say_helo = true;
+
 void loop() {
+  if (say_helo && CommandCanSend()) {
+    CommandSend([](char* buffer, size_t size) -> size_t {
+      int device_id = DeviceIdGet();
+      size_t s = snprintf ( buffer, size, "#%d: hello()", device_id);
+      if(s <= size && s > 0) {
+        say_helo = false;
+        return s;
+      } else {
+        return 0;
+      }
+    });
+  }
+  
   TimeProfilerTrace(TP_CRON);
   CronLoop();
   
@@ -72,11 +88,24 @@ void loop() {
   TimeProfilerTrace(TP_STRIP);
   StripLoop();
 
+  ErrorLoop();
+
   TimeProfilerTrace(TP_LOOP);
   if(StripHasError()) {
     if(ButtonIsPressedShort()) {
       StripResetError();
-    }    
+    }
+    if(ButtonIsPressedLong()) {
+      CommandSend([](char* buffer, size_t size) -> size_t {
+        size_t s = snprintf ( buffer, size, "resetError()");
+        if(s <= size) {
+          StripResetError();
+          return s;
+        } else {
+          return 0;
+        }
+      });
+    }
   } else {
     if(ButtonIsPressedShort()) {
       LightControlSetFlut(!LightControlGetFlut());

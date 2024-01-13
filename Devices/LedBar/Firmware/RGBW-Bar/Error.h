@@ -5,8 +5,11 @@ typedef enum {
   ERROR_COMMUNICATION,
   ERROR_LED_STRIP_ERROR,
   ERROR_OVER_VOLTAGE,
-  ERROR_OVER_CURRENT
+  ERROR_OVER_CURRENT,
+  ERROR_COMM_BUSY
 } error_t;
+
+void ErrorLoop();
 
 void ErrorActivate(error_t error);
 void ErrorDeactivate(error_t error);

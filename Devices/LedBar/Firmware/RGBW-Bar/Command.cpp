@@ -9,6 +9,7 @@
 #include "LightControl.h"
 #include "Log.h"
 #include "Report.h"
+#include "Strip.h"
 #include "Strobe.h"
 #include "Types.h"
 
@@ -25,17 +26,19 @@ void CommandBegin() {
 }
 
 static bool CommandSendCb() {
-  if(send_cb) {
-    char buffer[20];
-    size_t s = send_cb(buffer, 18);
-    buffer[s]     = '\n';
-    buffer[s + 1] = '\0';
-    CommSend(buffer, s + 1);
-    send_cb = nullptr;
-    return true;
-  } else {
+  if(!send_cb) {
     return false;
   }
+  char buffer[30];
+  constexpr size_t size = sizeof(buffer) - 2;
+  size_t s = send_cb(buffer, size);
+  if (s <= 0 || s > size) {
+    return false;
+  }
+  buffer[s]     = '\n';
+  buffer[s + 1] = '\0';
+  CommSend(buffer, s + 1);
+  send_cb = nullptr;
 }
 
 void CommandLoop() {
@@ -56,9 +59,19 @@ void CommandLoop() {
     uint8_t b = Serial.read();
 
     switch(state) {
+    case 2: // skip till end 
+      if (b != '\r' && b != '\n') {
+        break;
+      }
+      state = -1;
+      // Fall-though
     case -1:
-      if (b == '\r' || b == '\n' || b == ';' || (b >= '0' && b <= '9')) {
-        return;
+      if (b == '\r' || b == '\n' || b == ';') {
+        break;
+      }
+      if(b == '#') {
+        state = 2; // Ignore till end
+        break;
       }
       state = 0;
       pos   = 0;
@@ -261,6 +274,14 @@ void CommandLoop() {
               ErrorRaise(ERROR_COMMUNICATION);
             }
           };
+        } else if(!strcmp(buffer, "resetError")) {
+          cmd = [](char* args, size_t len) {
+            int device_id;
+            int res = sscanf(args, "%d", &device_id);
+            if(res != 1 || DeviceIdGet() == device_id) {
+              StripResetError();
+            }
+          };
         } else {
           ErrorRaise(ERROR_COMMUNICATION);
           state = 2; // skip till end
@@ -290,10 +311,6 @@ void CommandLoop() {
         buffer[pos++]= b;
       }
       break;
-    case 2: // skip till end 
-      if (b == '\r' || b == '\n') {
-        state = -1;
-      }
     }
   }
 }
@@ -303,6 +320,9 @@ bool CommandCanSend() {
 }
 
 void CommandSend(size_t(*cb)(char* buffer, size_t size)) {
+  if (send_cb) {
+    ErrorRaise(ERROR_COMM_BUSY);
+  }
   send_cb = cb;
 }
 

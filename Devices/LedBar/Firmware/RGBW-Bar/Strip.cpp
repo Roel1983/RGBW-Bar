@@ -143,6 +143,7 @@ bool StripHasError() {
 }
 
 void StripResetError() {
+  // TODO reject if brownout active
   if(power_valid) Enable();
   error = false;
   ErrorDeactivate(ERROR_LED_STRIP_ERROR);
