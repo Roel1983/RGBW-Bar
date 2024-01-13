@@ -74,12 +74,11 @@ void LightControlLoop() {
         const factor_t non_strobe_weight = (FACTOR_MAX - strobe_factor);
         for (int i = 0; i < 4; i++) {
           uint32_t c;
-          c  = (uint32_t)color_from[i] * fade_from_weight_when_no_strobe;
-          c += (uint32_t)color_to[i]   * fade_current_factor;
-          c /= (uint32_t)FACTOR_MAX;
-          c *= non_strobe_weight;
+          c  = (uint32_t)color_from[i]   * fade_from_weight_when_no_strobe;
+          c += (uint32_t)color_to[i]     * fade_current_factor;
           c += (uint32_t)strobe_color[i] * strobe_factor;
           c /= (uint32_t)FACTOR_MAX;
+          if (c > 4094) c = 4094;
           color_out[i] = c;
         }
       }
