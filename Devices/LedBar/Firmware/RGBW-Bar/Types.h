@@ -5,8 +5,8 @@
 
 using factor_t = uint16_t;
 
-static constexpr factor_t FACTOR_MIN =     0;
-static constexpr factor_t FACTOR_MAX = 10000;
+static constexpr factor_t FACTOR_MIN =    0;
+static constexpr factor_t FACTOR_MAX = 8192;
 
 using ms_t = unsigned long;
 
