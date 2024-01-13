@@ -67,7 +67,7 @@ void LightControlLoop() {
           c  = (uint32_t)color_from[i] * fade_from_weight_when_no_strobe;
           c += (uint32_t)color_to[i]   * fade_current_factor;
           c /= (uint32_t)FACTOR_MAX;
-          color_out[i] = c;
+          color_out[i] = c * c / 4094; // Gamma correction
         }
       } else {
         const color_t& strobe_color(StrobeGetStripColor(strip_index));
@@ -79,10 +79,9 @@ void LightControlLoop() {
           c += (uint32_t)strobe_color[i] * strobe_factor;
           c /= (uint32_t)FACTOR_MAX;
           if (c > 4094) c = 4094;
-          color_out[i] = c;
+          color_out[i] = c * c / 4094; // Gamma correction
         }
       }
-      GammaColorCorrection(color_out);
       StripSet(strip_index, color_out); // TODO Pass by reference
     }
   } else {
