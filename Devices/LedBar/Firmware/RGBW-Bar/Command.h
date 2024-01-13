@@ -5,6 +5,6 @@ void CommandBegin();
 void CommandLoop();
 
 bool CommandCanSend();
-void CommandSend(size_t(*cb)(char* buffer, size_t size));
+void CommandSend(size_t(*cb)(char* buffer, size_t size, bool talk_at_will));
 
 #endif

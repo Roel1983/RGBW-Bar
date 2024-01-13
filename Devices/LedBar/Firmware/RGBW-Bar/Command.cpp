@@ -15,7 +15,7 @@
 
 #include "Command.h"
 
-static size_t (*send_cb)(char* buffer, size_t size);
+static size_t (*send_cb)(char* buffer, size_t size, bool talk_at_will);
 
 static ms_t   last_talk_to_me_timestamp;
 static bool   talk_at_will;
@@ -31,8 +31,9 @@ static bool CommandSendCb() {
   }
   char buffer[30];
   constexpr size_t size = sizeof(buffer) - 2;
-  size_t s = send_cb(buffer, size);
-  if (s <= 0 || s > size) {
+  size_t s = send_cb(buffer, size, talk_at_will);
+  if (s == 0 || s > size) {
+    send_cb = nullptr;
     return false;
   }
   buffer[s]     = '\n';
@@ -319,7 +320,7 @@ bool CommandCanSend() {
   return send_cb == nullptr;
 }
 
-void CommandSend(size_t(*cb)(char* buffer, size_t size)) {
+void CommandSend(size_t(*cb)(char* buffer, size_t size, bool talk_at_will)) {
   if (send_cb) {
     ErrorRaise(ERROR_COMM_BUSY);
   }

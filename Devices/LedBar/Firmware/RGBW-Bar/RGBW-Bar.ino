@@ -48,19 +48,6 @@ void end() {
 static bool say_helo = true;
 
 void loop() {
-  if (say_helo && CommandCanSend()) {
-    CommandSend([](char* buffer, size_t size) -> size_t {
-      int device_id = DeviceIdGet();
-      size_t s = snprintf ( buffer, size, "#%d: hello()", device_id);
-      if(s <= size && s > 0) {
-        say_helo = false;
-        return s;
-      } else {
-        return 0;
-      }
-    });
-  }
-  
   TimeProfilerTrace(TP_CRON);
   CronLoop();
   
@@ -96,7 +83,7 @@ void loop() {
       StripResetError();
     }
     if(ButtonIsPressedLong()) {
-      CommandSend([](char* buffer, size_t size) -> size_t {
+      CommandSend([](char* buffer, size_t size, bool talk_at_will) -> size_t {
         size_t s = snprintf ( buffer, size, "resetError()");
         if(s <= size) {
           StripResetError();
@@ -111,7 +98,7 @@ void loop() {
       LightControlSetFlut(!LightControlGetFlut());
     }
     if(ButtonIsPressedLong()) {
-      CommandSend([](char* buffer, size_t size) -> size_t {
+      CommandSend([](char* buffer, size_t size, bool talk_at_will) -> size_t {
         bool is_follow = !LightControlGetFollow();
         size_t s = snprintf ( buffer, size, is_follow?"follow()":"work()");
         if(s <= size) {
