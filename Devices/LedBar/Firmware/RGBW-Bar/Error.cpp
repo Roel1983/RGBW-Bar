@@ -23,7 +23,7 @@ void ErrorDeactivate(error_t error) {
     if(error_state_bits) {
       for(int old_error = 0; old_error < 8; old_error++) {
         if((error_state_bits & bit(old_error)) != 0) {
-          LedBlinkCount(LED_RED, ErrorToBlinkCount(old_error), true);
+          LedBlinkCount(LED_RED, ErrorToBlinkCount(static_cast<error_t>(old_error)), true);
           return;
         }
       }

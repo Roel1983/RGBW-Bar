@@ -39,7 +39,7 @@ static bool CommandSendCb() {
 }
 
 void CommandLoop() {
-  static byte buffer[40];
+  static char buffer[40];
   static unsigned int pos = 0;
   static int state = -1;
   static void (*cmd)(char*, size_t);
@@ -103,7 +103,8 @@ void CommandLoop() {
               last_talk_to_me_timestamp = timestamp;
               if(DeviceIdGet() == device_id) {
                 if(!CommandSendCb()) {
-                  CommSend("none\n", 5);
+                  char cmd[] = "none\n";
+                  CommSend(cmd, sizeof(cmd) - 5);
                 }
               }
             } else {
