@@ -149,11 +149,8 @@ void StripResetError() {
   LightControlClearError();
 }
 
-void StripSet(int index, const strip_color_t color) {
-  colors[index][0] = color[0];
-  colors[index][1] = color[1];
-  colors[index][2] = color[2];
-  colors[index][3] = color[3];
+void StripSet(int index, const strip_color_t& color) {
+  memcpy(&colors[index][0], &color[0], sizeof(color));
 }
 
 void StripPowerInvalid() {

@@ -150,7 +150,7 @@ void CommandLoop() {
             int duration = 0;
             int res = sscanf(args, "%d, %d", &factor, &duration);
             if(res >= 1) {
-              FadeSetTargetFactor(factor, (ms_t)duration * 1000);
+              LightControlFollowTargetFactor(factor, (ms_t)duration * 1000);
             } else {
               ErrorRaise(ERROR_COMMUNICATION);
             }
@@ -165,12 +165,12 @@ void CommandLoop() {
               c[1] = c[0];
               c[2] = c[0];
               c[3] = c[0];
-              if(DeviceIdGet() == device_id) FadeSetTargetColor(index, c);
+              if(DeviceIdGet() == device_id) LightControlFollowTargetColor(index, c);
             } else if (res == 5) {
               c[3] = 0;
-              if(DeviceIdGet() == device_id) FadeSetTargetColor(index, c);
+              if(DeviceIdGet() == device_id) LightControlFollowTargetColor(index, c);
             } else if (res == 6) {
-              if(DeviceIdGet() == device_id) FadeSetTargetColor(index, c);
+              if(DeviceIdGet() == device_id) LightControlFollowTargetColor(index, c);
             } else {
               ErrorRaise(ERROR_COMMUNICATION);
             }
