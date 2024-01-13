@@ -38,7 +38,6 @@
       "Report",
       "Command",
       "Led",
-      "Fade",
       "LightControler",
       "Strip",
       "Loop"

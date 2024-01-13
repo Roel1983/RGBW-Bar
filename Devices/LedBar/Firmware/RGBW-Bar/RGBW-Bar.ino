@@ -8,13 +8,10 @@
 #include "Cron.h"
 #include "I2C.h"
 #include "DeviceId.h"
-#include "Fade.h"
-#include "Gamma.h"
 #include "Led.h"
 #include "Log.h"
 #include "LoopMonitor.h"
 #include "LightControl.h"
-#include "Mix.h"
 #include "PowerMonitor.h"
 #include "Report.h"
 #include "Strip.h"
@@ -68,9 +65,6 @@ void loop() {
 
   TimeProfilerTrace(TP_LED);
   LedLoop();
-
-  TimeProfilerTrace(TP_FADE);
-  FadeLoop();
 
   TimeProfilerTrace(TP_LIGHT_CONTROL);
   LightControlLoop();

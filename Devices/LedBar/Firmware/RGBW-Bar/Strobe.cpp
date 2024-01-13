@@ -5,7 +5,7 @@ static ms_t          strobe_off;
 static uint8_t       strobe_count=0;
 static bool          strobe_toggle;
 static ms_t          strobe_next_change;
-static strip_color_t strobe_colors[4]  = {{4094, 4094, 4094, 4094},{4094, 4094, 4094, 4094},{4094, 4094, 4094, 4094},{4094, 4094, 4094, 4094}};
+static color_t       strobe_colors[4]  = {{4094, 4094, 4094, 4094},{4094, 4094, 4094, 4094},{4094, 4094, 4094, 4094},{4094, 4094, 4094, 4094}};
 static factor_t      strobe_strip_weight[4] = {FACTOR_MAX, FACTOR_MAX, FACTOR_MAX, FACTOR_MAX};
 
 void Strobe(ms_t on, ms_t off, uint8_t count) {
@@ -35,11 +35,11 @@ factor_t StrobeGetStripFactor(int index) {
   return strobe_toggle?strobe_strip_weight[index]:0;  
 }
 
-internal_color_t& StrobeGetStripColor(int index) {
+const color_t& StrobeGetStripColor(int index) {
   return strobe_colors[index];
 }
 
-void StrobeSetStripColor (int index, internal_color_t color) {
+void StrobeSetStripColor (int index, const color_t& color) {
   strobe_colors[index][0] = color[0];
   strobe_colors[index][1] = color[1];
   strobe_colors[index][2] = color[2];

@@ -3,10 +3,9 @@
 
 #include "Color.h"
 
-float SettingsGetGamma();
 float SettingsGetOverVoltage();
 
-const strip_color_t& SettingsGetWorkLightColor();
-const strip_color_t& SettingsGetFlutLightColor();
+const color_t& SettingsGetWorkLightColor();
+const color_t& SettingsGetFlutLightColor();
 
 #endif

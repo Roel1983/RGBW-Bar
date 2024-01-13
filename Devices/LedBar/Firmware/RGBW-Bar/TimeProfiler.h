@@ -13,7 +13,6 @@ typedef enum {
   TP_REPORT,
   TP_COMMAND,
   TP_LED,
-  TP_FADE,
   TP_LIGHT_CONTROL,
   TP_STRIP,
   TP_LOOP

@@ -1,9 +1,6 @@
 #include "Types.h"
 
 #include "Color.h"
-#include "Fade.h"
-#include "Gamma.h"
-#include "Mix.h"
 #include "Settings.h"
 #include "Strip.h"
 #include "Strobe.h"

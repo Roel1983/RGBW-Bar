@@ -5,7 +5,6 @@
 #include "Comm.h"
 #include "DeviceId.h"
 #include "Error.h"
-#include "Fade.h"
 #include "Led.h"
 #include "LightControl.h"
 #include "Log.h"
@@ -14,8 +13,6 @@
 #include "Types.h"
 
 #include "Command.h"
-
-using color_t = color_rgbw_t;
 
 static size_t (*send_cb)(char* buffer, size_t size);
 
