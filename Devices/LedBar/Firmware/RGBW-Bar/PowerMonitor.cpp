@@ -80,27 +80,31 @@ enum {
 
 
 static constexpr int      ina219_i2caddr  = 0x44;
-static constexpr uint32_t ina219_calValue = 4096;
+static constexpr uint32_t ina219_calValue = 81920;
+//static constexpr uint16_t ina219_config   = INA219_CONFIG_BVOLTAGERANGE_32V |
+//                                            INA219_CONFIG_GAIN_8_320MV | 
+//                                            INA219_CONFIG_BADCRES_12BIT |
+//                                            INA219_CONFIG_SADCRES_12BIT_1S_532US |
+//                                            INA219_CONFIG_MODE_SANDBVOLT_CONTINUOUS;
 static constexpr uint16_t ina219_config   = INA219_CONFIG_BVOLTAGERANGE_32V |
-                                            INA219_CONFIG_GAIN_8_320MV | 
+                                            INA219_CONFIG_GAIN_1_40MV | 
                                             INA219_CONFIG_BADCRES_12BIT |
                                             INA219_CONFIG_SADCRES_12BIT_1S_532US |
                                             INA219_CONFIG_MODE_SANDBVOLT_CONTINUOUS;
-static constexpr uint32_t ina219_currentDivider_mA  = 10;
+static constexpr uint32_t ina219_currentDivider_mA  = 1;
 static constexpr float    ina219_powerMultiplier_mW = 2;
 
-static float ina219_voltage;
-static float ina219_current;
-static float ina219_power;
+static uint16_t ina219_voltage_mv;
+static uint16_t ina219_current_mA;
 
 void PowerMonitorBegin() {
   Wire.beginTransmission(ina219_i2caddr);
   Wire.write(INA219_REG_CALIBRATION);
   Wire.write((ina219_calValue >> 8) & 0xFF);
   Wire.write(ina219_calValue & 0xFF);
-  //Wire.endTransmission();
+  Wire.endTransmission();
 
-  //Wire.beginTransmission(ina219_i2caddr);
+  Wire.beginTransmission(ina219_i2caddr);
   Wire.write(INA219_REG_CONFIG);
   Wire.write((ina219_config >> 8) & 0xFF);
   Wire.write(ina219_config & 0xFF);
@@ -113,32 +117,21 @@ void PowerMonitorLoop() {
 
   long time_stamp = micros();
   switch(state) {
-  case 0:
+  case 0: // BusVoltage send register
     Wire.beginTransmission(ina219_i2caddr);
     Wire.write(INA219_REG_BUSVOLTAGE);
     Wire.endTransmission();
     previous_time_stamp = micros();
     state = 1;
     break;
-  case 1:
+  case 1: // BusVoltage read value
     if ((time_stamp - previous_time_stamp > 586) && I2cLock()) {
       Wire.requestFrom(ina219_i2caddr, 2);
-      Wire.beginTransmission(ina219_i2caddr);
-      Wire.write(INA219_REG_BUSVOLTAGE);
-      Wire.endTransmission();
-
-      Wire.beginTransmission(ina219_i2caddr);
-      Wire.write(INA219_REG_BUSVOLTAGE);
-      Wire.endTransmission();
-      previous_time_stamp = micros();
-
-      previous_time_stamp = micros();
-      int value      = ((Wire.read() << 8) | Wire.read());
-      ina219_voltage = 0.001 * (int16_t)((value >> 3) * 4);
-      state          = 0;
+      ina219_voltage_mv = (((Wire.read() << 8) | Wire.read()) >> 1);
+      state          = 2;
       I2cUnlock();
 
-      if(ina219_voltage >= SettingsGetOverVoltage()) {
+      if(ina219_voltage_mv >= SettingsGetOverVoltageMv()) {
         StripPowerInvalid();
         ErrorActivate(ERROR_OVER_VOLTAGE);
       } else {
@@ -146,11 +139,25 @@ void PowerMonitorLoop() {
         ErrorDeactivate(ERROR_OVER_VOLTAGE);
       }
     }
+  case 2: // BusVoltage send register
+    Wire.beginTransmission(ina219_i2caddr);
+    Wire.write(INA219_REG_CURRENT);
+    Wire.endTransmission();
+    previous_time_stamp = micros();
+    state = 3;
+    break;
+  case 3: // BusVoltage read value
+    if ((time_stamp - previous_time_stamp > 586) && I2cLock()) {
+      Wire.requestFrom(ina219_i2caddr, 2);
+      int value         = ((Wire.read() << 8) | Wire.read());
+      ina219_current_mA = (int16_t)value / ina219_currentDivider_mA;
+      state             = 0;
+      I2cUnlock();
+    }
   }
 }
 
-void PowerMonitorRead(float& voltage, float& current, float& power) {
-  voltage = ina219_voltage;
-  current = ina219_current;
-  power   = ina219_power;
+void PowerMonitorRead(uint16_t& voltage_mv, uint16_t& current_mA) {
+  voltage_mv = ina219_voltage_mv;
+  current_mA = ina219_current_mA;
 }

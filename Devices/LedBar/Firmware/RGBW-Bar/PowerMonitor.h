@@ -3,6 +3,6 @@
 
 void PowerMonitorBegin();
 void PowerMonitorLoop();
-void PowerMonitorRead(float& voltage, float& current, float& power);
+void PowerMonitorRead(uint16_t& voltage_mv, uint16_t& current_mA);
 
 #endif

@@ -1,7 +1,7 @@
 #include "Settings.h"
 
-float SettingsGetOverVoltage() {
-  return 12.5f;
+uint16_t SettingsGetOverVoltageMv() {
+  return 12500;
 }
 
 const color_t& SettingsGetWorkLightColor() {

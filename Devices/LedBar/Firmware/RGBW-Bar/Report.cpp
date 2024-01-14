@@ -18,14 +18,12 @@ void ReportLoop() {
 }
 
 void ReportLog() {
-  float voltage = 0;
-  float current = 0;
-  float power   = 0;
-  PowerMonitorRead(voltage, current, power);
-  LogPrintln("Voltage: %d mV", (int)(voltage * 1000));
-  LogPrintln("Current: %d mA", (int)(current * 1000));
-  LogPrintln("Power  : %d mW", (int)(power   * 1000));
-
+  uint16_t voltage_mv = 0;
+  uint16_t current_mA = 0;
+  PowerMonitorRead(voltage_mv, current_mA);
+  LogPrintln("Voltage: %d mV", voltage_mv);
+  LogPrintln("Current: %d mA", current_mA);
+  
   long last, min, max;
   LoopMonitorGet(last, min, max);
   LogPrintln("FPS (last, min, max): %ld, %ld, %ld",last, min, max);

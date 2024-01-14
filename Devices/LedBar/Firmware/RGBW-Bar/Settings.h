@@ -3,7 +3,7 @@
 
 #include "Color.h"
 
-float SettingsGetOverVoltage();
+uint16_t SettingsGetOverVoltageMv();
 
 const color_t& SettingsGetWorkLightColor();
 const color_t& SettingsGetFlutLightColor();

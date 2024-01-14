@@ -22,7 +22,7 @@ static void OnError();
 
 static bool error = false;
 static color_t colors[4] = {0};
-static bool power_valid = false;
+static bool power_valid = true;
 static bool is_enabled = false;
 
 void StripBegin() {
@@ -121,14 +121,16 @@ void StripLoop() {
 }
 
 static void Enable() {
-  is_enabled = true;
-  pinMode(2, INPUT); // pca_oe
+  if(power_valid) {
+    is_enabled = true;
+    pinMode(2, INPUT); // pca_oe
+  }
 }
 
 static void Disable() {
   is_enabled = false;
   pinMode(2, OUTPUT); // pca_oe
-  digitalWrite(2, HIGH); 
+  digitalWrite(2, HIGH);
 }
 
 static void OnError() {
@@ -144,7 +146,7 @@ bool StripHasError() {
 
 void StripResetError() {
   // TODO reject if brownout active
-  if(power_valid) Enable();
+  Enable();
   error = false;
   ErrorDeactivate(ERROR_LED_STRIP_ERROR);
   LightControlClearError();
