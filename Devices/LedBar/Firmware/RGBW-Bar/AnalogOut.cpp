@@ -9,8 +9,8 @@ void AnalogOutBegin() {
   analogWrite(analog_out_pin, 0);
 }
 
-void AnalogOutSetVoltage(float voltage) {
-  int value = voltage * 255 / 10;
-  if(value > 255) value = 255; else if(value < 0) value = 0;
+void AnalogOutSetVoltage(uint16_t voltage_mv) {
+  uint32_t value = (uint32_t)voltage_mv * 255 / 10000;
+  if(value > 255) value = 255;
   analogWrite(analog_out_pin, value);
 }

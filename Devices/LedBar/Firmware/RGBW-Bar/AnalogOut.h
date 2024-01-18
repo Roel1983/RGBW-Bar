@@ -2,6 +2,6 @@
 #define _ANALOG_OUT_H_
 
 void AnalogOutBegin();
-void AnalogOutSetVoltage(float voltage);
+void AnalogOutSetVoltage(uint16_t voltage_mv);
 
 #endif
