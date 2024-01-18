@@ -162,7 +162,7 @@ void CommandLoop() {
             int duration = 0;
             int res = sscanf(args, "%d, %d", &factor, &duration);
             if(res >= 1) {
-              LightControlFollowTargetFactor(factor, (ms_t)duration * 1000);
+              LightControlFollowTargetFactor(factor, (ms_t)duration);
             } else {
               ErrorRaise(ERROR_COMMUNICATION);
             }
