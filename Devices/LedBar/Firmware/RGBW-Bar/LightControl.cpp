@@ -23,9 +23,11 @@ typedef struct {
     factor_t factor;
     color_t  colors[4];
   } to;
+  color_t stashed_colors[4];
+  bool    has_new_stashed_colors;
 } fade_t;
 
-static fade_t      fade      = {MS_INDEFINETE, {0, {0}}, {0, 0, {0}}};
+static fade_t      fade      = {MS_INDEFINETE, {0, {0}}, {0, 0, {0}}, {0}, false};
 static soft_bool_t is_on     = {false, FACTOR_MIN};
 static soft_bool_t is_follow = {false, FACTOR_MIN};
 static soft_bool_t is_flut   = {false, FACTOR_MIN};
@@ -207,23 +209,31 @@ void LightControlClearError() {
 }
 
 void LightControlFollowTargetColor(int strip_index, const color_t& color) {
-  const factor_t from_weight = (FACTOR_MAX - fade_current_factor);
-  const factor_t to_weight   = fade_current_factor;
-  
-  for (int strip_index2 = 0; strip_index2 < 4; strip_index2++) {
-    const color_t& color_from(fade.from.colors[strip_index2]);
-    const color_t& color_to  (fade.to.colors[strip_index2]);
-    for (int i = 0; i < 4; i++) {
-      uint32_t c;
-      c  = (uint32_t)color_from[i] * from_weight;
-      c += (uint32_t)color_to[i]   * to_weight;
-      c /= (uint32_t)FACTOR_MAX;
-      fade.from.colors[strip_index2][i] = c;
+  memcpy(fade.stashed_colors[strip_index], color, sizeof(color_t));
+  fade.has_new_stashed_colors = true;
+}
+
+void LightConstrolApplyTargetColors() {
+  if(fade.has_new_stashed_colors) {
+    fade.has_new_stashed_colors = false;
+    const factor_t from_weight = (FACTOR_MAX - fade_current_factor);
+    const factor_t to_weight   = fade_current_factor;
+    
+    for (int strip_index2 = 0; strip_index2 < 4; strip_index2++) {
+      const color_t& color_from(fade.from.colors[strip_index2]);
+      const color_t& color_to  (fade.to.colors[strip_index2]);
+      for (int i = 0; i < 4; i++) {
+        uint32_t c;
+        c  = (uint32_t)color_from[i] * from_weight;
+        c += (uint32_t)color_to[i]   * to_weight;
+        c /= (uint32_t)FACTOR_MAX;
+        fade.from.colors[strip_index2][i] = c;
+      }
     }
+    memcpy(fade.to.colors, fade.stashed_colors, sizeof(color_t[4]));
+    fade.from.factor = 0;
+    fade.duration    = MS_INDEFINETE;
   }
-  memcpy(fade.to.colors[strip_index], color, sizeof(color_t));
-  fade.from.factor = 0;
-  fade.duration    = MS_INDEFINETE;
 }
 
 void LightControlFollowTargetFactor(const factor_t factor, const ms_t duration) {

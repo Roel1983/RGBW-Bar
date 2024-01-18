@@ -162,7 +162,7 @@ void CommandLoop() {
             int duration = 0;
             int res = sscanf(args, "%d, %d", &factor, &duration);
             if(res >= 1) {
-              LightControlFollowTargetFactor(factor, (ms_t)duration);
+              LightControlFollowTargetFactor(factor, (ms_t)duration); 
             } else {
               ErrorRaise(ERROR_COMMUNICATION);
             }
@@ -185,6 +185,14 @@ void CommandLoop() {
               if(DeviceIdGet() == device_id) LightControlFollowTargetColor(index, c);
             } else {
               ErrorRaise(ERROR_COMMUNICATION);
+            }
+          };
+        } else if(!strcmp(buffer, "apply")) {
+          cmd = [](char* args, size_t len) {
+            int device_id;
+            int res = sscanf(args, "%d", &device_id);
+            if(res != 1 || DeviceIdGet() == device_id) {
+              LightConstrolApplyTargetColors();
             }
           };
         } else if(!strcmp(buffer, "report")) {

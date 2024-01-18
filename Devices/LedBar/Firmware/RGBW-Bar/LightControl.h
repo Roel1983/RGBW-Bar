@@ -22,5 +22,7 @@ void LightControlClearError();
 void LightControlFollowTargetColor(int strip_index, const color_t& color);
 void LightControlFollowTargetFactor(const factor_t factor, const ms_t duration);
 
+void LightConstrolApplyTargetColors();
+
 #endif
 
