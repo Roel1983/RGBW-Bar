@@ -95,11 +95,11 @@ void loop() {
     }
   } else {
     if(ButtonIsPressedShort()) {
-      LightControlSetFlut(!LightControlGetFlut());
+      LightControlSetFlut(!LightControlIsFlut());
     }
     if(ButtonIsPressedLong()) {
       CommandSend([](char* buffer, size_t size, bool talk_at_will) -> size_t {
-        bool is_follow = !LightControlGetFollow();
+        bool is_follow = !LightControlIsFollow();
         size_t s = snprintf ( buffer, size, is_follow?"follow()":"work()");
         if(s <= size) {
           LightControlSetFollow(is_follow);
@@ -113,9 +113,16 @@ void loop() {
   }
   
   if(ButtonIsPressedVeryLong()) {
-    LogPrintln("Start bootloader");
-    end();
-    BootloaderExecute();
+    CommandSend([](char* buffer, size_t size, bool talk_at_will) -> size_t {
+      bool is_on = !LightControlIsOn();
+      size_t s = snprintf ( buffer, size, is_on?"on()":"off()");
+      if(s <= size) {
+        LightControlSetOn(is_on);
+        return s;
+      } else {
+        return 0;
+      }
+    });
   }
 
 }

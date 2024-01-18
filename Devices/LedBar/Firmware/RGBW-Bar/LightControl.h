@@ -8,12 +8,13 @@ void LightControlBegin();
 void LightControlLoop();
 
 void LightControlSetOn(bool value);
+bool LightControlIsOn();
 
 void LightControlSetFollow(bool value);
-bool LightControlGetFollow();
+bool LightControlIsFollow();
 
 void LightControlSetFlut(bool value);
-bool LightControlGetFlut();
+bool LightControlIsFlut();
 
 void LightControlRaiseError();
 void LightControlClearError();

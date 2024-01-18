@@ -169,6 +169,10 @@ void LightControlSetOn(bool value) {
   }
 }
 
+bool LightControlIsOn() {
+  return is_on.b;
+}
+
 void LightControlSetFollow(bool value) {
   is_follow.b = value;
   if(is_error || is_on.factor == FACTOR_MIN || is_flut.factor == FACTOR_MAX) {
@@ -176,7 +180,7 @@ void LightControlSetFollow(bool value) {
   }
 }
 
-bool LightControlGetFollow() {
+bool LightControlIsFollow() {
   return is_follow.b;
 }
 
@@ -187,7 +191,7 @@ void LightControlSetFlut(bool value) {
   }
 }
 
-bool LightControlGetFlut() {
+bool LightControlIsFlut() {
   return is_flut.b;
 }
 
