@@ -25,9 +25,12 @@ module Support(
 ) {
     thickness = mm(10);
     
-    Feet();
+    
     difference() {
-        Base();
+        union() {
+            Base();
+            Feet();
+        }
         GitRevision();
     }
     
@@ -65,7 +68,7 @@ module Support(
         }
 
         module SideSketch() {
-            wall = mm(5);
+            wall = CASE_PCB_Z_FRONT;
             r    = mm(2);
             
             difference() {
@@ -96,16 +99,23 @@ module Support(
     }
     
     module Feet(angle = angle) {
-        if (angle < 0) {
-            mirror(VEC_Y) Feet(-angle);
-        } else {
-            translate([-thickness / 2, 0]) {
-                rotate(90) ScrewFoot(align = 0, slide = foot_slide);
-            }
-            translate([0, -width/2]) rotate(-angle) {
-                translate([thickness / 2, width/2]) {
-                    rotate(-90) ScrewFoot(align = 0, slide = foot_slide);
+        
+        translate([0, -width/2]) rotate(-angle / 2) {
+            translate([0, -sin(angle/2) * thickness/2]) {
+                mirror(VEC_Y) {
+                    ScrewFoot(
+                        align = 0,
+                        slide = foot_slide,
+                        extend = width,
+                        turned = true);
                 }
+            }
+            translate([0, width /cos(angle/2)]) {
+                ScrewFoot(
+                        align = 0,
+                        slide = foot_slide,
+                        extend = width,
+                        turned = true);
             }
         }
     }
