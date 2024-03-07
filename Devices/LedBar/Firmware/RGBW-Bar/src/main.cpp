@@ -1,6 +1,7 @@
 #include <avr/interrupt.h>
 
 #include "cron.hpp"
+#include "button.hpp"
 #include "deviceId.hpp"
 #include "leds.hpp"
 #include "timestamp.hpp"
@@ -9,6 +10,7 @@ void setup();
 void loop();
 
 void setup() {
+	button::setup();
 	cron::setup();
 	deviceId::setup();
 	leds::setup();
@@ -20,6 +22,7 @@ void setup() {
 }
 
 void loop() {
+	button::loop();
 	cron::loop();
 	leds::loop();
 }
