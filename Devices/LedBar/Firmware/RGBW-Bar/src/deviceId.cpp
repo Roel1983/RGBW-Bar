@@ -7,8 +7,6 @@ namespace deviceId {
 static uint8_t device_id;
 
 void setup() {
-	jumpers::setup();
-	
 	device_id = 0;
 	for (int i = 0; i < 4; i++) {
 		device_id <<= 1;
