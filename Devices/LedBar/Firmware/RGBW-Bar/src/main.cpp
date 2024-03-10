@@ -31,6 +31,8 @@ void setup() {
 	
 	lightControl::setFollow(false);
 	lightControl::setOn(true);
+	
+	DDRC = _BV(1);
 }
 
 void loop() {
@@ -38,7 +40,9 @@ void loop() {
 	cron::loop();
 	leds::loop();
 	lightControl::loop();
+	PORTC |= _BV(1);
 	strip::loop();
+	PORTC &= ~_BV(1);
 	
 	if (strip::hasError()) {
 		if (button::isPressedShort()) {
@@ -52,10 +56,15 @@ void loop() {
 			lightControl::toggleFlut();
 		}
 		if (button::isPressedLong()) {
+			const bool is_follow = !lightControl::isFollow();
+			lightControl::setFollow(is_follow);
+			lightControl::setFlut(false);
 			// TODO send group command to toggle between work and follow
 		}
 	}
 	if (button::isPressedVeryLong()) {
+		const bool is_on = !lightControl::isOn();
+		lightControl::setOn(is_on);
 		// TODO send group command to toggle between on and off
 	}
 }
