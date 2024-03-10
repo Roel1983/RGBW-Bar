@@ -5,28 +5,29 @@
 namespace i2c {
 
 
-volatile bool           lock = false;
+volatile bool           is_locked = false;
 volatile uint8_t        address;
 volatile uint8_t        length;
 volatile const uint8_t *data;
 volatile uint8_t        index;
 
-inline void sendStart();
-inline void sendAddressForWrite(uint8_t address);
-inline void sendByte(uint8_t b);
-inline void sendStop();
+static inline void lock();
+
+static inline void sendStart();
+static inline void sendAddressForWrite(uint8_t address);
+static inline void sendByte(uint8_t b);
+static inline void sendStop();
 
 void setup() {
 	TWSR = 0;         // TWI Bit Rate Prescaler
-	//TWBR = 11;        // TWI Bit Rate Register
-	TWBR = 11;
+	TWBR = 11;        // TWI Bit Rate Register
 	
 	TWCR = _BV(TWEN)  // TWI Enable Bit
 	     | _BV(TWIE); // TWI Interrupt Enable
 }
 
 void send(uint8_t addr, const Payload& payload) {
-	flush();
+	lock();
 	
 	address = addr;
 	length  = payload.length;
@@ -48,18 +49,22 @@ ISR(TWI_vect) {
 			sendByte(data[index++]);
 		} else {
 			sendStop();
-			lock = false;
+			is_locked = false;
 		}
 		break;
 	}
 }
 
 void flush() {
+	while (is_locked);
+}
+
+static inline void lock() {
 	while(true) {
-		while (lock);		
+		flush();		
 		cli();
-		if (!lock) {
-			lock = true;
+		if (!is_locked) {
+			is_locked = true;
 			sei();
 			break;
 		}
@@ -68,25 +73,25 @@ void flush() {
 }
 
 
-inline void sendStart() {
+static inline void sendStart() {
 	TWCR = _BV(TWEN)   // TWI Enable Bit
 	     | _BV(TWIE)   // TWI Interrupt Enable
 	     | _BV(TWINT)  // TWI Interrupt Flag (clear)
 	     | _BV(TWSTA); // TWI START Condition Bit
 }
 
-inline void sendStop() {
+static inline void sendStop() {
 	TWCR = _BV(TWEN)   // TWI Enable Bit
 	//     | _BV(TWIE)   // TWI Interrupt Enable
 	     | _BV(TWINT)  // TWI Interrupt Flag (clear)
 	     | _BV(TWSTO); // TWI STOP Condition Bit
 }
 
-inline void sendAddressForWrite(uint8_t address) {
+static inline void sendAddressForWrite(uint8_t address) {
 	sendByte((address << 1) + 0);
 }
 
-inline void sendByte(uint8_t b) {
+static inline void sendByte(uint8_t b) {
 	TWDR = b;
 	TWCR = _BV(TWEN) // TWI Enable Bit
 	     | _BV(TWIE)     // TWI Interrupt Enable

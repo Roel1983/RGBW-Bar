@@ -40,7 +40,7 @@ static void pcaInit() {
 		0x06
 	});
 	
-	//~ i2c::flush();
+	i2c::flush();
 	for (volatile uint32_t w = 0; w < 0x120; w++);
 	
 	i2c::send(i2c_address_pca, {
@@ -56,7 +56,7 @@ static void pcaInit() {
 		pca_mode1_none
 	});
 	
-	//~ i2c::flush();
+	i2c::flush();
 	for (volatile uint32_t w = 0; w < 0x120; w++);
 	
 	i2c::send(i2c_address_pca, {
@@ -64,12 +64,15 @@ static void pcaInit() {
 		0xA0
 	});
 	
-	//i2c::flush();
+	i2c::flush();
 }
 
 static void pcaAllOff() {
-	
-	// i2c::flush();
+	i2c::send(i2c_address_pca, {
+		pca_register_all_led,
+		0x00, 0x00, 0x00, 0x00
+	});
+	i2c::flush();
 	for (volatile uint16_t w = 0; w < 0xFFF; w++);
 }
 
@@ -87,8 +90,8 @@ void loop() {
 	static uint16_t i = 0;
 	
 	i = i + 1;
-	buffer[2] = (i >> 8) & 0x0f;
-	buffer[1] = (i >> 0) & 0xff;
+	buffer[4] = (i >> 8) & 0x0f;
+	buffer[3] = (i >> 0) & 0xff;
 
 	i2c::send(i2c_address_pca, buffer);
 }
