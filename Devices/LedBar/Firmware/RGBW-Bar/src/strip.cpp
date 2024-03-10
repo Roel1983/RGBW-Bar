@@ -86,14 +86,20 @@ static void pcaReady() {
 void loop() {
 	//i2c::send(i2c_address_pca, {0x06, 0x00, 0x02, 0x00, 0x00});
 	
-	static uint8_t buffer[5] = {0x06, 0x00, 0x00, 0x00, 0x00};
-	static uint16_t i = 0;
-	
-	i = i + 1;
-	buffer[4] = (i >> 8) & 0x0f;
-	buffer[3] = (i >> 0) & 0xff;
-
+	static uint8_t buffer[17] = {0x06, 0x00, 0x00, 0x00, 0x00};
+	static uint8_t strip_index = 0;
+	buffer[0] = 0x06 + strip_index * 16;
+	buffer[3 + 0 * 4] = colors[strip_index][0] & 0xFF ;
+	buffer[4 + 0 * 4] = colors[strip_index][0] >> 8;
+	buffer[3 + 1 * 4] = colors[strip_index][1] & 0xFF ;
+	buffer[4 + 1 * 4] = colors[strip_index][1] >> 8;
+	buffer[3 + 2 * 4] = colors[strip_index][2] & 0xFF ;
+	buffer[4 + 2 * 4] = colors[strip_index][2] >> 8;
+	buffer[3 + 3 * 4] = colors[strip_index][3] & 0xFF ;
+	buffer[4 + 3 * 4] = colors[strip_index][3] >> 8;
 	i2c::send(i2c_address_pca, buffer);
+	strip_index = (strip_index + 1) & 0b11;
+	
 }
 
 void teardown() {
