@@ -24,15 +24,20 @@ wildcard_recursive_1       = $(wildcard $1$2) $(foreach dir,$(wildcard $1*/),$(c
 wildcard_recursive         = $(foreach base_dir,$1,$(call wildcard_recursive_1,$(base_dir),$2))
 
 # Determine Firmware files
-FIRMWARE_SOURCE_FILES_CPP := $(wildcard src/*.cpp) # Make recursive
-FIRMWARE_SOURCE_FILES_C   := $(wildcard src/*.c)   # Make recursive
-FIRMWARE_SOURCE_FILES     := $(FIRMWARE_SOURCE_FILES_CPP) $(FIRMWARE_SOURCE_FILES_C)
+FIRMWARE_SOURCE_FILES_CPP := 
+FIRMWARE_SOURCE_FILES_C   := 
+FIRMWARE_SOURCE_FILES      = $(FIRMWARE_SOURCE_FILES_CPP) $(FIRMWARE_SOURCE_FILES_C)
+
+include src/build.mk
 
 FIRMWARE_BUILD_DIR         = $(BUILD_DIR)/firmware
-FIRMWARE_OBJECT_FILES      = $(call ObjectFileName, $(addprefix $(FIRMWARE_BUILD_DIR)/, $(FIRMWARE_SOURCE_FILES)))
+FIRMWARE_OBJECT_FILES     := $(call ObjectFileName, $(addprefix $(FIRMWARE_BUILD_DIR)/, $(FIRMWARE_SOURCE_FILES)))
 
 FIRMWARE_ELF_FILE          = $(BUILD_DIR)/$(PROJECT_NAME).elf
 FIRMWARE_HEX_FILE          = $(BIN_DIR)/$(PROJECT_NAME).hex
+
+p:
+	echo $(FIRMWARE_SOURCE_FILES)
 
 # Determine Unittest files
 UNITTEST_SOURCE_DIRS       = $(call wildcard_recursive,$(SOURCE_DIR)/,unittest/)

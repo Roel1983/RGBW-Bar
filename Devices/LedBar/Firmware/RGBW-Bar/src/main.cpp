@@ -1,6 +1,7 @@
 #include <avr/interrupt.h>
 
 #include "cron.hpp"
+#include "communication/communication.hpp"
 #include "button.hpp"
 #include "deviceId.hpp"
 #include "i2c.hpp"
@@ -16,6 +17,7 @@ void loop();
 void setup() {
 	timestamp::setup();
 	cron::setup();
+	communication::setup();
 	jumpers::setup();
 	deviceId::setup();
 	button::setup();
@@ -38,6 +40,7 @@ void setup() {
 void loop() {
 	button::loop();
 	cron::loop();
+	communication::loop();
 	leds::loop();
 	lightControl::loop();
 	PORTC |= _BV(1);
