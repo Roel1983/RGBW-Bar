@@ -92,8 +92,6 @@ void loop() {
 }
 
 ISR(USART_RX_vect) {
-	PORTB |= _BV(5); // DEBUG
-	
 	const uint8_t data_byte = UDR0; // Read regardless signal error in order to reset interrupt flag
 	const bool has_signal_error = (UCSR0A & ((1 << FE0) | (1 << DOR0) | (1 << UPE0))) != 0;
 	if(has_signal_error) {
@@ -103,7 +101,6 @@ ISR(USART_RX_vect) {
 	} else {
 		processIncommingByte(data_byte);
 	}
-	PORTB &= ~_BV(5); // DEBUG
 }
 
 PRIVATE INLINE void processIncommingByte(const uint8_t data_byte) {

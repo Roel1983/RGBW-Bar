@@ -11,15 +11,37 @@
 #include "strip.hpp"
 #include "timestamp.hpp"
 
-void setup();
-void loop();
 
-void setup() {
+#include <avr/interrupt.h>
+#include <avr/io.h>
+#include <util/delay.h>
+
+#include <string.h>
+
+#include "timestamp.hpp"
+#include "communication/send_strategy.hpp"
+#include "communication/sender/sender.hpp"
+
+void Setup();
+void Loop();
+
+#ifndef UNITTEST
+int main (void)
+{
+	Setup();
+	while(1) {
+		Loop();
+	}
+}
+#endif
+
+void Setup() {
 	timestamp::setup();
 	cron::setup();
 	communication::setup();
 	jumpers::setup();
 	deviceId::setup();
+	communication::commandTypeSetBlockNr(communication::COMMAND_TYPE_UNIQUE_ID, deviceId::get());
 	button::setup();
 	leds::setup();
 	i2c::setup();
@@ -30,22 +52,23 @@ void setup() {
 	sei();
 	
 	strip::setup();
-	
+
 	lightControl::setFollow(false);
 	lightControl::setOn(true);
 	
-	DDRC = _BV(1);
+	DDRC &= ~_BV(0);
+	PORTC |= _BV(0);
+	DDRB  |= _BV(5);
 }
 
-void loop() {
+int button_cnt = 0;
+bool button_state = false;
+void Loop() {
 	button::loop();
 	cron::loop();
 	communication::loop();
-	leds::loop();
 	lightControl::loop();
-	PORTC |= _BV(1);
 	strip::loop();
-	PORTC &= ~_BV(1);
 	
 	if (strip::hasError()) {
 		if (button::isPressedShort()) {
@@ -68,26 +91,33 @@ void loop() {
 					if (!is_timeout) {
 						lightControl::setFollow(is_follow);
 						lightControl::setFlut(false);
-						payload_buffer[0] = is_follow
-								? lightControl::LIGHT_CONTROL_ACTION_FOLLOW_ON
-								: lightControl::LIGHT_CONTROL_ACTION_FOLLOW_OFF;
+						*payload_buffer =
+								(is_follow
+									? lightControl::ACTION_FOLLOW_ON
+									: lightControl::ACTION_FOLLOW_OFF
+								) | lightControl::ACTION_FLUT_OFF;
 					}
 					return true;
 				});
-			
-			// TODO send group command to toggle between work and follow
 		}
 	}
 	if (button::isPressedVeryLong()) {
-		const bool is_on = !lightControl::isOn();
-		lightControl::setOn(is_on);
+		static bool is_on;
+		is_on = !lightControl::isOn();
+		communication::sendBroadcast(
+				02,
+				1,
+				[](bool is_timeout, uint8_t& payload_size, uint8_t *payload_buffer) -> bool {
+					if (!is_timeout) {
+						lightControl::setOn(is_on);
+						*payload_buffer = is_on
+								? lightControl::ACTION_ON
+								: lightControl::ACTION_OFF;
+					}
+					return true;
+				});
+		
+		
 		// TODO send group command to toggle between on and off
-	}
-}
-
-int main() {
-	setup();
-	while(true) {
-		loop();
 	}
 }

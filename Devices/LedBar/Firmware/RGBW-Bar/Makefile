@@ -57,7 +57,7 @@ bla:
 DEPFLAGS = -MT $@ -MMD -MP -MF $(basename $@).d
 
 # Determine avrdude args
-AVRDUDE_ARGS               = -carduino -P$(UPLOAD_PORT) -b57600
+AVRDUDE_ARGS               = -carduino -P$(UPLOAD_PORT) -b57600 -V
 
 # Utility functions
 echo_execute = (echo "$1"; $1)

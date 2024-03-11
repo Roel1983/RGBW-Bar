@@ -8,13 +8,16 @@
 
 namespace lightControl {
 
-enum LightControlAction {
-	LIGHT_CONTROL_ACTION_OFF,
-	LIGHT_CONTROL_ACTION_ON,
-	LIGHT_CONTROL_ACTION_FOLLOW_OFF,
-	LIGHT_CONTROL_ACTION_FOLLOW_ON,
-	LIGHT_CONTROL_ACTION_FLUT_OFF,
-	LIGHT_CONTROL_ACTION_FLUT_ON
+enum Action {
+	ACTION_OFF           = 1 << 0,
+	ACTION_ON            = 2 << 0,
+	ACTION_TOGGLE        = 3 << 0,
+	ACTION_FOLLOW_OFF    = 1 << 2,
+	ACTION_FOLLOW_ON     = 2 << 2,
+	ACTION_FOLLOW_TOGGLE = 3 << 2,
+	ACTION_FLUT_OFF      = 1 << 4,
+	ACTION_FLUT_ON       = 2 << 4,
+	ACTION_FLUT_TOGGLE   = 3 << 4,
 };
 
 void setup();

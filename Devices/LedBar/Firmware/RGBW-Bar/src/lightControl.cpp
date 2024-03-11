@@ -260,18 +260,42 @@ void applyTargetColors() {
 }
 #include <avr/io.h>
 // TODO should be group
-communication::receiver::Command<communication::COMMAND_TYPE_BROADCAST, LightControlAction> light_control_command;
-bool onLightControlCommand(const LightControlAction& payload) {
-	PORTC ^= _BV(1);
-	switch(payload) {
-	case LIGHT_CONTROL_ACTION_ON:         setOn(false);     break;
-	case LIGHT_CONTROL_ACTION_OFF:        setOn(true);      break;
-	case LIGHT_CONTROL_ACTION_FOLLOW_OFF: setFollow(false); break;
-	case LIGHT_CONTROL_ACTION_FOLLOW_ON:  setFollow(true);  break;
-	case LIGHT_CONTROL_ACTION_FLUT_OFF:   setFlut(false);   break;
-	case LIGHT_CONTROL_ACTION_FLUT_ON:    setFlut(true);    break;
+communication::receiver::Command<communication::COMMAND_TYPE_BROADCAST, Action> light_control_command;
+bool onLightControlCommand(const Action& payload) {
+	switch(payload & 0b000011) {
+	case ACTION_OFF:
+		setOn(false);
+		break;
+	case ACTION_ON:
+		setOn(true);
+		break;
+	case ACTION_TOGGLE:
+		setOn(!isOn());
+		break;
 	}
-	PORTC ^= _BV(1);
+	switch(payload & 0b001100) {
+	case ACTION_FOLLOW_OFF:
+		setFollow(false);
+		break;
+	case ACTION_FOLLOW_ON:
+		setFollow(true);
+		break;
+	case ACTION_FOLLOW_TOGGLE:
+		setFollow(!isFollow());
+		break;
+	}
+	switch(payload & 0b110000) {
+	case ACTION_FLUT_OFF:
+		setFlut(false);
+		break;
+	case ACTION_FLUT_ON:
+		setFlut(true);
+		break;
+	case ACTION_FLUT_TOGGLE:
+		setFlut(!isFollow());
+		break;
+	}
+	
 	return true;
 };
 communication::receiver::CommandInfo light_control_command_info(
