@@ -59,9 +59,22 @@ void loop() {
 			lightControl::toggleFlut();
 		}
 		if (button::isPressedLong()) {
-			const bool is_follow = !lightControl::isFollow();
-			lightControl::setFollow(is_follow);
-			lightControl::setFlut(false);
+			static bool is_follow;
+			is_follow = !lightControl::isFollow();
+			communication::sendBroadcast(
+				02,
+				1,
+				[](bool is_timeout, uint8_t& payload_size, uint8_t *payload_buffer) -> bool {
+					if (!is_timeout) {
+						lightControl::setFollow(is_follow);
+						lightControl::setFlut(false);
+						payload_buffer[0] = is_follow
+								? lightControl::LIGHT_CONTROL_ACTION_FOLLOW_ON
+								: lightControl::LIGHT_CONTROL_ACTION_FOLLOW_OFF;
+					}
+					return true;
+				});
+			
 			// TODO send group command to toggle between work and follow
 		}
 	}

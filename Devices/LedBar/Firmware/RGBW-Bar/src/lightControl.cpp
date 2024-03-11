@@ -7,6 +7,8 @@
 #include "timestamp.hpp"
 #include "types.hpp"
 
+#include "leds.hpp" // TODO
+
 #include "lightControl.hpp"
 
 namespace lightControl {
@@ -182,6 +184,7 @@ bool isOn() {
 }
 
 void setFollow(bool value) {
+	leds::set(leds::ORANGE, value ? leds::LED_ON : leds::LED_OFF);
 	is_follow.b = value;
 	if (is_error || is_on.factor == FACTOR_MIN || is_flut.factor == FACTOR_MAX) {
 		is_follow.factor = is_follow.b ? FACTOR_MIN : FACTOR_MAX;
@@ -255,5 +258,25 @@ void applyTargetColors() {
 		fade.duration    = INDEFINETE;
 	}
 }
+#include <avr/io.h>
+// TODO should be group
+communication::receiver::Command<communication::COMMAND_TYPE_BROADCAST, LightControlAction> light_control_command;
+bool onLightControlCommand(const LightControlAction& payload) {
+	PORTC ^= _BV(1);
+	switch(payload) {
+	case LIGHT_CONTROL_ACTION_ON:         setOn(false);     break;
+	case LIGHT_CONTROL_ACTION_OFF:        setOn(true);      break;
+	case LIGHT_CONTROL_ACTION_FOLLOW_OFF: setFollow(false); break;
+	case LIGHT_CONTROL_ACTION_FOLLOW_ON:  setFollow(true);  break;
+	case LIGHT_CONTROL_ACTION_FLUT_OFF:   setFlut(false);   break;
+	case LIGHT_CONTROL_ACTION_FLUT_ON:    setFlut(true);    break;
+	}
+	PORTC ^= _BV(1);
+	return true;
+};
+communication::receiver::CommandInfo light_control_command_info(
+	light_control_command,
+	onLightControlCommand);
+
 
 } // End of: namespace lightControl
