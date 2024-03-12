@@ -77,6 +77,19 @@ void Loop() {
 		if(button::isPressedLong()) {
 			// TODO send group command to reset all strip errors
 		}
+	} else if (!lightControl::isOn()) {
+		if (button::isPressedShort()) {
+			communication::sendBroadcast( // Might reject
+					02,
+					1,
+					[](bool is_timeout, uint8_t& payload_size, uint8_t *payload_buffer) -> bool {
+						if (!is_timeout) {
+							lightControl::setOn(true);
+							*payload_buffer = lightControl::ACTION_ON;
+						}
+						return true;
+					});
+		}
 	} else {
 		if (button::isPressedShort()) {
 			lightControl::toggleFlut();
@@ -85,39 +98,32 @@ void Loop() {
 			static bool is_follow;
 			is_follow = !lightControl::isFollow();
 			communication::sendBroadcast(
-				02,
-				1,
-				[](bool is_timeout, uint8_t& payload_size, uint8_t *payload_buffer) -> bool {
-					if (!is_timeout) {
-						lightControl::setFollow(is_follow);
-						lightControl::setFlut(false);
-						*payload_buffer =
-								(is_follow
-									? lightControl::ACTION_FOLLOW_ON
-									: lightControl::ACTION_FOLLOW_OFF
-								) | lightControl::ACTION_FLUT_OFF;
-					}
-					return true;
-				});
+					02,
+					1,
+					[](bool is_timeout, uint8_t& payload_size, uint8_t *payload_buffer) -> bool {
+						if (!is_timeout) {
+							lightControl::setFollow(is_follow);
+							lightControl::setFlut(false);
+							*payload_buffer =
+									(is_follow
+										? lightControl::ACTION_FOLLOW_ON
+										: lightControl::ACTION_FOLLOW_OFF
+									) | lightControl::ACTION_FLUT_OFF;
+						}
+						return true;
+					});
 		}
-	}
-	if (button::isPressedVeryLong()) {
-		static bool is_on;
-		is_on = !lightControl::isOn();
-		communication::sendBroadcast(
-				02,
-				1,
-				[](bool is_timeout, uint8_t& payload_size, uint8_t *payload_buffer) -> bool {
-					if (!is_timeout) {
-						lightControl::setOn(is_on);
-						*payload_buffer = is_on
-								? lightControl::ACTION_ON
-								: lightControl::ACTION_OFF;
-					}
-					return true;
-				});
-		
-		
-		// TODO send group command to toggle between on and off
+		if (button::isPressedVeryLong()) {
+			communication::sendBroadcast( // Might reject
+					02,
+					1,
+					[](bool is_timeout, uint8_t& payload_size, uint8_t *payload_buffer) -> bool {
+						if (!is_timeout) {
+							lightControl::setOn(false);
+							*payload_buffer = lightControl::ACTION_OFF;
+						}
+						return true;
+					});
+		}
 	}
 }
