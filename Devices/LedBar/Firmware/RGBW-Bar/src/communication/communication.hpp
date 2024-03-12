@@ -3,6 +3,8 @@
 
 #include "stdint.h"
 
+#include "../timestamp.hpp"
+
 #include "receiver/command.hpp"
 #include "receiver/command_info.hpp"
 #include "command_types.hpp"
@@ -12,6 +14,7 @@ namespace communication {
 typedef bool (*PayloadWritter)(bool is_timeout, uint8_t& payload_size, uint8_t *payload_buffer);
 
 constexpr uint32_t BAUDRATE       = 115200;
+constexpr uint32_t BOOTLOADER_BAUDRATE = 57600;
 constexpr uint8_t  PREAMBLE_BYTE  = 0x55;
 constexpr uint8_t  PREAMBLE_COUNT = 2;
 constexpr uint8_t  EXTENDED_PAYLOAD_LENGHT_MASK = 0x80;
@@ -32,6 +35,8 @@ bool sendAddressable(
 	uint8_t        block_nr,
 	uint8_t        payload_size,
 	PayloadWritter payload_writer);
+
+void ignoreBootloader(timestamp::Timestamp timeout);
 
 extern communication::receiver::CommandInfo request_to_send_command_info;
 

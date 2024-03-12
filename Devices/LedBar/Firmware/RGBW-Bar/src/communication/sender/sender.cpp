@@ -150,6 +150,10 @@ bool is_sending() {
 	return isr.state != STATE_IDLE;
 }
 
+void flush() {
+	while(is_sending());
+}
+
 static void __onSendComplete() __attribute__ ((unused));
 static void __onSendComplete() {}
 void onSendComplete() __attribute__ ((weak, alias ("_ZN13communication6senderL16__onSendCompleteEv")));

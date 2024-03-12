@@ -1,6 +1,8 @@
 #ifndef _UTILS_HPP_
 #define _UTILS_HPP_
 
+#include <stdint.h>
+
 #ifdef UNITEST
 #define PRIVATE
 #define INLINE

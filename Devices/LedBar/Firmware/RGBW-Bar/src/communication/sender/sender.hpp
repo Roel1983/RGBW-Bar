@@ -20,6 +20,8 @@ bool send(Command& command);
 bool is_sending();
 extern void onSendComplete();
 
+void flush();
+
 }}
 
 #endif // COMMUNICATION_SENDER_SENDER_H_

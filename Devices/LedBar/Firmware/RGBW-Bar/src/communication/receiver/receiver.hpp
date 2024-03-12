@@ -11,6 +11,9 @@ void tearDown();
 void setup();
 void loop();
 
+void ignore(bool);
+bool didIgnoreIncomingData();
+
 }} // namespace ::communitation::receiver
 
 #endif  // COMMUNICATION_RECEIVER_RECEIVER_H_

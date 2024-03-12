@@ -24,10 +24,11 @@ typedef enum {
 	STATE_PAYLOAD_LENGTH,
 	STATE_BLOCK_NR,
 	STATE_CRC,
+	STATE_IGNORE,
 } State;
 
 struct Isr {
-	State             state;
+	volatile State    state;
 	uint8_t           crc;
 	uint8_t           read_byte_count;
 	union {
@@ -44,7 +45,8 @@ struct Isr {
 	const CommandInfo* command_info;
 };
 
-Isr    isr;
+PRIVATE Isr      isr;
+PRIVATE volatile bool did_ignore_in_comming_data;
 
 PRIVATE INLINE void processIncommingByte     (const uint8_t data_byte);
 PRIVATE INLINE bool receiveBlockData         (const uint8_t data_byte);
@@ -95,9 +97,13 @@ ISR(USART_RX_vect) {
 	const uint8_t data_byte = UDR0; // Read regardless signal error in order to reset interrupt flag
 	const bool has_signal_error = (UCSR0A & ((1 << FE0) | (1 << DOR0) | (1 << UPE0))) != 0;
 	if(has_signal_error) {
-		raiseError(ERROR_SIGNAL);
-		isr.preamble_count = 0;
-		isr.state          = STATE_PREAMBLE;
+		if (isr.state != STATE_IGNORE) {
+			raiseError(ERROR_SIGNAL);
+			isr.preamble_count = 0;
+			isr.state          = STATE_PREAMBLE;
+		} else {
+			did_ignore_in_comming_data = true;
+		}
 	} else {
 		processIncommingByte(data_byte);
 	}
@@ -128,6 +134,9 @@ PRIVATE INLINE void processIncommingByte(const uint8_t data_byte) {
 		return;
 	case STATE_CRC:
 		receiveCrc(data_byte);
+		return;
+	case STATE_IGNORE:
+		did_ignore_in_comming_data = true;
 		return;
 	}
 }
@@ -379,6 +388,26 @@ PRIVATE void receiveSkipRemainingPayload() {
 	isr.read_byte_count            = 0;
 	isr.skip_byte_count_after_read = 0;
 	isr.state                      = STATE_CRC;
+}
+
+void ignore(bool is_ignore) {
+	cli();
+	if (is_ignore) {
+		isr.state = STATE_IGNORE;
+		did_ignore_in_comming_data = false;
+	} else {
+		isr.state = STATE_PREAMBLE;
+		isr.preamble_count = 0;
+		isr.read_byte_count = 0;
+		isr.skip_byte_count = 0;
+		isr.skip_byte_count_after_read = 0;
+	}
+	sei();
+}
+bool didIgnoreIncomingData() {
+	const bool res = did_ignore_in_comming_data;
+	did_ignore_in_comming_data = false;
+	return res;
 }
 
 }} // End of namespace ::communication::receiver

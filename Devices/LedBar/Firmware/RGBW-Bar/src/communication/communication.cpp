@@ -30,12 +30,22 @@ struct SendBuffer {
 	PayloadWritter payload_writer;
 };
 
+enum BootloaderIgnoreState {
+	BOOTLOADER_IGNORE_STATE_IDLE,
+	BOOTLOADER_IGNORE_STATE_WAIT,
+	BOOTLOADER_IGNORE_STATE_IGNORING,
+};
+
 PRIVATE constexpr uint8_t max_send_command_size = 40;
 PRIVATE volatile SendBuffer send_buffer = { SEND_BUFFER_UNLOCKED_FOR_WRITING };
 PRIVATE volatile uint32_t send_timestamp;
 
 PRIVATE constexpr uint32_t send_timeout = 2000;
 
+PRIVATE volatile int ignoreBootloaderState = BOOTLOADER_IGNORE_STATE_IDLE;
+PRIVATE timestamp::Timestamp bootloaderTimeoutTimestamp;
+
+PRIVATE INLINE void setBaudrate(const uint32_t baudrate);
 PRIVATE INLINE bool send(
 	uint8_t        command_id,
 	bool           is_addressable,
@@ -43,6 +53,7 @@ PRIVATE INLINE bool send(
 	uint8_t        payload_size,
 	PayloadWritter payload_writer);
 PRIVATE bool sendFromBuffer(uint8_t *max_length);
+PRIVATE void ignoreBootloaderLoop();
 
 #ifdef UNITTEST
 void tearDown() {
@@ -52,10 +63,7 @@ void tearDown() {
 #endif
 
 void setup() {
-	constexpr uint16_t baudrate_prescaler = (F_CPU / (8UL * BAUDRATE)) - 1;
-	
-	UBRR0H  = baudrate_prescaler >> 8;
-	UBRR0L  = baudrate_prescaler;
+	setBaudrate(BAUDRATE);
 	
 	UCSR0A |= (1<<U2X0);
 	
@@ -67,6 +75,13 @@ void setup() {
 	send_strategy::setup();
 	receiver::setup();
 	sender::setup();
+}
+
+PRIVATE INLINE void setBaudrate(const uint32_t baudrate) {
+	uint16_t baudrate_prescaler = (F_CPU / (8UL * baudrate)) - 1;
+	
+	UBRR0H  = baudrate_prescaler >> 8;
+	UBRR0L  = baudrate_prescaler;
 }
 
 void loop() {
@@ -87,6 +102,7 @@ void loop() {
 			? SEND_BUFFER_UNLOCKED_FOR_WRITING
 			: SEND_BUFFER_UNLOCKED_FOR_READING;
 	}	
+	ignoreBootloaderLoop();
 }
 
 bool sendBroadcast(
@@ -113,6 +129,9 @@ PRIVATE INLINE bool send(
 	uint8_t        payload_size,
 	PayloadWritter payload_writer
 ) {
+	if (ignoreBootloaderState != BOOTLOADER_IGNORE_STATE_IDLE) {
+		return false;
+	}
 	if (payload_size >= max_send_command_size) {
 		return false;
 	}
@@ -222,5 +241,45 @@ communication::receiver::CommandInfo request_to_send_command_info(
 	request_to_send_command,
 	onRequestToSendCommand,
 	true);
+
+void ignoreBootloader(timestamp::Timestamp timeout) {
+	DDRC |= _BV(1); // Debug
+    
+    PORTC |= _BV(1); // Debug
+    ignoreBootloaderState = BOOTLOADER_IGNORE_STATE_WAIT;
+	communication::receiver::ignore(true);
+	communication::sender::flush();
+	setBaudrate(BOOTLOADER_BAUDRATE);
+	bootloaderTimeoutTimestamp = timestamp::getMsTimestamp() + timeout;
+	PORTC &= ~_BV(1); // Debug
+	
+}
+
+PRIVATE void ignoreBootloaderLoop() {
+	if (ignoreBootloaderState == BOOTLOADER_IGNORE_STATE_IDLE) {
+		return;
+	}
+	
+	PORTC |= _BV(1); PORTC &= ~_BV(1); // Debug
+    
+	timestamp::Timestamp ts = timestamp::getMsTimestamp();
+	if (communication::receiver::didIgnoreIncomingData()) {
+		PORTC |= _BV(1); PORTC &= ~_BV(1); // Debug
+		PORTC |= _BV(1); PORTC &= ~_BV(1); // Debug
+		ignoreBootloaderState = BOOTLOADER_IGNORE_STATE_IGNORING;
+		bootloaderTimeoutTimestamp = ts + 1000;
+	}
+	if ((int32_t)(ts - bootloaderTimeoutTimestamp) > 0) {
+		PORTC |= _BV(1); PORTC &= ~_BV(1); // Debug
+		PORTC |= _BV(1); PORTC &= ~_BV(1); // Debug
+		PORTC |= _BV(1); PORTC &= ~_BV(1); // Debug
+		setBaudrate(BAUDRATE);
+		ignoreBootloaderState = BOOTLOADER_IGNORE_STATE_IDLE;
+		communication::receiver::ignore(false);
+		if (send_strategy::get() == send_strategy::STRATEGY_SEND_AT_WILL) {
+			(void)sendFromBuffer(nullptr);
+		}
+	}
+}
 
 } // namespace communitation
