@@ -42,6 +42,9 @@ void followTargetFactor(const Factor factor, const timestamp::Timestamp duration
 void applyTargetColors();
 
 extern communication::receiver::CommandInfo light_control_command_info;
+extern communication::receiver::CommandInfo strip_color_command_info;
+extern communication::receiver::CommandInfo target_factor_command_info;
+extern communication::receiver::CommandInfo apply_target_colors_command_info;
 
 } // End of: namespace lightControl
 

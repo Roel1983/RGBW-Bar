@@ -5,6 +5,8 @@
 #include "timestamp.hpp"
 #include "types.hpp"
 
+#include "communication/communication.hpp"
+
 namespace strobe {
 
 static constexpr uint8_t COUNT_INFINITE = 0xFF;
@@ -13,7 +15,11 @@ void         trigger        (timestamp::Timestamp on, timestamp::Timestamp off, 
 Factor       getStripFactor (int index);
 const Color& getStripColor  (int index);
 void         setStripColor  (int index, const Color& color);
-void         setStripWeights(Factor weights[4]);
+void         setStripWeight (int index, Factor weight);
+
+extern communication::receiver::CommandInfo trigger_command_info;
+extern communication::receiver::CommandInfo strip_color_command_info;
+extern communication::receiver::CommandInfo strip_weight_command_info;
 
 } // End of: namespace strobe
 

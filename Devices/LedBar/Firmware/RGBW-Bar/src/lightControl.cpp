@@ -35,6 +35,10 @@ struct Fade {
   bool        has_new_stashed_colors;
 };
 
+struct StripColorCommand;
+struct TargetFactorCommand;
+struct ApplyTargetColorsCommand;
+
 static Fade      fade      = {INDEFINETE, {0, {0}}, {0, 0, {0}}, {0}, false};
 static SoftBool  is_on     = {false, FACTOR_MIN};
 static SoftBool  is_follow = {false, FACTOR_MIN};
@@ -48,6 +52,11 @@ static inline Timestamp calculateDeltaTime (const Timestamp timestamp);
 static inline void      updateSoftBooleans (const Timestamp delta_time);
 static        void      updateSoftBoolean  (SoftBool& value, const Factor delta);
 static inline Factor    calculateFadeFactor(const Timestamp timestamp);
+
+static bool onLightControlCommand(const Action& command);
+static bool onStripColorCommand(uint8_t index, const StripColorCommand& command);
+static bool onTargetFactorCommand(const TargetFactorCommand& command);
+static bool onApplyTargetColorsCommand(const ApplyTargetColorsCommand& command);
 
 void setup() {
 	last_timestamp = timestamp::getMsTimestamp();
@@ -258,11 +267,15 @@ void applyTargetColors() {
 		fade.duration    = INDEFINETE;
 	}
 }
-#include <avr/io.h>
 // TODO should be group
 communication::receiver::Command<communication::COMMAND_TYPE_BROADCAST, Action> light_control_command;
-bool onLightControlCommand(const Action& payload) {
-	switch(payload & 0b000011) {
+
+communication::receiver::CommandInfo light_control_command_info(
+	light_control_command,
+	onLightControlCommand);
+	
+static bool onLightControlCommand(const Action& command) {
+	switch(command & 0b000011) {
 	case ACTION_OFF:
 		setOn(false);
 		break;
@@ -273,7 +286,7 @@ bool onLightControlCommand(const Action& payload) {
 		setOn(!isOn());
 		break;
 	}
-	switch(payload & 0b001100) {
+	switch(command & 0b001100) {
 	case ACTION_FOLLOW_OFF:
 		setFollow(false);
 		break;
@@ -284,7 +297,7 @@ bool onLightControlCommand(const Action& payload) {
 		setFollow(!isFollow());
 		break;
 	}
-	switch(payload & 0b110000) {
+	switch(command & 0b110000) {
 	case ACTION_FLUT_OFF:
 		setFlut(false);
 		break;
@@ -298,9 +311,52 @@ bool onLightControlCommand(const Action& payload) {
 	
 	return true;
 };
-communication::receiver::CommandInfo light_control_command_info(
-	light_control_command,
-	onLightControlCommand);
 
+struct StripColorCommand {
+	Color color;
+};
+
+communication::receiver::Command<communication::COMMAND_TYPE_STRIP, StripColorCommand> strip_color_command;
+
+communication::receiver::CommandInfo strip_color_command_info(
+	strip_color_command,
+	onStripColorCommand);
+
+static bool onStripColorCommand(uint8_t relative_block_nr, const StripColorCommand& command) {
+	followTargetColor(relative_block_nr, command.color);
+	return true;
+}
+
+struct TargetFactorCommand {
+	Factor factor;
+	timestamp::Timestamp duration;
+};
+
+// TODO should be group
+communication::receiver::Command<communication::COMMAND_TYPE_BROADCAST, TargetFactorCommand> target_factor_command;
+
+communication::receiver::CommandInfo target_factor_command_info(
+	target_factor_command,
+	onTargetFactorCommand);
+
+static bool onTargetFactorCommand(const TargetFactorCommand& command) {
+	followTargetFactor(command.factor, command.duration);
+	return true;
+}
+
+struct ApplyTargetColorsCommand {
+};
+
+// TODO should be group
+communication::receiver::Command<communication::COMMAND_TYPE_BROADCAST, ApplyTargetColorsCommand> apply_target_colors_command;
+
+communication::receiver::CommandInfo apply_target_colors_command_info(
+	apply_target_colors_command,
+	onApplyTargetColorsCommand);
+
+static bool onApplyTargetColorsCommand(const ApplyTargetColorsCommand& command) {
+	applyTargetColors();
+	return true;
+}
 
 } // End of: namespace lightControl
