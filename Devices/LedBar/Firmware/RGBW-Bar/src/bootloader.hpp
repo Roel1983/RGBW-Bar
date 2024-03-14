@@ -1,16 +1,13 @@
 #ifndef _BOOTLOADER_HPP_
 #define _BOOTLOADER_HPP_
 
+#include "communication/communication.hpp"
+
 namespace bootloader {
 
-#ifndef BOOT_LOADER_ADDRESS
-#define BOOT_LOADER_ADDRESS 0x7800
-#endif
+void execute();
 
-void inline execute() {
-  typedef void (*BootLoaderMeth)(void);
-  ((BootLoaderMeth)BOOT_LOADER_ADDRESS)();
-}
+extern communication::receiver::CommandInfo bootloader_command_info;
 
 } // End of: namespace bootloader
 

@@ -1,5 +1,4 @@
 #include <avr/interrupt.h>
-#include <avr/io.h>
 
 #include <stdint.h>
 
@@ -243,36 +242,23 @@ communication::receiver::CommandInfo request_to_send_command_info(
 	true);
 
 void ignoreBootloader(timestamp::Timestamp timeout) {
-	DDRC |= _BV(1); // Debug
-    
-    PORTC |= _BV(1); // Debug
     ignoreBootloaderState = BOOTLOADER_IGNORE_STATE_WAIT;
 	communication::receiver::ignore(true);
 	communication::sender::flush();
 	setBaudrate(BOOTLOADER_BAUDRATE);
 	bootloaderTimeoutTimestamp = timestamp::getMsTimestamp() + timeout;
-	PORTC &= ~_BV(1); // Debug
-	
 }
 
 PRIVATE void ignoreBootloaderLoop() {
 	if (ignoreBootloaderState == BOOTLOADER_IGNORE_STATE_IDLE) {
 		return;
 	}
-	
-	PORTC |= _BV(1); PORTC &= ~_BV(1); // Debug
-    
 	timestamp::Timestamp ts = timestamp::getMsTimestamp();
 	if (communication::receiver::didIgnoreIncomingData()) {
-		PORTC |= _BV(1); PORTC &= ~_BV(1); // Debug
-		PORTC |= _BV(1); PORTC &= ~_BV(1); // Debug
 		ignoreBootloaderState = BOOTLOADER_IGNORE_STATE_IGNORING;
 		bootloaderTimeoutTimestamp = ts + 1000;
 	}
 	if ((int32_t)(ts - bootloaderTimeoutTimestamp) > 0) {
-		PORTC |= _BV(1); PORTC &= ~_BV(1); // Debug
-		PORTC |= _BV(1); PORTC &= ~_BV(1); // Debug
-		PORTC |= _BV(1); PORTC &= ~_BV(1); // Debug
 		setBaudrate(BAUDRATE);
 		ignoreBootloaderState = BOOTLOADER_IGNORE_STATE_IDLE;
 		communication::receiver::ignore(false);
