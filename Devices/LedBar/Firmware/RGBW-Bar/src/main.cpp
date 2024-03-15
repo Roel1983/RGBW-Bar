@@ -65,6 +65,7 @@ bool button_state = false;
 void Loop() {
 	button::loop();
 	cron::loop();
+	leds::loop();
 	communication::loop();
 	lightControl::loop();
 	strip::loop();

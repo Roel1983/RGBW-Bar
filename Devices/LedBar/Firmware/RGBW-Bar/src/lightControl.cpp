@@ -193,7 +193,6 @@ bool isOn() {
 }
 
 void setFollow(bool value) {
-	leds::set(leds::ORANGE, value ? leds::LED_ON : leds::LED_OFF);
 	is_follow.b = value;
 	if (is_error || is_on.factor == FACTOR_MIN || is_flut.factor == FACTOR_MAX) {
 		is_follow.factor = is_follow.b ? FACTOR_MIN : FACTOR_MAX;

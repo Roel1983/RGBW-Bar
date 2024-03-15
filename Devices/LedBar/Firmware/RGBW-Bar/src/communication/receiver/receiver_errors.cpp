@@ -2,6 +2,7 @@
 #include <cstring>
 #endif
 
+#include "../../leds.hpp"
 #include "receiver_errors.hpp"
 
 namespace communication {
@@ -18,6 +19,7 @@ void ReceiverErrorsTearDown() {
 #endif
 
 void raiseError(const Error error) {
+	leds::blink(leds::RED, error);
 	if(error_counts[error] != 0xff) {
 		error_counts[error]++;
 	}
