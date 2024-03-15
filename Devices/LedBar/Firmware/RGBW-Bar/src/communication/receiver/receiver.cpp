@@ -6,6 +6,7 @@
 #include <cstring>
 #endif
 
+#include "../../timestamp.hpp"
 #include "../../utils.hpp"
 #include "../commands.hpp"
 #include "../communication.hpp"
@@ -47,6 +48,9 @@ struct Isr {
 
 PRIVATE Isr      isr;
 PRIVATE volatile bool did_ignore_in_comming_data;
+PRIVATE volatile timestamp::Timestamp start_receving_timestamp;
+
+PRIVATE constexpr timestamp::Timestamp RECEIVE_TIMEOUT = 250;
 
 PRIVATE INLINE void processIncommingByte     (const uint8_t data_byte);
 PRIVATE INLINE bool receiveBlockData         (const uint8_t data_byte);
@@ -67,6 +71,7 @@ PRIVATE INLINE void notifySingleBlockCommandReceived(const CommandInfo& command_
 PRIVATE INLINE void notifyMultiBlockCommandReceived(const CommandInfo& command_info);
 
 PRIVATE void receiveSkipRemainingPayload();
+PRIVATE void reset();
 
 #ifdef UNITTEST
 void tearDown() {
@@ -90,6 +95,13 @@ void loop() {
 		if (command_info->command.lock == COMMAND_LOCK_READ) {
 			notifyCommandReceived(*command_info);
 		}
+	}
+	timestamp::Timestamp ts = timestamp::getMsTimestamp();
+	if (isr.state != STATE_PREAMBLE && (ts - start_receving_timestamp) > RECEIVE_TIMEOUT) {
+		cli();
+		raiseError(ERROR_TIMEOUT);
+		reset();
+		sei();
 	}
 }
 
@@ -174,6 +186,7 @@ PRIVATE INLINE void receivePreamble(const uint8_t data_byte) {
 }
 
 PRIVATE INLINE void receiveSenderUniqueId(const uint8_t data_byte) {
+	start_receving_timestamp = timestamp::getMsTimestamp();
 	isr.sender_unique_id = data_byte;
 	isr.state = STATE_COMMAND_ID;
 }
@@ -396,18 +409,28 @@ void ignore(bool is_ignore) {
 		isr.state = STATE_IGNORE;
 		did_ignore_in_comming_data = false;
 	} else {
-		isr.state = STATE_PREAMBLE;
-		isr.preamble_count = 0;
-		isr.read_byte_count = 0;
-		isr.skip_byte_count = 0;
-		isr.skip_byte_count_after_read = 0;
+		reset();
 	}
 	sei();
 }
+
 bool didIgnoreIncomingData() {
 	const bool res = did_ignore_in_comming_data;
 	did_ignore_in_comming_data = false;
 	return res;
+}
+
+PRIVATE void reset() {
+	if (isr.state >= STATE_PAYLOAD_LENGTH && isr.command_info 
+			&& isr.command_info->command.lock == COMMAND_LOCK_WRITE)
+	{
+		isr.command_info->command.lock = COMMAND_LOCK_NONE;
+	}	
+	isr.state = STATE_PREAMBLE;
+	isr.preamble_count = 0;
+	isr.read_byte_count = 0;
+	isr.skip_byte_count = 0;
+	isr.skip_byte_count_after_read = 0;
 }
 
 }} // End of namespace ::communication::receiver

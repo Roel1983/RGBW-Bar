@@ -13,7 +13,8 @@ typedef enum {
 	ERROR_UNKNOW_COMMAND,
 	ERROR_INVALID_LENGTH,
 	ERROR_BUSY,
-	ERROR_CRC
+	ERROR_CRC,
+	ERROR_TIMEOUT,
 } Error;
 constexpr int error_count = 6;
 
