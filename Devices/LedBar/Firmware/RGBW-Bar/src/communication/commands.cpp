@@ -1,6 +1,7 @@
 #include "../bootloader.hpp"
 #include "../lightControl.hpp"
 #include "../strobe.hpp"
+#include "../settings.hpp"
 #include "../utils.hpp"
 #include "receiver/command_info.hpp"
 
@@ -21,6 +22,9 @@ PRIVATE COMMAND_INFO_DECL const receiver::CommandInfo* command_infos[] = {
 	&strobe::trigger_command_info,
 	&strobe::strip_color_command_info,
 	&strobe::strip_weight_command_info,
+	&settings::read_command_info,
+	nullptr,
+	&settings::write_command_info,
 };
 
 const receiver::CommandInfo * const getCommandInfo(const uint8_t command_id) {

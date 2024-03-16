@@ -99,7 +99,7 @@ void loop() {
 		}
 		if (is_follow.factor != FACTOR_MAX) {
 			const Factor non_follow_weight = FACTOR_MAX - is_follow.factor;
-			const Color& work_color(settings::getWorkLightColor());
+			const Color& work_color(settings::get().work_light_color);
 			for (int i = 0; i < 4; i++) {
 				uint32_t c;
 				c  = (uint32_t)work_color[i] * non_follow_weight;
@@ -110,7 +110,7 @@ void loop() {
 		}
 		if (is_flut.factor != FACTOR_MIN) {
 			const Factor non_flut_weight = FACTOR_MAX - is_flut.factor;
-			const Color& flut_color(settings::getFlutLightColor());
+			const Color& flut_color(settings::get().flut_light_color);
 			for (int i = 0; i < 4; i++) {
 				uint32_t c;
 				c  = (uint32_t)color_out[i]  * non_flut_weight;

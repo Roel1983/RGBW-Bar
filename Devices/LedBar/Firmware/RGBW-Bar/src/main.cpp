@@ -9,6 +9,7 @@
 #include "leds.hpp"
 #include "lightControl.hpp"
 #include "strip.hpp"
+#include "settings.hpp"
 #include "timestamp.hpp"
 
 #include <avr/interrupt.h>
@@ -35,10 +36,12 @@ int main (void)
 #endif
 
 void Setup() {
+	jumpers::setup();
+	settings::setup();
+	
 	timestamp::setup();
 	cron::setup();
 	communication::setup();
-	jumpers::setup();
 	deviceId::setup();
 	communication::commandTypeSetBlockNr(communication::COMMAND_TYPE_UNIQUE_ID, deviceId::get());
 	button::setup();

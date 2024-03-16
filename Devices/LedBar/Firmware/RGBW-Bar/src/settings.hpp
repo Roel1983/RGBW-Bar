@@ -2,11 +2,29 @@
 #define _SETTINGS_HPP_
 
 #include "color.hpp"
+#include "communication/communication.hpp"
 
 namespace settings {
+
+struct Settings {
+	uint32_t crc;
 	
-const Color& getWorkLightColor();
-const Color& getFlutLightColor();
+	uint8_t unique_id;
+	
+	uint8_t device_id;
+	uint8_t group_id;
+	uint8_t sun_id;
+	uint8_t strip_id;
+
+	Color   work_light_color;
+	Color   flut_light_color;
+};
+
+void setup();
+const Settings& get();
+
+extern communication::receiver::CommandInfo read_command_info;
+extern communication::receiver::CommandInfo write_command_info;
 
 }
 
