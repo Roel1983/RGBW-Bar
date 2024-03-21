@@ -22,8 +22,8 @@ PRIVATE void     loadSettings       (Settings& settings);
 PRIVATE void     loadDefaultSettings(Settings& settings);
 PRIVATE void     saveSettings       (Settings& settings);
 PRIVATE bool     checkCrc           (const Settings& settings);
-PRIVATE uint32_t calculateCrc       (const Settings& settings);
-PRIVATE uint32_t calculateCrc       (const uint8_t *buffer, uint8_t size);
+PRIVATE int32_t calculateCrc        (const Settings& settings);
+PRIVATE int32_t calculateCrc        (const uint8_t *buffer, uint8_t size);
 PRIVATE void     applySettings      (Settings& settings);
 
 bool onReadCommand(const ReadCommand& command);
@@ -82,15 +82,15 @@ PRIVATE bool checkCrc(const Settings& settings) {
 	return (sram_settings.crc == calculateCrc(settings));
 }
 
-PRIVATE uint32_t calculateCrc(const Settings& settings) {
+PRIVATE int32_t calculateCrc(const Settings& settings) {
 	return calculateCrc(
 		reinterpret_cast<const uint8_t*>(&settings) + sizeof(settings.crc),
 		sizeof(settings) - sizeof(settings.crc));
 }
 
-PRIVATE uint32_t calculateCrc(const uint8_t *buffer, uint8_t size) {
-	constexpr uint32_t prime = 31;
-	uint32_t res = 1;
+PRIVATE int32_t calculateCrc(const uint8_t *buffer, uint8_t size) {
+	constexpr int32_t prime = 31;
+	int32_t res = 1;
 	for (int i = 0; i < size; i++) {
 		res += buffer[i];
 		res *= prime;
@@ -103,7 +103,7 @@ const Settings& get() {
 }
 
 struct ReadCommand {
-	/* Empty */
+	uint8_t dummy;
 };
 static_assert(sizeof(ReadCommand) == 1, "");
 

@@ -97,12 +97,13 @@ void loop() {
 		}
 	}
 	timestamp::Timestamp ts = timestamp::getMsTimestamp();
+	
+	cli();
 	if (isr.state != STATE_PREAMBLE && (ts - start_receving_timestamp) > RECEIVE_TIMEOUT) {
-		cli();
 		raiseError(ERROR_TIMEOUT);
 		reset();
-		sei();
 	}
+	sei();
 }
 
 ISR(USART_RX_vect) {

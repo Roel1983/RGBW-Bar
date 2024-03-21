@@ -7,7 +7,7 @@
 namespace settings {
 
 struct Settings {
-	uint32_t crc;
+	int32_t crc;
 	
 	uint8_t unique_id;
 	
