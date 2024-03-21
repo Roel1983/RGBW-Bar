@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import nl.rdrost.rgbw.comm.layer2.AbstractCommand;
 import nl.rdrost.rgbw.comm.layer2.CommandId;
 import nl.rdrost.rgbw.comm.layer2.UniqueIdCommand;
 import nl.rdrost.rgbw.types.Settings;
@@ -21,7 +22,7 @@ public class SettingsWriteCommand extends UniqueIdCommand {
 	}
 
 	public SettingsWriteCommand(final int unique_id, final List<Settings> settings) {
-		super(COMMAND_ID, unique_id);
+		super(INFO, unique_id);
 		Objects.nonNull(settings);
 		
 		assert(settings.stream().allMatch((Settings s)->!Objects.isNull(s)));
@@ -39,9 +40,22 @@ public class SettingsWriteCommand extends UniqueIdCommand {
 	}
 	
 	@Override
-	protected void payloadPutTo(	final ByteBuffer payload) {
+	protected void payloadPutTo(final ByteBuffer payload) {
 		for (final Settings settings : this.settings) {
 			settings.putTo(payload);
 		}
 	}
+	
+	public static UniqueIdCommand.Info INFO = new UniqueIdCommand.Info() {
+		@Override
+		public CommandId getCommand_id() {
+			return CommandId.SETTINGS_WRITE;
+		}
+		
+		@Override
+		protected AbstractCommand commandFrom(byte block_id, ByteBuffer payload) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+	};
 }

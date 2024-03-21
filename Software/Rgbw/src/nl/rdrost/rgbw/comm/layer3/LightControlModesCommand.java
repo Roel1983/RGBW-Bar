@@ -3,19 +3,16 @@ package nl.rdrost.rgbw.comm.layer3;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
+import nl.rdrost.rgbw.comm.layer2.AbstractCommand;
 import nl.rdrost.rgbw.comm.layer2.BroadcastCommand;
 import nl.rdrost.rgbw.comm.layer2.CommandId;
 import nl.rdrost.rgbw.types.LightControlModes;
 
 public class LightControlModesCommand extends BroadcastCommand {
-	public static final CommandId COMMAND_ID = CommandId.LIGHT_CONTROLLER_MODES;
-	
-	
-	
 	private final LightControlModes modes;
 	
 	public LightControlModesCommand(final LightControlModes modes) {
-		super(COMMAND_ID);
+		super(INFO);
 		
 		Objects.nonNull(modes);
 		
@@ -32,4 +29,18 @@ public class LightControlModesCommand extends BroadcastCommand {
 		payload.put(modes.asByte());
 		
 	}
+	
+	public static BroadcastCommand.Info INFO = new BroadcastCommand.Info() {
+		
+		@Override
+		public CommandId getCommand_id() {
+			return CommandId.LIGHT_CONTROLLER_MODES;
+		}
+		
+		@Override
+		protected AbstractCommand commandFrom(final ByteBuffer payload) {
+			return new LightControlModesCommand(
+					LightControlModes.fromByte(payload.get()));
+		}
+	};
 }

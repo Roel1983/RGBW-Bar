@@ -2,17 +2,16 @@ package nl.rdrost.rgbw.comm.layer3;
 
 import java.nio.ByteBuffer;
 
+import nl.rdrost.rgbw.comm.layer2.AbstractCommand;
 import nl.rdrost.rgbw.comm.layer2.BroadcastCommand;
 import nl.rdrost.rgbw.comm.layer2.CommandId;
 
 public class BootloaderCommand extends BroadcastCommand {
-	public static final CommandId COMMAND_ID = CommandId.BOOTLOADER;
-	
 	private final int unique_id;
 	private final int seconds;
 	
 	public BootloaderCommand(final int unique_id, final int seconds) {
-		super(COMMAND_ID);
+		super(INFO);
 		
 		assert(unique_id >= 0 && unique_id < 0xff);
 		assert(seconds >= 0   && seconds < 0xff);
@@ -39,6 +38,20 @@ public class BootloaderCommand extends BroadcastCommand {
 		payload
 			.put((byte)this.unique_id)
 			.put((byte)this.seconds);
-		
 	}
+	
+	public static BroadcastCommand.Info INFO = new BroadcastCommand.Info() {
+		
+		@Override
+		public CommandId getCommand_id() {
+			return CommandId.BOOTLOADER;
+		}
+		
+		@Override
+		protected AbstractCommand commandFrom(final ByteBuffer payload) {
+			return new BootloaderCommand(
+					payload.get(),
+					payload.get());
+		}
+	};
 }

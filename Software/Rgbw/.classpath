@@ -6,6 +6,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="/home/roel/eclipse-workspaces/RGBW/RS485/libs/jSerialComm-2.10.4.jar"/>
+	<classpathentry kind="lib" path="/home/msa/git/RGBW-Bar/Software/Rgbw/libs/jSerialComm-2.10.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -48,4 +48,9 @@ public class LightControlModes {
 				    | this.follow.value << 2
 			        | this.flut.value   << 4);
 	}
+	
+	public static LightControlModes fromByte(final byte b) {
+		// TODO
+		return new LightControlModes(Value.NO_CHANGE, Value.NO_CHANGE, Value.NO_CHANGE);
+	}
 }

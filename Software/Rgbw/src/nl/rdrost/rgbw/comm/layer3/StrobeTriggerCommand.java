@@ -4,12 +4,11 @@ import java.nio.ByteBuffer;
 import java.time.Duration;
 import java.util.Objects;
 
+import nl.rdrost.rgbw.comm.layer2.AbstractCommand;
 import nl.rdrost.rgbw.comm.layer2.BroadcastCommand;
 import nl.rdrost.rgbw.comm.layer2.CommandId;
 
 public class StrobeTriggerCommand extends BroadcastCommand {
-	public static final CommandId COMMAND_ID = CommandId.STROBE_TRIGGER;
-	
 	public static final Duration MAX_DURATION = Duration.ofMillis(0xFFFF);
 	public static final int      MAX_COUNT    = 0xFF;
 	
@@ -18,7 +17,7 @@ public class StrobeTriggerCommand extends BroadcastCommand {
 	private final int      count;
 	
 	public StrobeTriggerCommand(final Duration on, final Duration off, final int count) {
-		super(COMMAND_ID);
+		super(INFO);
 		Objects.nonNull(on);
 		Objects.nonNull(off);
 		
@@ -55,4 +54,19 @@ public class StrobeTriggerCommand extends BroadcastCommand {
 			.putShort((short)this.off.toMillis())
 			.put((byte)this.count);
 	}
+	
+	public static BroadcastCommand.Info INFO = new BroadcastCommand.Info() {
+		@Override
+		public CommandId getCommand_id() {
+			return CommandId.STROBE_TRIGGER;
+		}
+		
+		@Override
+		protected AbstractCommand commandFrom(ByteBuffer payload) {
+			return new StrobeTriggerCommand(
+					Duration.ofMillis(payload.getShort()),
+					Duration.ofMillis(payload.getShort()),
+					payload.get());
+		}
+	};
 }

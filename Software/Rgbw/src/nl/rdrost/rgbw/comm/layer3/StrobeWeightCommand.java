@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import nl.rdrost.rgbw.comm.layer2.AbstractCommand;
+import nl.rdrost.rgbw.comm.layer2.BroadcastCommand;
 import nl.rdrost.rgbw.comm.layer2.CommandId;
 import nl.rdrost.rgbw.comm.layer2.StripCommand;
 
@@ -20,7 +22,7 @@ public class StrobeWeightCommand extends StripCommand {
 	}
 	
 	protected StrobeWeightCommand(final int strip_id, final List<Float> weights) {
-		super(COMMAND_ID, strip_id);
+		super(INFO, strip_id);
 		Objects.nonNull(weights);
 		
 		assert(weights.stream().allMatch((Float f)->!Objects.isNull(f) && f >= 0 && f <= 8192));
@@ -39,4 +41,17 @@ public class StrobeWeightCommand extends StripCommand {
 			payload.putShort((short)(weight * 8192));
 		}
 	}
+	
+	public static StripCommand.Info INFO = new StripCommand.Info() {
+		@Override
+		public CommandId getCommand_id() {
+			return CommandId.STROBE_WEIGHT;
+		}
+		@Override
+		protected AbstractCommand commandFrom(byte block_id, ByteBuffer payload) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+	};
+
 }

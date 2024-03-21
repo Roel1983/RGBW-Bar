@@ -5,18 +5,31 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Objects;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 
 public class Receiver implements Closeable {
 	
 	private final InputStream is;
+	private final BlockingQueue<Command> command_queue;
+	
 	private Thread thread;
-	private volatile boolean must_close = false;
 	
 	public Receiver(final InputStream is) {
+		this(is, 100);
+	}
+	
+	public Receiver(final InputStream is, final int capacity) {
+		this(is, new LinkedBlockingDeque<>(capacity));
+	}
+	
+	public Receiver(final InputStream is, final BlockingQueue<Command> command_queue) {
 		Objects.nonNull(is);
+		Objects.nonNull(command_queue);
 		
 		this.is = is;
+		this.command_queue = command_queue;
 		
 		thread = new Thread(new MyRunable());
 		thread.start();
@@ -26,11 +39,13 @@ public class Receiver implements Closeable {
 		return this.is;
 	}
 	
+	public final BlockingQueue<Command> getCommandQueue() {
+		return this.command_queue;
+	}
 
 	@Override
 	public void close() throws IOException {
-		must_close = true;
-		thread.interrupt();
+		this.thread.interrupt();
 	}
 	
 	private void fireOnError() {
@@ -62,7 +77,7 @@ public class Receiver implements Closeable {
 		}
 		
 		public void run() {
-			while (!must_close) {
+			while (!Thread.interrupted()) {
 				try {
 					byte data_byte = (byte) is.read();
 					processIncommingByte(data_byte);
@@ -149,8 +164,15 @@ public class Receiver implements Closeable {
 				fireOnError(/*ERROR_CRC*/);
 				return;
 			}
-			Command command = new Command(this.sender_unique_id, this.command_id, this.body.flip());
-			System.out.println(command);
+			Command command = new Command(
+					this.sender_unique_id,
+					this.command_id,
+					this.body.flip());
+			try {
+				command_queue.put(command);
+			} catch (final InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
 		}
 	}
 }

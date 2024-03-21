@@ -3,13 +3,15 @@ package nl.rdrost.rgbw.comm.layer2;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import nl.rdrost.rgbw.comm.layer1.Command;
+
 public abstract class AddressableCommand extends AbstractCommand {
 	public static final int MAX_BLOCK_ID = 0xFE;
 	
 	private final byte block_id;
 	
-	protected AddressableCommand(final CommandId command_id, final int block_id) {
-		super(command_id);
+	protected AddressableCommand(final AbstractCommand.Info info, final int block_id) {
+		super(info);
 		assert(block_id >= 0 && block_id <= MAX_BLOCK_ID);
 		
 		this.block_id = (byte)block_id; 
@@ -29,6 +31,24 @@ public abstract class AddressableCommand extends AbstractCommand {
 				.put(block_id);
 		payloadPutTo(body);
 		return new nl.rdrost.rgbw.comm.layer1.Command(
-				(byte)0xff,	this.command_id.value, body.flip());
+				(byte)0xff,	this.info.getCommand_id().value, body.flip());
+	}
+	
+	public static abstract class Info extends AbstractCommand.Info {
+		
+		public Info(AbstractCommand.Info.Type type) {
+			super(type);
+		}
+		
+		@Override
+		protected final AbstractCommand commandFrom(final Command layer1_command) {
+			final ByteBuffer body = layer1_command.getBody();
+			
+			byte block_id            = body.get();
+			final ByteBuffer payload = body;
+			return commandFrom(block_id, payload);
+		}
+		
+		protected abstract AbstractCommand commandFrom(final byte block_id, final ByteBuffer payload);
 	}
 }
