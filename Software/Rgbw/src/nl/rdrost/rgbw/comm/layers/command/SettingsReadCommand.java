@@ -41,6 +41,7 @@ public class SettingsReadCommand extends UniqueIdCommand {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("SettingsReadCommand [sender_unique_id=").append(getSenderUniqueId())
+				.append(", unique_id=").append(getUniqueId())
 				.append(", count=").append(count)
 				.append("]");
 		return builder.toString();

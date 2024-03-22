@@ -8,7 +8,7 @@ import nl.rdrost.rgbw.comm.layers.command.details.AbstractCommand;
 import nl.rdrost.rgbw.comm.layers.command.details.BroadcastCommand;
 
 public class StrobeTriggerCommand extends BroadcastCommand {
-	public static final Duration MAX_DURATION = Duration.ofMillis(0xFFFF);
+	public static final Duration MAX_DURATION = Duration.ofMillis(0x8FFF);
 	public static final int      MAX_COUNT    = 0xFF;
 	
 	private final Duration on;

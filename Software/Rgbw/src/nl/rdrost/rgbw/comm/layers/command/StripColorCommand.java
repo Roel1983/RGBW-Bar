@@ -48,6 +48,7 @@ public class StripColorCommand extends StripCommand {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("StripColorCommand [sender_unique_id=").append(getSenderUniqueId())
+				.append(", strip_id=").append(getStripId())
 				.append(", colors=");
 		
 		boolean is_first = true;

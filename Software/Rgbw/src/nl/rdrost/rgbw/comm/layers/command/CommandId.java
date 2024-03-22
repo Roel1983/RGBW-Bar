@@ -10,7 +10,7 @@ public enum CommandId {
 	LIGHT_CONTROLLER_MODES   ((byte) 2, LightControlModesCommand.INFO),
 	BOOTLOADER               ((byte) 3, BootloaderCommand.INFO),
 	STRIP_COLOR              ((byte) 4, StripColorCommand.INFO),
-	//STRIP_TARGET_FACTOR      ((byte) 5, StripTargetFactor.class),
+	STRIP_TARGET_FACTOR      ((byte) 5, StripTargetFactor.INFO),
 	STROBE_TRIGGER           ((byte) 6, StrobeTriggerCommand.INFO),
 	STROBE_COLOR             ((byte) 7, StrobeColorCommand.INFO),
 	STROBE_WEIGHT            ((byte) 8, StrobeWeightCommand.INFO),

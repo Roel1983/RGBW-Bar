@@ -46,6 +46,7 @@ public class StrobeWeightCommand extends StripCommand {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("StrobeWeightCommand [sender_unique_id=").append(getSenderUniqueId())
+				.append(", strip_id=").append(getStripId())
 				.append(", weights=");
 		
 		boolean is_first = true;

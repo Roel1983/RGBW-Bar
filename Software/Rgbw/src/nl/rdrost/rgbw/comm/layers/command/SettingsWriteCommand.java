@@ -49,6 +49,7 @@ public class SettingsWriteCommand extends UniqueIdCommand {
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("SettingsWriteCommand [sender_unique_id=").append(getSenderUniqueId())
+				.append(", unique_id=").append(getUniqueId())
 				.append(", settings=").append(settings)
 				.append("]");
 		return builder.toString();
