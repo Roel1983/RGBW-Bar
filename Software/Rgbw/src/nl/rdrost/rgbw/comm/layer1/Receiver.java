@@ -4,12 +4,15 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
 
 public class Receiver implements Closeable {
+	
+	enum Error {PREAMBLE, CRC};
 	
 	private final InputStream is;
 	private final BlockingQueue<Command> command_queue;
@@ -48,8 +51,8 @@ public class Receiver implements Closeable {
 		this.thread.interrupt();
 	}
 	
-	private void fireOnError() {
-		System.err.println("layer1.Receiver.fireOnError");
+	private void fireOnError(final Error error) {
+		System.err.println("layer1.Receiver.fireOnError: " + error);
 		// TODO
 	}
 	
@@ -61,7 +64,7 @@ public class Receiver implements Closeable {
 		
 		private State state = State.PREAMBLE;
 		
-		private int crc               = 0;
+		private byte crc              = 0;
 		private int preamble_count    = 0;
 		private byte sender_unique_id = 0;
 		private byte command_id;
@@ -84,6 +87,7 @@ public class Receiver implements Closeable {
 				} catch (java.io.InterruptedIOException e) {
 				} catch (IOException e) {
 					System.err.print('!');
+					Thread.currentThread().interrupt();
 				}
 			}
 		}
@@ -111,8 +115,7 @@ public class Receiver implements Closeable {
 			case CRC:
 				receiveCrc(data_byte);
 				return;
-			}
-			
+			}			
 		}
 		
 		private boolean receiveBody(byte data_byte) {
@@ -125,7 +128,7 @@ public class Receiver implements Closeable {
 
 		private void receivePreamble(byte data_byte) {
 			if (data_byte != PREAMBLE_BYTE) {
-				fireOnError(/*ERROR_PREAMBLE*/);
+				fireOnError(Error.PREAMBLE);
 				preamble_count = 0;
 				state          = State.PREAMBLE;
 				return;
@@ -155,13 +158,15 @@ public class Receiver implements Closeable {
 			} else {
 				remaining_payload_length |= data_byte;
 			}
-			body = ByteBuffer.allocate(remaining_payload_length);
+			body = ByteBuffer.allocate(remaining_payload_length).order(ByteOrder.LITTLE_ENDIAN);
 			state = State.CRC;
 		}
 		
 		private void receiveCrc(byte data_byte) {
 			if (this.crc != 0x00) {
-				fireOnError(/*ERROR_CRC*/);
+				System.out.print(String.format("[%02x]", this.crc));
+				fireOnError(Error.CRC);
+				state = State.PREAMBLE;
 				return;
 			}
 			Command command = new Command(
@@ -173,6 +178,7 @@ public class Receiver implements Closeable {
 			} catch (final InterruptedException e) {
 				Thread.currentThread().interrupt();
 			}
+			state = State.PREAMBLE;
 		}
 	}
 }

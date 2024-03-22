@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Objects;
 
 import nl.rdrost.rgbw.comm.layer2.AbstractCommand;
-import nl.rdrost.rgbw.comm.layer2.BroadcastCommand;
 import nl.rdrost.rgbw.comm.layer2.CommandId;
 import nl.rdrost.rgbw.comm.layer2.StripCommand;
 
@@ -42,6 +41,24 @@ public class StrobeWeightCommand extends StripCommand {
 		}
 	}
 	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("StrobeWeightCommand [weights=");
+		
+		boolean is_first = true;
+		for (final float weight : this.weights) {
+			if (is_first) {
+				is_first = false;
+			} else {
+				builder.append(", ");
+			}
+			builder.append(String.format("%0.0f", weight));
+		}
+		builder.append(weights).append("]");
+		return builder.toString();
+	}
+
 	public static StripCommand.Info INFO = new StripCommand.Info() {
 		@Override
 		public CommandId getCommand_id() {

@@ -48,6 +48,16 @@ public class StrobeTriggerCommand extends BroadcastCommand {
 	}
 	
 	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("StrobeTriggerCommand [on=").append(on)
+				.append(", off=").append(off)
+				.append(", count=").append(count)
+				.append("]");
+		return builder.toString();
+	}
+
+	@Override
 	protected void payloadPutTo(final ByteBuffer payload) {
 		payload
 			.putShort((short)this.on.toMillis())

@@ -38,10 +38,18 @@ public class RequestToSendCommand extends BroadcastCommand {
 	protected void payloadPutTo(final ByteBuffer payload) {
 		payload
 			.put((byte)this.unique_id)
-			.put((byte)this.max_length);
-		
+			.put((byte)this.max_length);	
 	}
 	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("RequestToSendCommand [unique_id=").append(unique_id)
+				.append(", max_length=").append(max_length)
+				.append("]");
+		return builder.toString();
+	}
+
 	public static BroadcastCommand.Info INFO = new BroadcastCommand.Info() {
 		@Override
 		public CommandId getCommand_id() {

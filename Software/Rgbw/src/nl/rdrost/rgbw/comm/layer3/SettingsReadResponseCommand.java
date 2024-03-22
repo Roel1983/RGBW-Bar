@@ -6,48 +6,52 @@ import java.util.Objects;
 import nl.rdrost.rgbw.comm.layer2.AbstractCommand;
 import nl.rdrost.rgbw.comm.layer2.BroadcastCommand;
 import nl.rdrost.rgbw.comm.layer2.CommandId;
-import nl.rdrost.rgbw.types.LightControlModes;
+import nl.rdrost.rgbw.types.Settings;
 
-public class LightControlModesCommand extends BroadcastCommand {
-	private final LightControlModes modes;
+public class SettingsReadResponseCommand extends BroadcastCommand {
 	
-	public LightControlModesCommand(final LightControlModes modes) {
+	private final Settings settings;
+	
+	public SettingsReadResponseCommand(final Settings settings) {
 		super(INFO);
 		
-		Objects.nonNull(modes);
+		Objects.nonNull(settings);
 		
-		this.modes = modes;
+		this.settings = settings;
 	}
 	
+	public final Settings getSettings() {
+		return this.settings;
+	}
+
 	@Override
 	protected int getPayloadLength() {
-		return 1;
+		return Settings.PAYLOAD_SIZE;
 	}
-	
+
 	@Override
 	protected void payloadPutTo(final ByteBuffer payload) {
-		payload.put(modes.asByte());
+		this.settings.putTo(payload);
 	}
 	
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("LightControlModesCommand [modes=").append(modes)
+		builder.append("SettingsReadResponseCommand [settings=").append(settings)
 				.append("]");
 		return builder.toString();
 	}
 
 	public static BroadcastCommand.Info INFO = new BroadcastCommand.Info() {
-		
 		@Override
 		public CommandId getCommand_id() {
-			return CommandId.LIGHT_CONTROLLER_MODES;
+			return CommandId.SETTINGS_READ_RESPONSE;
 		}
 		
 		@Override
 		protected AbstractCommand commandFrom(final ByteBuffer payload) {
-			return new LightControlModesCommand(
-					LightControlModes.fromByte(payload.get()));
+			return new SettingsReadResponseCommand(
+					Settings.from(payload));
 		}
 	};
 }

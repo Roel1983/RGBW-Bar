@@ -1,6 +1,7 @@
 package nl.rdrost.rgbw.comm.layer1;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public class Command {
 	final byte       sender_unique_id;
@@ -26,7 +27,7 @@ public class Command {
 	}
 	
 	public final ByteBuffer getBody() {
-		return this.body.duplicate();
+		return this.body.duplicate().order(ByteOrder.LITTLE_ENDIAN);
 	}
 
 	@Override
@@ -42,6 +43,4 @@ public class Command {
 		builder.append("]");
 		return builder.toString();
 	}
-	
-	
 }

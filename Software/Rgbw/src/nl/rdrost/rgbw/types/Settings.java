@@ -53,4 +53,40 @@ public class Settings {
 		}
 		payload.putInt(crc_position, crc);
 	}
+	
+	
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Settings [unique_id=").append(unique_id).append(", device_id=").append(device_id)
+				.append(", group_id=").append(group_id).append(", sun_id=").append(sun_id).append(", strip_id=")
+				.append(strip_id).append(", work_light_color=").append(work_light_color).append(", flut_light_color=")
+				.append(flut_light_color).append("]");
+		return builder.toString();
+	}
+
+	public static Settings from(final ByteBuffer payload) {
+		final int crc = payload.getInt();
+		int begin_position = payload.position();
+		Settings settings = new Settings(
+				payload.get(),
+				payload.get(),
+				payload.get(),
+				payload.get(),
+				payload.get(),
+				Rgbw.from(payload),
+				Rgbw.from(payload));
+		
+		ByteBuffer bb = payload.duplicate().flip().position(begin_position);
+		int calculated_crc = 1;
+		while (bb.hasRemaining()) {
+			calculated_crc += bb.get();
+			calculated_crc *= CRC_PRIME;
+		}
+		if(crc != calculated_crc) {
+			System.err.println("Settings CRC error"); // TODO
+		}
+		return settings;
+	}
 }

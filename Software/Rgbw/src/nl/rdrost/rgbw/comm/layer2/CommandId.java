@@ -5,22 +5,26 @@ import java.util.Optional;
 import nl.rdrost.rgbw.comm.layer3.BootloaderCommand;
 import nl.rdrost.rgbw.comm.layer3.LightControlModesCommand;
 import nl.rdrost.rgbw.comm.layer3.RequestToSendCommand;
+import nl.rdrost.rgbw.comm.layer3.RequestToSendResponseCommand;
 import nl.rdrost.rgbw.comm.layer3.SettingsReadCommand;
+import nl.rdrost.rgbw.comm.layer3.SettingsReadResponseCommand;
 import nl.rdrost.rgbw.comm.layer3.SettingsWriteCommand;
 import nl.rdrost.rgbw.comm.layer3.StrobeTriggerCommand;
 import nl.rdrost.rgbw.comm.layer3.StrobeWeightCommand;
 
 public enum CommandId {
-	REQUEST_TO_SEND        ((byte) 0, RequestToSendCommand.INFO),
-	LIGHT_CONTROLLER_MODES ((byte) 2, LightControlModesCommand.INFO),
-	BOOTLOADER             ((byte) 3, BootloaderCommand.INFO),
-	//STRIP_COLOR            ((byte) 4, StripColorCommand.class),
-	//STRIP_TARGET_FACTOR    ((byte) 5, StripTargetFactor.class),
-	STROBE_TRIGGER         ((byte) 6, StrobeTriggerCommand.INFO),
-	//STROBE_COLOR           ((byte) 7, StrobeColorCommand.class),
-	STROBE_WEIGHT          ((byte) 8, StrobeWeightCommand.INFO),
-	SETTINGS_READ          ((byte) 9, SettingsReadCommand.INFO),
-	SETTINGS_WRITE         ((byte)11, SettingsWriteCommand.INFO);
+	REQUEST_TO_SEND          ((byte) 0, RequestToSendCommand.INFO),
+	REQUEST_TO_SEND_RESPONSE ((byte) 1, RequestToSendResponseCommand.INFO),
+	LIGHT_CONTROLLER_MODES   ((byte) 2, LightControlModesCommand.INFO),
+	BOOTLOADER               ((byte) 3, BootloaderCommand.INFO),
+	//STRIP_COLOR              ((byte) 4, StripColorCommand.class),
+	//STRIP_TARGET_FACTOR      ((byte) 5, StripTargetFactor.class),
+	STROBE_TRIGGER           ((byte) 6, StrobeTriggerCommand.INFO),
+	//STROBE_COLOR             ((byte) 7, StrobeColorCommand.class),
+	STROBE_WEIGHT            ((byte) 8, StrobeWeightCommand.INFO),
+	SETTINGS_READ            ((byte) 9, SettingsReadCommand.INFO),
+	SETTINGS_READ_RESPONSE   ((byte)10, SettingsReadResponseCommand.INFO),
+	SETTINGS_WRITE           ((byte)11, SettingsWriteCommand.INFO);
 	
 	public final byte                 value;
 	public       AbstractCommand.Info info;

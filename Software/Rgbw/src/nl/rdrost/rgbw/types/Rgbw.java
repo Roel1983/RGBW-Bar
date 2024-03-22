@@ -27,4 +27,19 @@ public class Rgbw {
 			payload.putShort(s);
 		}
 	}
+	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Rgbw [channels=").append(Arrays.toString(channels)).append("]");
+		return builder.toString();
+	}
+
+	public static Rgbw from(final ByteBuffer payload) {
+		final short[] channels = new short[CHANNEL_COUNT];
+		for (int i = 0; i < CHANNEL_COUNT; i++) {
+			channels[i] = payload.getShort();
+		}		
+		return new Rgbw(channels);
+	}
 }

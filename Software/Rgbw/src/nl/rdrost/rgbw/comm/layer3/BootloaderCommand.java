@@ -40,6 +40,15 @@ public class BootloaderCommand extends BroadcastCommand {
 			.put((byte)this.seconds);
 	}
 	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("BootloaderCommand [unique_id=").append(unique_id)
+				.append(", seconds=").append(seconds)
+				.append("]");
+		return builder.toString();
+	}
+
 	public static BroadcastCommand.Info INFO = new BroadcastCommand.Info() {
 		
 		@Override

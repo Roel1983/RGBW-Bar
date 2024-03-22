@@ -46,6 +46,13 @@ public class SettingsWriteCommand extends UniqueIdCommand {
 		}
 	}
 	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("SettingsWriteCommand [settings=").append(settings).append("]");
+		return builder.toString();
+	}
+
 	public static UniqueIdCommand.Info INFO = new UniqueIdCommand.Info() {
 		@Override
 		public CommandId getCommand_id() {
@@ -53,9 +60,14 @@ public class SettingsWriteCommand extends UniqueIdCommand {
 		}
 		
 		@Override
-		protected AbstractCommand commandFrom(byte block_id, ByteBuffer payload) {
-			// TODO Auto-generated method stub
-			return null;
+		protected AbstractCommand commandFrom(byte unique_id, ByteBuffer payload) {
+			final int settings_count = payload.remaining() / Settings.PAYLOAD_SIZE;
+			final List<Settings> settings_list = new ArrayList<>(settings_count);
+			for (int i = 0; i < settings_count; i++) {
+				final Settings settings = Settings.from(payload);
+				settings_list.add(settings);
+			}
+			return new SettingsWriteCommand(unique_id, settings_list);
 		}
 	};
 }

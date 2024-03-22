@@ -38,6 +38,13 @@ public class SettingsReadCommand extends UniqueIdCommand {
 		}
 	}
 	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("SettingsReadCommand [count=").append(count).append("]");
+		return builder.toString();
+	}
+
 	public static UniqueIdCommand.Info INFO = new UniqueIdCommand.Info() {
 		@Override
 		public CommandId getCommand_id() {
