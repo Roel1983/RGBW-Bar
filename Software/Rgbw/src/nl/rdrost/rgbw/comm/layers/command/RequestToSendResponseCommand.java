@@ -15,7 +15,11 @@ public class RequestToSendResponseCommand extends BroadcastCommand {
 		assert(requested_length >= 0 && requested_length < 0xff);
 		
 		this.requested_length = (byte)requested_length;
-	}	
+	}
+	
+	public final int getRequestedLength() {
+		return requested_length & 0xff;
+	}
 	
 	@Override
 	protected int getPayloadLength() {

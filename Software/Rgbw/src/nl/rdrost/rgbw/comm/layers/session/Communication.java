@@ -1,19 +1,19 @@
 package nl.rdrost.rgbw.comm.layers.session;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.BitSet;
 import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
-import nl.rdrost.rgbw.comm.layers.command.CommandId;
 import nl.rdrost.rgbw.comm.layers.command.Receiver;
 import nl.rdrost.rgbw.comm.layers.command.RequestToSendCommand;
 import nl.rdrost.rgbw.comm.layers.command.RequestToSendResponseCommand;
 import nl.rdrost.rgbw.comm.layers.command.Sender;
 import nl.rdrost.rgbw.comm.layers.command.details.AbstractCommand;
 
-public class Communication {
+public class Communication implements Closeable{
 	
 	private final Sender   sender;
 	private final Receiver receiver;
@@ -21,6 +21,7 @@ public class Communication {
 	private final Thread sending_thread;
 	private final Thread receiving_thread;
 	private final BlockingQueue<AbstractCommand> command_queue;
+	private final BlockingQueue<RequestToSendResponseCommand> request_for_higher_requested_length;
 		
 	public Communication(final Sender sender, final Receiver receiver) {
 		Objects.nonNull(sender);
@@ -29,7 +30,8 @@ public class Communication {
 		this.sender   = sender;
 		this.receiver = receiver;
 		
-		this.command_queue  = new LinkedBlockingDeque<AbstractCommand>(100);
+		this.command_queue    = new LinkedBlockingDeque<>(100);
+		this.request_for_higher_requested_length = new LinkedBlockingDeque<>(10);
 		
 		this.sending_thread   = new Thread(new SendingRunnable());
 		this.receiving_thread = new Thread(new ReceivingRunnable());
@@ -38,7 +40,9 @@ public class Communication {
 		receiving_thread.start();
 	}
 	
-	public void stop() {
+	@Override
+	public void close() throws IOException {
+		this.receiver.close();
 		this.sending_thread.interrupt();
 		this.receiving_thread.interrupt();
 	}
@@ -63,12 +67,26 @@ public class Communication {
 				AbstractCommand command_or_null = Communication.this.command_queue.poll();
 				
 				try {
-					Thread.sleep(20); // tmp
 					if(command_or_null != null) {
+						System.out.println(String.format("-->: %s", command_or_null));
 						Communication.this.sender.send(command_or_null);
 					} else {
-						final int unique_id_to_try = nextUniqueIdToTry();
-						Communication.this.sender.send(new RequestToSendCommand(unique_id_to_try, 8));
+						RequestToSendResponseCommand request_to_send_response = 
+								request_for_higher_requested_length.poll();
+						if (request_to_send_response != null) {
+							final RequestToSendCommand requestToSendCommand = new RequestToSendCommand(
+									request_to_send_response.getSenderUniqueId(),
+									request_to_send_response.getRequestedLength());
+							//System.out.println(String.format("-->: %s", requestToSendCommand));
+							Communication.this.sender.send(requestToSendCommand);
+							Thread.sleep(2 + request_to_send_response.getRequestedLength() / 8);
+						} else {
+							final int unique_id_to_try = nextUniqueIdToTry();
+							Communication.this.sender.send(new RequestToSendCommand(
+									unique_id_to_try,
+									8));
+							Thread.sleep(3);
+						}
 					}
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -114,11 +132,14 @@ public class Communication {
 					}
 					
 					if (command instanceof RequestToSendResponseCommand) {
-						RequestToSendResponseCommand requestToSendResponseCommand = (RequestToSendResponseCommand)command;
-						// TODO re-request of asked for longer slot
+						RequestToSendResponseCommand requestToSendResponseCommand = 
+								(RequestToSendResponseCommand)command;
+						if (requestToSendResponseCommand.getRequestedLength() > 0) {
+							Communication.this.request_for_higher_requested_length.offer(
+									requestToSendResponseCommand);
+						}
 					}
-					
-					System.out.println(String.format("<--: %s", command));
+					//System.out.println(String.format("<--: %s", command));
 				} catch (InterruptedException e) {
 					Thread.currentThread().interrupt();
 				}
