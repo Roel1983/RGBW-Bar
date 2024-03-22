@@ -1,4 +1,4 @@
-package nl.rdrost.rgbw.comm.layer2;
+package nl.rdrost.rgbw.comm.layers.command.details;
 
 public abstract class DeviceCommand extends AddressableCommand {
 

@@ -1,4 +1,4 @@
-package nl.rdrost.rgbw.comm.layer2;
+package nl.rdrost.rgbw.comm.layers.command;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -7,29 +7,30 @@ import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
-import nl.rdrost.rgbw.comm.layer1.Command;
+import nl.rdrost.rgbw.comm.layers.command.details.AbstractCommand;
+import nl.rdrost.rgbw.comm.layers.packet.Command;
 
 public class Receiver implements Closeable {
 	
-	private final nl.rdrost.rgbw.comm.layer1.Receiver inner_receiver;
+	private final nl.rdrost.rgbw.comm.layers.packet.Receiver inner_receiver;
 	
 	private Thread thread;
 	private final BlockingQueue<AbstractCommand> command_queue;
 	
 	public Receiver(final InputStream is) {
-		this(new nl.rdrost.rgbw.comm.layer1.Receiver(is));
+		this(new nl.rdrost.rgbw.comm.layers.packet.Receiver(is));
 	}
 	
-	public Receiver(final nl.rdrost.rgbw.comm.layer1.Receiver inner_receiver) {
+	public Receiver(final nl.rdrost.rgbw.comm.layers.packet.Receiver inner_receiver) {
 		this(inner_receiver, 100);
 	}
 	
-	public Receiver(final nl.rdrost.rgbw.comm.layer1.Receiver inner_receiver, 
+	public Receiver(final nl.rdrost.rgbw.comm.layers.packet.Receiver inner_receiver, 
 			final int capacity) {
 		this(inner_receiver, new LinkedBlockingDeque<>(capacity));
 	}
 	
-	public Receiver(final nl.rdrost.rgbw.comm.layer1.Receiver inner_receiver, 
+	public Receiver(final nl.rdrost.rgbw.comm.layers.packet.Receiver inner_receiver, 
 			final BlockingQueue<AbstractCommand> command_queue) {
 		Objects.nonNull(inner_receiver);
 		Objects.nonNull(command_queue);

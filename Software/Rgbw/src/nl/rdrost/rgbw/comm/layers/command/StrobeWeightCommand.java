@@ -1,4 +1,4 @@
-package nl.rdrost.rgbw.comm.layer3;
+package nl.rdrost.rgbw.comm.layers.command;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -7,9 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import nl.rdrost.rgbw.comm.layer2.AbstractCommand;
-import nl.rdrost.rgbw.comm.layer2.CommandId;
-import nl.rdrost.rgbw.comm.layer2.StripCommand;
+import nl.rdrost.rgbw.comm.layers.command.details.AbstractCommand;
+import nl.rdrost.rgbw.comm.layers.command.details.StripCommand;
 
 public class StrobeWeightCommand extends StripCommand {
 	public static final CommandId COMMAND_ID = CommandId.STROBE_WEIGHT;

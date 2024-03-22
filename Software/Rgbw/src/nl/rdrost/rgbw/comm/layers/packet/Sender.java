@@ -1,4 +1,4 @@
-package nl.rdrost.rgbw.comm.layer1;
+package nl.rdrost.rgbw.comm.layers.packet;
 
 import java.io.IOException;
 import java.io.OutputStream;

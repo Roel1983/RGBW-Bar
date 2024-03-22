@@ -1,12 +1,13 @@
-package nl.rdrost.rgbw.comm.layer2;
+package nl.rdrost.rgbw.comm.layers.command.details;
 
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
-import nl.rdrost.rgbw.comm.layer1.Command;
+import nl.rdrost.rgbw.comm.layers.command.CommandId;
+import nl.rdrost.rgbw.comm.layers.packet.Command;
 
 public abstract class AbstractCommand {
-	private nl.rdrost.rgbw.comm.layer1.Command command = null;
+	private nl.rdrost.rgbw.comm.layers.packet.Command command = null;
 	protected Info                       info;
 	
 	public AbstractCommand(final Info info) {
@@ -18,7 +19,7 @@ public abstract class AbstractCommand {
 		return this.info;
 	}
 	
-	public synchronized final nl.rdrost.rgbw.comm.layer1.Command asCommand() {
+	public synchronized final nl.rdrost.rgbw.comm.layers.packet.Command asCommand() {
 		if (Objects.isNull(command)) {
 			command = createCommand();
 		}
@@ -27,7 +28,7 @@ public abstract class AbstractCommand {
 	
 	protected abstract int        getPayloadLength();
 	protected abstract void       payloadPutTo(final ByteBuffer payload);
-	protected abstract nl.rdrost.rgbw.comm.layer1.Command createCommand();
+	protected abstract nl.rdrost.rgbw.comm.layers.packet.Command createCommand();
 	
 	public static abstract class Info {
 		
@@ -52,6 +53,6 @@ public abstract class AbstractCommand {
 		
 		public abstract CommandId getCommand_id();
 
-		protected abstract AbstractCommand commandFrom(final Command layer1_command);
+		public abstract AbstractCommand commandFrom(final Command layer1_command);
 	}
 }

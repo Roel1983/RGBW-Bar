@@ -1,15 +1,17 @@
-package nl.rdrost.rgbw.comm.layer2;
+package nl.rdrost.rgbw.comm.layers.command;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Objects;
 
+import nl.rdrost.rgbw.comm.layers.command.details.AbstractCommand;
+
 public class Sender {
 	
-	private final nl.rdrost.rgbw.comm.layer1.Sender inner_sender;
+	private final nl.rdrost.rgbw.comm.layers.packet.Sender inner_sender;
 	
 	public Sender(final OutputStream os) {
-		inner_sender = new nl.rdrost.rgbw.comm.layer1.Sender(os);
+		inner_sender = new nl.rdrost.rgbw.comm.layers.packet.Sender(os);
 	}
 	
 	public final OutputStream getOutputStream() {

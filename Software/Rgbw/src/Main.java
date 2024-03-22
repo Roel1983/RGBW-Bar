@@ -6,13 +6,13 @@ import java.util.Arrays;
 
 import com.fazecast.jSerialComm.SerialPort;
 
-import nl.rdrost.rgbw.comm.layer2.AbstractCommand;
-import nl.rdrost.rgbw.comm.layer2.Receiver;
-import nl.rdrost.rgbw.comm.layer2.Sender;
-import nl.rdrost.rgbw.comm.layer3.LightControlModesCommand;
-import nl.rdrost.rgbw.comm.layer3.RequestToSendCommand;
-import nl.rdrost.rgbw.comm.layer3.SettingsReadCommand;
-import nl.rdrost.rgbw.comm.layer3.StrobeTriggerCommand;
+import nl.rdrost.rgbw.comm.layers.command.LightControlModesCommand;
+import nl.rdrost.rgbw.comm.layers.command.Receiver;
+import nl.rdrost.rgbw.comm.layers.command.RequestToSendCommand;
+import nl.rdrost.rgbw.comm.layers.command.Sender;
+import nl.rdrost.rgbw.comm.layers.command.SettingsReadCommand;
+import nl.rdrost.rgbw.comm.layers.command.StrobeTriggerCommand;
+import nl.rdrost.rgbw.comm.layers.command.details.AbstractCommand;
 import nl.rdrost.rgbw.types.LightControlModes;
 
 public class Main {

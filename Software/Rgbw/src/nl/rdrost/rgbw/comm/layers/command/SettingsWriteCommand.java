@@ -1,4 +1,4 @@
-package nl.rdrost.rgbw.comm.layer3;
+package nl.rdrost.rgbw.comm.layers.command;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -7,9 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import nl.rdrost.rgbw.comm.layer2.AbstractCommand;
-import nl.rdrost.rgbw.comm.layer2.CommandId;
-import nl.rdrost.rgbw.comm.layer2.UniqueIdCommand;
+import nl.rdrost.rgbw.comm.layers.command.details.AbstractCommand;
+import nl.rdrost.rgbw.comm.layers.command.details.UniqueIdCommand;
 import nl.rdrost.rgbw.types.Settings;
 
 public class SettingsWriteCommand extends UniqueIdCommand {

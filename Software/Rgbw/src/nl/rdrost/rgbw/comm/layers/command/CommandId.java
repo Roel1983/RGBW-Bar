@@ -1,16 +1,8 @@
-package nl.rdrost.rgbw.comm.layer2;
+package nl.rdrost.rgbw.comm.layers.command;
 
 import java.util.Optional;
 
-import nl.rdrost.rgbw.comm.layer3.BootloaderCommand;
-import nl.rdrost.rgbw.comm.layer3.LightControlModesCommand;
-import nl.rdrost.rgbw.comm.layer3.RequestToSendCommand;
-import nl.rdrost.rgbw.comm.layer3.RequestToSendResponseCommand;
-import nl.rdrost.rgbw.comm.layer3.SettingsReadCommand;
-import nl.rdrost.rgbw.comm.layer3.SettingsReadResponseCommand;
-import nl.rdrost.rgbw.comm.layer3.SettingsWriteCommand;
-import nl.rdrost.rgbw.comm.layer3.StrobeTriggerCommand;
-import nl.rdrost.rgbw.comm.layer3.StrobeWeightCommand;
+import nl.rdrost.rgbw.comm.layers.command.details.AbstractCommand;
 
 public enum CommandId {
 	REQUEST_TO_SEND          ((byte) 0, RequestToSendCommand.INFO),
