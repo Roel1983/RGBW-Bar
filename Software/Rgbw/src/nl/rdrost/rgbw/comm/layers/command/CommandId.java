@@ -12,7 +12,7 @@ public enum CommandId {
 	//STRIP_COLOR              ((byte) 4, StripColorCommand.class),
 	//STRIP_TARGET_FACTOR      ((byte) 5, StripTargetFactor.class),
 	STROBE_TRIGGER           ((byte) 6, StrobeTriggerCommand.INFO),
-	//STROBE_COLOR             ((byte) 7, StrobeColorCommand.class),
+	STROBE_COLOR             ((byte) 7, StrobeColorCommand.INFO),
 	STROBE_WEIGHT            ((byte) 8, StrobeWeightCommand.INFO),
 	SETTINGS_READ            ((byte) 9, SettingsReadCommand.INFO),
 	SETTINGS_READ_RESPONSE   ((byte)10, SettingsReadResponseCommand.INFO),

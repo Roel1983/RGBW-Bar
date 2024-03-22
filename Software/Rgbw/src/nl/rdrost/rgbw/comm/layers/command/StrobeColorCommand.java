@@ -9,68 +9,68 @@ import java.util.Objects;
 
 import nl.rdrost.rgbw.comm.layers.command.details.AbstractCommand;
 import nl.rdrost.rgbw.comm.layers.command.details.StripCommand;
+import nl.rdrost.rgbw.types.Rgbw;
 
-public class StrobeWeightCommand extends StripCommand {
-	private final List<Float> weights;
+public class StrobeColorCommand extends StripCommand {
+	private final List<Rgbw> colors;
 	
-	public StrobeWeightCommand(final int strip_id, final float weight) {
-		this(strip_id, Arrays.asList(weight));
+	public StrobeColorCommand(final int strip_id, final Rgbw color) {
+		this(strip_id, Arrays.asList(color));
 	}
 	
-	public StrobeWeightCommand(final int strip_id, final List<Float> weights) {
+	public StrobeColorCommand(final int strip_id, final List<Rgbw> colors) {
 		super(INFO, strip_id);
-		Objects.nonNull(weights);
+		Objects.nonNull(colors);
 		
-		assert(weights.stream().allMatch((Float f)->!Objects.isNull(f) && f >= 0 && f <= 8192));
+		assert(colors.stream().allMatch((Rgbw c)->!Objects.isNull(c)));
 		
-		this.weights = Collections.unmodifiableList(new ArrayList<>(weights));
+		this.colors = Collections.unmodifiableList(new ArrayList<>(colors));
 	}
 	
-	public final List<Float> getWeights() {
-		return this.weights;
+	public final List<Rgbw> getColors() {
+		return this.colors;
 	}
 	
 	@Override
 	protected int getPayloadLength() {
-		return 2 * this.weights.size();
+		return this.colors.size() * Rgbw.PAYLOAD_SIZE;
 	}
 	
 	@Override
 	protected void payloadPutTo(final ByteBuffer payload) {
-		for (final float weight : this.weights) {
-			payload.putShort((short)(weight * 8192));
+		for (final Rgbw color : this.colors) {
+			color.putTo(payload);
 		}
 	}
 	
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("StrobeWeightCommand [weights=");
+		builder.append("StrobeColorCommand [colors=");
 		
 		boolean is_first = true;
-		for (final float weight : this.weights) {
+		for (final Rgbw color : this.colors) {
 			if (is_first) {
 				is_first = false;
 			} else {
 				builder.append(", ");
 			}
-			builder.append(String.format("%0.0f", weight));
+			builder.append(color);
 		}
 		builder.append("]");
 		return builder.toString();
 	}
 
 	public static StripCommand.Info INFO = new StripCommand.Info() {
-		
 		@Override
 		public CommandId getCommand_id() {
-			return CommandId.STROBE_WEIGHT;
+			return CommandId.STROBE_COLOR;
 		}
-		
 		@Override
 		protected AbstractCommand commandFrom(byte block_id, ByteBuffer payload) {
 			// TODO Auto-generated method stub
 			return null;
 		}
 	};
+
 }

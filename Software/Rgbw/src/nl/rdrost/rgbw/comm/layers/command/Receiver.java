@@ -60,7 +60,6 @@ public class Receiver implements Closeable {
 			try {
 				while (!Thread.interrupted()) {
 					final Command layer1_command = commandQueue.take();
-					System.out.println(layer1_command);
 					
 					final byte command_id_byte = layer1_command.getCommand_id();
 					CommandId.fromValue(command_id_byte).ifPresent((CommandId command_id) -> {
