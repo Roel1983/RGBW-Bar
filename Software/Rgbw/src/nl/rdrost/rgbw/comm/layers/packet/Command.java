@@ -18,8 +18,8 @@ public class Command {
 		this.body             = body.asReadOnlyBuffer();
 	}
 	
-	public final byte getSenderUniqueId() {
-		return this.sender_unique_id;
+	public final int getSenderUniqueId() {
+		return this.sender_unique_id & 0xFF;
 	}
 	
 	public final byte getCommand_id() {

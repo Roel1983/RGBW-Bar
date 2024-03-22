@@ -41,12 +41,14 @@ public abstract class AddressableCommand extends AbstractCommand {
 		}
 		
 		@Override
-		public final AbstractCommand commandFrom(final Command layer1_command) {
-			final ByteBuffer body = layer1_command.getBody();
+		public final AbstractCommand commandFrom(final Command packet_command) {
+			final ByteBuffer body = packet_command.getBody();
 			
-			byte block_id            = body.get();
-			final ByteBuffer payload = body;
-			return commandFrom(block_id, payload);
+			final byte            block_id = body.get();
+			final ByteBuffer      payload  = body;
+			final AbstractCommand command  = commandFrom(block_id, payload);
+			command.setPacketCommand(packet_command);
+			return command;
 		}
 		
 		protected abstract AbstractCommand commandFrom(final byte block_id, final ByteBuffer payload);

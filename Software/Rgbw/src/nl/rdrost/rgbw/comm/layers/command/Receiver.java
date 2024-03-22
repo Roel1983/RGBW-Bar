@@ -59,11 +59,11 @@ public class Receiver implements Closeable {
 			final BlockingQueue<Command> commandQueue = inner_receiver.getCommandQueue();
 			try {
 				while (!Thread.interrupted()) {
-					final Command layer1_command = commandQueue.take();
+					final Command packet_command = commandQueue.take();
 					
-					final byte command_id_byte = layer1_command.getCommand_id();
+					final byte command_id_byte = packet_command.getCommand_id();
 					CommandId.fromValue(command_id_byte).ifPresent((CommandId command_id) -> {
-						AbstractCommand command = command_id.info.commandFrom(layer1_command);
+						AbstractCommand command = command_id.info.commandFrom(packet_command);
 						try {
 							command_queue.put(command);
 						} catch (final InterruptedException e) {

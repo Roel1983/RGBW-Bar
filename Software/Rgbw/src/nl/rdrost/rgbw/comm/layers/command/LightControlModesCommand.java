@@ -31,7 +31,8 @@ public class LightControlModesCommand extends BroadcastCommand {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("LightControlModesCommand [modes=").append(modes)
+		builder.append("LightControlModesCommand [sender_unique_id=").append(getSenderUniqueId())
+				.append(", modes=").append(modes)
 				.append("]");
 		return builder.toString();
 	}

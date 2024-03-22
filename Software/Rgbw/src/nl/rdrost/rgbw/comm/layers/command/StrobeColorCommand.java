@@ -46,7 +46,8 @@ public class StrobeColorCommand extends StripCommand {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("StrobeColorCommand [colors=");
+		builder.append("StrobeColorCommand [sender_unique_id=").append(getSenderUniqueId())
+				.append(", colors=");
 		
 		boolean is_first = true;
 		for (final Rgbw color : this.colors) {

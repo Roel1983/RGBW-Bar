@@ -23,7 +23,7 @@ public class Sender {
 		
 		System.out.println(String.format("-->: %s", command));
 		
-		inner_sender.send(command.asCommand());
+		inner_sender.send(command.getPacketCommand());
 	}
 }
 

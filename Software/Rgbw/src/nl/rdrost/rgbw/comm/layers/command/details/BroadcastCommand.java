@@ -28,11 +28,13 @@ public abstract class BroadcastCommand extends AbstractCommand {
 		}
 		
 		@Override
-		public final AbstractCommand commandFrom(final Command layer1_command) {
-			final ByteBuffer body = layer1_command.getBody();
+		public final AbstractCommand commandFrom(final Command packet_command) {
+			final ByteBuffer body = packet_command.getBody();
 			
-			final ByteBuffer payload = body;
-			return commandFrom(payload);
+			final ByteBuffer      payload = body;
+			final AbstractCommand command = commandFrom(payload);
+			command.setPacketCommand(packet_command);
+			return command;
 		}
 		
 		protected abstract AbstractCommand commandFrom(final ByteBuffer payload);

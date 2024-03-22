@@ -7,7 +7,7 @@ import nl.rdrost.rgbw.comm.layers.command.CommandId;
 import nl.rdrost.rgbw.comm.layers.packet.Command;
 
 public abstract class AbstractCommand {
-	private nl.rdrost.rgbw.comm.layers.packet.Command command = null;
+	private nl.rdrost.rgbw.comm.layers.packet.Command packet_command = null;
 	protected Info                       info;
 	
 	public AbstractCommand(final Info info) {
@@ -19,11 +19,20 @@ public abstract class AbstractCommand {
 		return this.info;
 	}
 	
-	public synchronized final nl.rdrost.rgbw.comm.layers.packet.Command asCommand() {
-		if (Objects.isNull(command)) {
-			command = createCommand();
+	public synchronized final nl.rdrost.rgbw.comm.layers.packet.Command getPacketCommand() {
+		if (Objects.isNull(this.packet_command)) {
+			this.packet_command = createCommand();
 		}
-		return command;
+		return this.packet_command;
+	}
+	
+	void setPacketCommand(final nl.rdrost.rgbw.comm.layers.packet.Command packet_command) {
+		assert(Objects.isNull(this.packet_command));
+		this.packet_command = packet_command;
+	}
+	
+	public final int getSenderUniqueId() {
+		return this.getPacketCommand().getSenderUniqueId();
 	}
 	
 	protected abstract int        getPayloadLength();

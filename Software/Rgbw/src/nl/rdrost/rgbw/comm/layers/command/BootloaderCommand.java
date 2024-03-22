@@ -42,7 +42,8 @@ public class BootloaderCommand extends BroadcastCommand {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("BootloaderCommand [unique_id=").append(unique_id)
+		builder.append("BootloaderCommand [sender_unique_id=").append(getSenderUniqueId())
+				.append(", unique_id=").append(unique_id)
 				.append(", seconds=").append(seconds)
 				.append("]");
 		return builder.toString();

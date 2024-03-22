@@ -49,7 +49,8 @@ public class StrobeTriggerCommand extends BroadcastCommand {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("StrobeTriggerCommand [on=").append(on)
+		builder.append("StrobeTriggerCommand [sender_unique_id=").append(getSenderUniqueId())
+				.append(", on=").append(on)
 				.append(", off=").append(off)
 				.append(", count=").append(count)
 				.append("]");

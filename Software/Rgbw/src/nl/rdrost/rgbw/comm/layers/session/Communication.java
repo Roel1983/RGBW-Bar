@@ -63,7 +63,7 @@ public class Communication {
 				AbstractCommand command_or_null = Communication.this.command_queue.poll();
 				
 				try {
-					Thread.sleep(2); // tmp
+					Thread.sleep(20); // tmp
 					if(command_or_null != null) {
 						Communication.this.sender.send(command_or_null);
 					} else {
@@ -110,8 +110,7 @@ public class Communication {
 					final AbstractCommand command = Communication.this.receiver.getCommand_queue().take();
 					
 					synchronized (known_ids) {
-						// TODO add sender unique id as known_id;
-						//known_ids.set(command.getSenderUniqueId());
+						known_ids.set(command.getSenderUniqueId());
 					}
 					
 					if (command instanceof RequestToSendResponseCommand) {

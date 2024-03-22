@@ -30,7 +30,8 @@ public class RequestToSendResponseCommand extends BroadcastCommand {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("RequestToSendResponseCommand [requested_length=").append(requested_length)
+		builder.append("RequestToSendResponseCommand [sender_unique_id=").append(getSenderUniqueId())
+				.append(", requested_length=").append(requested_length)
 				.append("]");
 		return builder.toString();
 	}

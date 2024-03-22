@@ -36,7 +36,8 @@ public class SettingsReadResponseCommand extends BroadcastCommand {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("SettingsReadResponseCommand [settings=").append(settings)
+		builder.append("SettingsReadResponseCommand [sender_unique_id=").append(getSenderUniqueId())
+				.append(", settings=").append(settings)
 				.append("]");
 		return builder.toString();
 	}
