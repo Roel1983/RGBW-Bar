@@ -20,6 +20,9 @@ public class Sender {
 	
 	public void send(final AbstractCommand command) throws IOException {
 		Objects.nonNull(command);
+		
+		System.out.println(String.format("-->: %s", command));
+		
 		inner_sender.send(command.asCommand());
 	}
 }

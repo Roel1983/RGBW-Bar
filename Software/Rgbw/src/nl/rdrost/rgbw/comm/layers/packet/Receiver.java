@@ -164,7 +164,6 @@ public class Receiver implements Closeable {
 		
 		private void receiveCrc(byte data_byte) {
 			if (this.crc != 0x00) {
-				System.out.print(String.format("[%02x]", this.crc));
 				fireOnError(Error.CRC);
 				state = State.PREAMBLE;
 				return;

@@ -54,7 +54,7 @@ public class StrobeWeightCommand extends StripCommand {
 			} else {
 				builder.append(", ");
 			}
-			builder.append(String.format("%0.0f", weight));
+			builder.append(String.format("%2.1f", weight));
 		}
 		builder.append("]");
 		return builder.toString();

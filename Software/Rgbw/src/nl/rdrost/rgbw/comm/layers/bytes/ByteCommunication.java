@@ -30,27 +30,29 @@ public class ByteCommunication {
 		this.serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 1000, 1000);
 		
 		
-		this.outputStream = new OutputStream() {
-			private final OutputStream os = serialPort.getOutputStream(); 
-			@Override
-			public void write(int b) throws IOException {
-				System.out.print(ANSI_BLUE);
-				System.out.format("<%02X>", b & 0xff);
-				os.write(b);
-				System.out.print(ANSI_GREEN);
-			}
-		};
-		this.inputStream = new InputStream() {
-			private final InputStream is = serialPort.getInputStream();
-			@Override
-			public int read() throws IOException {
-				final int b = is.read();
-				System.out.print(ANSI_GREEN);
-				System.out.format("<%02X>", b & 0xff);
-				System.out.print(ANSI_GREEN);
-				return b;
-			}
-		};
+//		this.outputStream = new OutputStream() {
+//			private final OutputStream os = serialPort.getOutputStream(); 
+//			@Override
+//			public void write(int b) throws IOException {
+//				System.out.print(ANSI_BLUE);
+//				System.out.format("<%02X>", b & 0xff);
+//				os.write(b);
+//				System.out.print(ANSI_GREEN);
+//			}
+//		};
+//		this.inputStream = new InputStream() {
+//			private final InputStream is = serialPort.getInputStream();
+//			@Override
+//			public int read() throws IOException {
+//				final int b = is.read();
+//				System.out.print(ANSI_GREEN);
+//				System.out.format("<%02X>", b & 0xff);
+//				System.out.print(ANSI_GREEN);
+//				return b;
+//			}
+//		};
+		this.outputStream = this.serialPort.getOutputStream();
+		this.inputStream  = this.serialPort.getInputStream();
 	}
 
 	private static SerialPort findCommPort(final String serialPort) {

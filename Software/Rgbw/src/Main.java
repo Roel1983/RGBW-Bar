@@ -1,20 +1,17 @@
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.time.Duration;
 import java.util.Arrays;
-
-import com.fazecast.jSerialComm.SerialPort;
 
 import nl.rdrost.rgbw.comm.layers.bytes.ByteCommunication;
 import nl.rdrost.rgbw.comm.layers.command.LightControlModesCommand;
 import nl.rdrost.rgbw.comm.layers.command.Receiver;
-import nl.rdrost.rgbw.comm.layers.command.RequestToSendCommand;
 import nl.rdrost.rgbw.comm.layers.command.Sender;
-import nl.rdrost.rgbw.comm.layers.command.SettingsReadCommand;
+import nl.rdrost.rgbw.comm.layers.command.StrobeColorCommand;
 import nl.rdrost.rgbw.comm.layers.command.StrobeTriggerCommand;
-import nl.rdrost.rgbw.comm.layers.command.details.AbstractCommand;
+import nl.rdrost.rgbw.comm.layers.command.StrobeWeightCommand;
+import nl.rdrost.rgbw.comm.layers.session.Communication;
 import nl.rdrost.rgbw.types.LightControlModes;
+import nl.rdrost.rgbw.types.Rgbw;
 
 public class Main {
 	public static final String ANSI_RESET = "\u001B[0m";
@@ -27,35 +24,17 @@ public class Main {
 		ByteCommunication receiverSender = new ByteCommunication("/dev/ttyUSB0");
 		Receiver receiver = new Receiver(receiverSender.getInputStream());
 		Sender sender = new Sender(receiverSender.getOutputStream());
+		Communication communication = new Communication(sender, receiver);
 		
-		Thread receiver_thread = new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				while(!Thread.interrupted()) {
-					try {
-						final AbstractCommand command = receiver.getCommand_queue().take();
-						System.out.println(command);
-					} catch (InterruptedException e) {
-						Thread.currentThread().interrupt();
-					}
-				}
-				
-			}
-		});
-		receiver_thread.start();
+		communication.send(new LightControlModesCommand(new LightControlModes(LightControlModes.Value.ON, LightControlModes.Value.ON, LightControlModes.Value.NO_CHANGE)));
+		communication.send(new StrobeWeightCommand(5, Arrays.asList(0.1f, 0.2f, 0.4f, 0.8f)));
+		communication.send(new StrobeColorCommand(5, Arrays.asList(Rgbw.RED)));
 		
-		
-		
-//		sender.send(new LightControlModesCommand(new LightControlModes(LightControlModes.Value.ON, LightControlModes.Value.ON, LightControlModes.Value.OFF)));
-//		Thread.sleep(1000);
-//		//
-//		//sender.send(new RequestToSendCommand(6, 8));
-//		//Thread.sleep(1);
-//		sender.send(new StrobeTriggerCommand(Duration.ofMillis(10), Duration.ofMillis(10), 10));
-//		Thread.sleep(1000);
-		sender.send(new SettingsReadCommand(6));
-//		Thread.sleep(1000);
-//		receiver.close();
+		Thread.sleep(1000);
+		while(true) {
+			communication.send(new StrobeTriggerCommand(Duration.ofMillis(15), Duration.ofMillis(10), 5));
+			Thread.sleep(1000);
+		}
+		//communication.stop();
 	}	
 }
