@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 import com.fazecast.jSerialComm.SerialPort;
 
+import nl.rdrost.rgbw.comm.layers.bytes.ByteCommunication;
 import nl.rdrost.rgbw.comm.layers.command.LightControlModesCommand;
 import nl.rdrost.rgbw.comm.layers.command.Receiver;
 import nl.rdrost.rgbw.comm.layers.command.RequestToSendCommand;
@@ -22,40 +23,10 @@ public class Main {
 
 	
 	public static void main(String[] args) throws IOException, InterruptedException {
-		SerialPort[] comPorts = SerialPort.getCommPorts();
-		Arrays.stream(comPorts)
-				.map(s -> s.getSystemPortPath())
-				.forEach(str -> System.out.println(str));
-		
-		SerialPort comPort = comPorts[2];
-		comPort.openPort();
-		comPort.setBaudRate(115200);
-		comPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 1000, 1000);
-		
-		OutputStream os = new OutputStream() {
-			private final OutputStream os = comPort.getOutputStream(); 
-			@Override
-			public void write(int b) throws IOException {
-				System.out.print(ANSI_BLUE);
-				System.out.format("<%02X>", b & 0xff);
-				os.write(b);
-				System.out.print(ANSI_GREEN);
-			}
-		};
-		InputStream is = new InputStream() {
-			private final InputStream is = comPort.getInputStream();
-			@Override
-			public int read() throws IOException {
-				final int b = is.read();
-				System.out.print(ANSI_GREEN);
-				System.out.format("<%02X>", b & 0xff);
-				System.out.print(ANSI_GREEN);
-				return b;
-			}
-		};
-		
-		Receiver receiver = new Receiver(is);
-		Sender sender = new Sender(os);
+
+		ByteCommunication receiverSender = new ByteCommunication("/dev/ttyUSB0");
+		Receiver receiver = new Receiver(receiverSender.getInputStream());
+		Sender sender = new Sender(receiverSender.getOutputStream());
 		
 		Thread receiver_thread = new Thread(new Runnable() {
 			
