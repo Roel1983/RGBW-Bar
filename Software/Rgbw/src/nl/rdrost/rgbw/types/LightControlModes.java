@@ -15,6 +15,15 @@ public class LightControlModes {
 		private Value(final byte value) {
 			this.value = value;
 		}
+		
+		private final static Value fromValue(final byte value) {
+			for (final Value v : values()) {
+				if (v.value == value) {
+					return v;
+				}
+			}
+			throw new IllegalArgumentException();
+		}
 	}
 	
 	private final Value main;
@@ -50,7 +59,17 @@ public class LightControlModes {
 	}
 	
 	public static LightControlModes fromByte(final byte b) {
-		// TODO
-		return new LightControlModes(Value.NO_CHANGE, Value.NO_CHANGE, Value.NO_CHANGE);
+		return new LightControlModes(
+				Value.fromValue((byte)((b >> 0) & 0b11)),
+				Value.fromValue((byte)((b >> 2) & 0b11)), 
+				Value.fromValue((byte)((b >> 4) & 0b11)));
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("LightControlModes [main=").append(main).append(", follow=").append(follow).append(", flut=")
+				.append(flut).append("]");
+		return builder.toString();
 	}
 }
