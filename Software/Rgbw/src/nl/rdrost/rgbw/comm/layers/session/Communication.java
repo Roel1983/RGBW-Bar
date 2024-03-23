@@ -85,7 +85,7 @@ public class Communication implements Closeable{
 							Communication.this.sender.send(new RequestToSendCommand(
 									unique_id_to_try,
 									8));
-							Thread.sleep(3);
+							Thread.sleep(2);
 						}
 					}
 				} catch (IOException e) {
@@ -128,7 +128,11 @@ public class Communication implements Closeable{
 					final AbstractCommand command = Communication.this.receiver.getCommand_queue().take();
 					
 					synchronized (known_ids) {
-						known_ids.set(command.getSenderUniqueId());
+						final int unique_id = command.getSenderUniqueId();   
+						if (!known_ids.get(unique_id)) {
+							System.out.println(String.format("found: %d", unique_id));
+							known_ids.set(unique_id);
+						}
 					}
 					
 					if (command instanceof RequestToSendResponseCommand) {
