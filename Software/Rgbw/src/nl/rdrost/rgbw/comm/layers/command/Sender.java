@@ -23,4 +23,8 @@ public class Sender {
 		
 		inner_sender.send(command.getPacketCommand());
 	}
+
+	public void flush() throws IOException {
+		inner_sender.flush();
+	}
 }

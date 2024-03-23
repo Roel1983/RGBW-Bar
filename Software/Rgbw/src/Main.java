@@ -33,17 +33,9 @@ public class Main {
 		Sender sender = new Sender(receiverSender.getOutputStream());
 		Communication communication = new Communication(sender, receiver);
 		
-		
-		
 		communication.send(new LightControlModesCommand(new LightControlModes(LightControlModes.Value.ON, LightControlModes.Value.ON, LightControlModes.Value.NO_CHANGE)));
-		//communication.send(new StrobeWeightCommand(5*4, Arrays.asList(0.1f, 0.2f, 0.4f, 0.8f)));
-		//communication.send(new StrobeColorCommand(5*4, Arrays.asList(Rgbw.RED)));
-//		
-//		Thread.sleep(1000);
-//		communication.send(new StrobeTriggerCommand(Duration.ofMillis(15), Duration.ofMillis(10), 5));
-//		Thread.sleep(1000);
-//		communication.send(new SettingsReadCommand(5));
-//		Thread.sleep(1000);
+		communication.send(new StrobeWeightCommand(5*4, Arrays.asList(0.4f, 1.0f, 0.8f, 0.2f)));
+		communication.send(new StrobeColorCommand(5*4, Arrays.asList(Rgbw.RED, Rgbw.GREEN, Rgbw.GREEN, Rgbw.RED)));
 		
 		final Rgbw strip_colors[] = new Rgbw[]{Rgbw.RED, Rgbw.GREEN, Rgbw.BLUE, Rgbw.WHITE};
 		
@@ -55,12 +47,13 @@ public class Main {
 			communication.send(new StripColorCommand(0, colors));
 			communication.send(new ApplyStripColorsCommand());
 			
-			for (int j = 0; j < 10; j++) {
+			for (int j = 1; j <= 10; j++) {
 				communication.send(new StripTargetFactor(0.1f * j, Duration.ofMillis(100)));
 				Thread.sleep(100);
 			}
 			communication.send(new StrobeTriggerCommand(Duration.ofMillis(15), Duration.ofMillis(10), 5));
 		}
+		Thread.sleep(10000);
 		communication.send(new BootloaderCommand(5, 6));
 		Thread.sleep(1000);
 		communication.close();

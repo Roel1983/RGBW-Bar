@@ -26,13 +26,31 @@ public class Sender {
 		os.write(command.sender_unique_id);
 		os.write(command.command_id);
 		int payload_length = body.remaining();
-		os.write(payload_length); // TODO extended length
-		byte crc = (byte)(0 - command.sender_unique_id - command.command_id - payload_length);		
+		
+		byte crc = (byte)(0 - command.sender_unique_id - command.command_id);
+		
+		if (payload_length > 0x7F) {
+			byte b1 = (byte)((payload_length >> 8) | 0x80);
+			byte b2 = (byte)(payload_length & 0xFF); 
+			os.write(b1);
+			os.write(b2);
+			
+			crc -= (b1 + b2);
+			
+		} else {
+			os.write(payload_length);
+			crc -= payload_length;
+		}
+				
 		while (body.hasRemaining()) {
 			byte b = body.get();
 			os.write(b);
 			crc -= b;
 		}	
 		os.write(crc);		
+	}
+
+	public void flush() throws IOException {
+		os.flush();
 	}
 }

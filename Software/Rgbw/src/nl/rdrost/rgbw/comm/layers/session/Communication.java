@@ -67,25 +67,30 @@ public class Communication implements Closeable{
 				AbstractCommand command_or_null = Communication.this.command_queue.poll();
 				
 				try {
+					Thread.sleep(10); // Why is this needed why is the sleep after 
 					if(command_or_null != null) {
 						System.out.println(String.format("-->: %s", command_or_null));
 						Communication.this.sender.send(command_or_null);
 					} else {
 						RequestToSendResponseCommand request_to_send_response = 
 								request_for_higher_requested_length.poll();
-//						if (request_to_send_response != null) {
-//							final RequestToSendCommand requestToSendCommand = new RequestToSendCommand(
-//									request_to_send_response.getSenderUniqueId(),
-//									request_to_send_response.getRequestedLength());
-//							//System.out.println(String.format("-->: %s", requestToSendCommand));
-//							Communication.this.sender.send(requestToSendCommand);
-//							Thread.sleep(request_to_send_response.getRequestedLength() / 4);
-//						} else {
-//							final int unique_id_to_try = nextUniqueIdToTry();
-//							Communication.this.sender.send(new RequestToSendCommand(
-//									unique_id_to_try,
-//									8));
-//						}
+						if (request_to_send_response != null) {
+							final RequestToSendCommand requestToSendCommand = new RequestToSendCommand(
+									request_to_send_response.getSenderUniqueId(),
+									request_to_send_response.getRequestedLength());
+							//System.out.println(String.format("-->: %s", requestToSendCommand));
+							Communication.this.sender.send(requestToSendCommand);
+							Communication.this.sender.flush();
+							Thread.sleep(request_to_send_response.getRequestedLength() / 4);
+						} else {
+							final int unique_id_to_try = nextUniqueIdToTry();
+							Communication.this.sender.send(new RequestToSendCommand(
+									unique_id_to_try,
+									8));
+							Communication.this.sender.flush();
+							Thread.yield();
+						}
+
 						Thread.sleep(2);
 					}
 				} catch (IOException e) {
