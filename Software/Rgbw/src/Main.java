@@ -1,8 +1,11 @@
 import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import nl.rdrost.rgbw.comm.layers.bytes.ByteCommunication;
+import nl.rdrost.rgbw.comm.layers.command.ApplyStripColorsCommand;
 import nl.rdrost.rgbw.comm.layers.command.BootloaderCommand;
 import nl.rdrost.rgbw.comm.layers.command.LightControlModesCommand;
 import nl.rdrost.rgbw.comm.layers.command.Receiver;
@@ -30,9 +33,11 @@ public class Main {
 		Sender sender = new Sender(receiverSender.getOutputStream());
 		Communication communication = new Communication(sender, receiver);
 		
+		
+		
 		communication.send(new LightControlModesCommand(new LightControlModes(LightControlModes.Value.ON, LightControlModes.Value.ON, LightControlModes.Value.NO_CHANGE)));
-		communication.send(new StrobeWeightCommand(5*4, Arrays.asList(0.1f, 0.2f, 0.4f, 0.8f)));
-		communication.send(new StrobeColorCommand(5*4, Arrays.asList(Rgbw.RED)));
+		//communication.send(new StrobeWeightCommand(5*4, Arrays.asList(0.1f, 0.2f, 0.4f, 0.8f)));
+		//communication.send(new StrobeColorCommand(5*4, Arrays.asList(Rgbw.RED)));
 //		
 //		Thread.sleep(1000);
 //		communication.send(new StrobeTriggerCommand(Duration.ofMillis(15), Duration.ofMillis(10), 5));
@@ -42,11 +47,19 @@ public class Main {
 		
 		final Rgbw strip_colors[] = new Rgbw[]{Rgbw.RED, Rgbw.GREEN, Rgbw.BLUE, Rgbw.WHITE};
 		
-		for (int i = 0; i < 4; i++) {
-			communication.send(new StripColorCommand(20, strip_colors[i]));
-			communication.send(new StripTargetFactor(1.0f, Duration.ofMillis(1000)));
+		for (int i = 0; i < 40; i++) {
+			List<Rgbw> colors = new ArrayList<>();
+			for (int j = 0; j < 4; j++) {
+				colors.add(strip_colors[(i + j) % 4]);
+			}
+			communication.send(new StripColorCommand(20, colors));
+			communication.send(new ApplyStripColorsCommand());
+			
+			for (int j = 0; j < 10; j++) {
+				communication.send(new StripTargetFactor(0.1f * j, Duration.ofMillis(100)));
+				Thread.sleep(100);
+			}
 			communication.send(new StrobeTriggerCommand(Duration.ofMillis(15), Duration.ofMillis(10), 5));
-			Thread.sleep(1000);
 		}
 		communication.send(new BootloaderCommand(5, 6));
 		Thread.sleep(1000);

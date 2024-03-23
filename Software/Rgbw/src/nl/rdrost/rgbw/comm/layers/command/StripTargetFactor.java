@@ -33,7 +33,7 @@ public class StripTargetFactor extends BroadcastCommand {
 	
 	@Override
 	protected int getPayloadLength() {
-		return 4;
+		return 6;
 	}
 	
 	@Override
@@ -49,7 +49,7 @@ public class StripTargetFactor extends BroadcastCommand {
 	@Override
 	protected void payloadPutTo(final ByteBuffer payload) {
 		payload.putShort((short)(this.factor * FACTOR_MAX_SHORT));
-		payload.putShort((short)this.duration.toMillis());
+		payload.putInt((int)this.duration.toMillis());
 	}
 	
 	public static BroadcastCommand.Info INFO = new BroadcastCommand.Info() {

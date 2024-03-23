@@ -16,7 +16,8 @@ public enum CommandId {
 	STROBE_WEIGHT            ((byte) 8, StrobeWeightCommand.INFO),
 	SETTINGS_READ            ((byte) 9, SettingsReadCommand.INFO),
 	SETTINGS_READ_RESPONSE   ((byte)10, SettingsReadResponseCommand.INFO),
-	SETTINGS_WRITE           ((byte)11, SettingsWriteCommand.INFO);
+	SETTINGS_WRITE           ((byte)11, SettingsWriteCommand.INFO),
+	APPLY_STRIP_COLORS       ((byte)12, ApplyStripColorsCommand.INFO);
 	
 	public final byte                 value;
 	public       AbstractCommand.Info info;

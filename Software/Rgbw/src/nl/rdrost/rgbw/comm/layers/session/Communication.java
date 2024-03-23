@@ -73,20 +73,20 @@ public class Communication implements Closeable{
 					} else {
 						RequestToSendResponseCommand request_to_send_response = 
 								request_for_higher_requested_length.poll();
-						if (request_to_send_response != null) {
-							final RequestToSendCommand requestToSendCommand = new RequestToSendCommand(
-									request_to_send_response.getSenderUniqueId(),
-									request_to_send_response.getRequestedLength());
-							//System.out.println(String.format("-->: %s", requestToSendCommand));
-							Communication.this.sender.send(requestToSendCommand);
-							Thread.sleep(2 + request_to_send_response.getRequestedLength() / 8);
-						} else {
-							final int unique_id_to_try = nextUniqueIdToTry();
-							Communication.this.sender.send(new RequestToSendCommand(
-									unique_id_to_try,
-									8));
-							Thread.sleep(2);
-						}
+//						if (request_to_send_response != null) {
+//							final RequestToSendCommand requestToSendCommand = new RequestToSendCommand(
+//									request_to_send_response.getSenderUniqueId(),
+//									request_to_send_response.getRequestedLength());
+//							//System.out.println(String.format("-->: %s", requestToSendCommand));
+//							Communication.this.sender.send(requestToSendCommand);
+//							Thread.sleep(request_to_send_response.getRequestedLength() / 4);
+//						} else {
+//							final int unique_id_to_try = nextUniqueIdToTry();
+//							Communication.this.sender.send(new RequestToSendCommand(
+//									unique_id_to_try,
+//									8));
+//						}
+						Thread.sleep(2);
 					}
 				} catch (IOException e) {
 					// TODO Auto-generated catch block

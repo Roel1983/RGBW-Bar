@@ -330,6 +330,7 @@ struct TargetFactorCommand {
 	Factor factor;
 	timestamp::Timestamp duration;
 };
+static_assert(sizeof(TargetFactorCommand) == 6,"");
 
 // TODO should be group
 communication::receiver::Command<communication::COMMAND_TYPE_BROADCAST, TargetFactorCommand> target_factor_command;
@@ -344,6 +345,7 @@ static bool onTargetFactorCommand(const TargetFactorCommand& command) {
 }
 
 struct ApplyTargetColorsCommand {
+	uint8_t future_use;
 };
 
 // TODO should be group

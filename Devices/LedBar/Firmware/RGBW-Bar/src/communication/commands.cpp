@@ -25,6 +25,7 @@ PRIVATE COMMAND_INFO_DECL const receiver::CommandInfo* command_infos[] = {
 	&settings::read_command_info,
 	nullptr,
 	&settings::write_command_info,
+	&lightControl::apply_target_colors_command_info,
 };
 
 const receiver::CommandInfo * const getCommandInfo(const uint8_t command_id) {
