@@ -81,6 +81,7 @@ void Loop() {
 			// TODO send group command to reset all strip errors
 		}
 	} else if (!lightControl::isOn()) {
+		leds::set(leds::GREEN, leds::LED_OFF);
 		if (button::isPressedShort()) {
 			communication::sendBroadcast( // Might reject
 					02,
@@ -94,6 +95,14 @@ void Loop() {
 					});
 		}
 	} else {
+		if (lightControl::isFlut()) {
+			leds::set(leds::GREEN, leds::LED_BLINK_FAST);
+		} else if (lightControl::isFollow()) {
+			leds::set(leds::GREEN, leds::LED_ON);
+		} else {
+			leds::set(leds::GREEN, leds::LED_BLINK_SLOW);
+		}
+		
 		if (button::isPressedShort()) {
 			lightControl::toggleFlut();
 		}
