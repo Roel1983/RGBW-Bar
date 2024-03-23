@@ -29,20 +29,16 @@ typedef enum {
 } State;
 
 struct Isr {
-	volatile State    state;
-	uint8_t           crc;
-	uint8_t           read_byte_count;
-	union {
-		uint8_t      *read_byte_pos;
-		uint8_t       preamble_count;
-		struct {
-			uint16_t  remaining_payload_length;
-			uint8_t   block_nr;
-		};
-	};
-	uint16_t          skip_byte_count;
-	uint16_t          skip_byte_count_after_read;
-	uint8_t           sender_unique_id;
+	volatile State     state;
+	uint8_t            crc;
+	uint8_t            read_byte_count;
+	uint8_t           *read_byte_pos;
+	uint8_t            preamble_count;
+	uint16_t           remaining_payload_length;
+	uint8_t            block_nr;
+	uint16_t           skip_byte_count;
+	uint16_t           skip_byte_count_after_read;
+	uint8_t            sender_unique_id;
 	const CommandInfo* command_info;
 };
 
@@ -181,7 +177,6 @@ PRIVATE INLINE void receivePreamble(const uint8_t data_byte) {
 	}
 	if (++isr.preamble_count >= PREAMBLE_COUNT) {
 		isr.crc = 0;
-		isr.remaining_payload_length = 0;
 		isr.state = STATE_SENDER_UNIQUE_ID;
 	}
 }
@@ -193,9 +188,10 @@ PRIVATE INLINE void receiveSenderUniqueId(const uint8_t data_byte) {
 }
 
 PRIVATE INLINE void receiveCommandId(const uint8_t data_byte) {
-	const uint8_t command_id = data_byte;
-	isr.command_info         = getCommandInfo(command_id);
-	isr.state                = STATE_PAYLOAD_LENGTH;
+	const uint8_t command_id     = data_byte;
+	isr.command_info             = getCommandInfo(command_id);
+	isr.remaining_payload_length = 0;
+	isr.state                    = STATE_PAYLOAD_LENGTH;
 }
 
 PRIVATE INLINE void receivePayloadLength(const uint8_t data_byte) {
@@ -217,9 +213,6 @@ PRIVATE INLINE void receivePayloadLength(const uint8_t data_byte) {
 
 PRIVATE INLINE void receiveUnknownCommand() {
 	receiveSkipRemainingPayload();
-	raiseError(ERROR_UNKNOW_COMMAND);
-	isr.preamble_count = 0;
-	isr.state          = STATE_PREAMBLE;
 }
 
 PRIVATE INLINE void receiveBroadcastCommand() {

@@ -19,7 +19,7 @@ void ReceiverErrorsTearDown() {
 #endif
 
 void raiseError(const Error error) {
-	leds::blink(leds::RED, error); // Crashes 
+	leds::blink(leds::RED, error);
 	//~ if(error_counts[error] != 0xff) {
 		//~ error_counts[error]++;
 	//~ }
