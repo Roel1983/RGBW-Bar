@@ -40,7 +40,7 @@ public class StripTargetFactor extends BroadcastCommand {
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
 		builder.append("StripTargetFactor [sender_unique_id=").append(getSenderUniqueId())
-				.append("factor=").append(factor)
+				.append(", factor=").append(factor)
 				.append(", duration=").append(duration)
 				.append("]");
 		return builder.toString();

@@ -49,10 +49,10 @@ public class Main {
 		
 		for (int i = 0; i < 40; i++) {
 			List<Rgbw> colors = new ArrayList<>();
-			for (int j = 0; j < 4; j++) {
+			for (int j = 0; j < 40; j++) {
 				colors.add(strip_colors[(i + j) % 4]);
 			}
-			communication.send(new StripColorCommand(20, colors));
+			communication.send(new StripColorCommand(0, colors));
 			communication.send(new ApplyStripColorsCommand());
 			
 			for (int j = 0; j < 10; j++) {
