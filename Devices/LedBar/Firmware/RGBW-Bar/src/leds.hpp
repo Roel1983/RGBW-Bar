@@ -19,8 +19,8 @@ enum Action {
 
 void setup();
 void loop();
-void set  (uint8_t index, Action action);
-bool blink(uint8_t index, uint8_t count, bool is_repeat = false);
+void set  (uint8_t led_index, Action action);
+bool blink(uint8_t led_index, uint8_t blink_count, bool is_repeat = false);
 
 } // End of: namespace leds
 

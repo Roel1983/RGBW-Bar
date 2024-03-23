@@ -16,12 +16,12 @@ struct State {
 };
 
 static constexpr Pin pins[]        = {PIN13, PIN12, PIN11, PIN10};
-static constexpr int count         = GetArrLength(pins);
+static constexpr int led_count     = GetArrLength(pins);
 
-static State states[count];
+static State states[led_count];
 
 void setup() {
-	for(uint8_t i = 0; i < count; i++) {
+	for(uint8_t i = 0; i < led_count; i++) {
 		const Pin& pin = pins[i];
 		
 		pin.port.ddr |= pin.bit_mask;
@@ -39,7 +39,7 @@ void loop() {
 		}
 	}
   
-	for (size_t i = 0; i < count; i++) {
+	for (size_t i = 0; i < led_count; i++) {
 		State& state   = states[i];
 		const Pin& pin = pins[i];
 
@@ -87,25 +87,25 @@ void loop() {
 	}
 }
 
-void set(uint8_t index, Action action) {
-	assert(index < count);
+void set(uint8_t led_index, Action action) {
+	assert(led_index < led_count);
 	
-	State& state = states[index];
+	State& state = states[led_index];
 	state.is_repeat = false;
 	state.action    = action;
 }
 
-bool blink(uint8_t index, uint8_t count, bool is_repeat) {
-	assert(index < count);
+bool blink(uint8_t led_index, uint8_t blink_count, bool is_repeat) {
+	assert(led_index < led_count);
 	
-	State& state = states[index];
+	State& state = states[led_index];
 	
 	if(state.count && state.is_first) {
 		return false;
 	} else {
 		state.is_repeat = true;
 		state.step      = 0;
-		state.count     = count;
+		state.count     = blink_count;
 		state.is_first  = true;
 		state.is_repeat = is_repeat;
 		return true;

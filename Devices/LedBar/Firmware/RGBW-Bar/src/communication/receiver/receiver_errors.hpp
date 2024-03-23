@@ -16,7 +16,7 @@ typedef enum {
 	ERROR_CRC,
 	ERROR_TIMEOUT,
 } Error;
-constexpr int error_count = 6;
+constexpr int error_count = 7;
 
 #ifdef UNITTEST
 void ReceiverErrorsTearDown();
