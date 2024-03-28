@@ -73,6 +73,11 @@ void Loop() {
 	lightControl::loop();
 	strip::loop();
 	
+	leds::set(leds::YELLOW, (communication::send_strategy::get() == 
+			communication::send_strategy::STRATEGY_SEND_AT_WILL)
+				? leds::LED_OFF
+				: leds::LED_ON);
+	
 	if (strip::hasError()) {
 		if (button::isPressedShort()) {
 			strip::resetError();
