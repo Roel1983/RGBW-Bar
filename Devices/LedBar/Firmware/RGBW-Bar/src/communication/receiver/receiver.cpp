@@ -172,17 +172,16 @@ PRIVATE INLINE void receivePreamble(const uint8_t data_byte) {
 	if (data_byte != PREAMBLE_BYTE) {
 		raiseError(ERROR_PREAMBLE);
 		isr.preamble_count = 0;
-		isr.state          = STATE_PREAMBLE;
 		return;
 	}
 	if (++isr.preamble_count >= PREAMBLE_COUNT) {
 		isr.crc = 0;
+		start_receving_timestamp = timestamp::getMsTimestamp();
 		isr.state = STATE_SENDER_UNIQUE_ID;
 	}
 }
 
 PRIVATE INLINE void receiveSenderUniqueId(const uint8_t data_byte) {
-	start_receving_timestamp = timestamp::getMsTimestamp();
 	isr.sender_unique_id = data_byte;
 	isr.state = STATE_COMMAND_ID;
 }
