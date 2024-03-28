@@ -95,7 +95,9 @@ void loop() {
 	timestamp::Timestamp ts = timestamp::getMsTimestamp();
 	
 	cli();
-	if (isr.state != STATE_PREAMBLE && (ts - start_receving_timestamp) > RECEIVE_TIMEOUT) {
+	timestamp::Timestamp ts = timestamp::getMsTimestamp();
+	if (isr.state != STATE_PREAMBLE && isr.state != STATE_IGNORE
+			&& (ts - start_receving_timestamp) > RECEIVE_TIMEOUT) {
 		raiseError(ERROR_TIMEOUT);
 		reset();
 	}
