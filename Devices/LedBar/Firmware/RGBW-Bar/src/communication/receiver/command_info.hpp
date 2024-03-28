@@ -22,7 +22,7 @@ struct CommandInfo{
 
 private:	
 	void*        function;
-	bool (*on_received)(void *func, const uint8_t relative_block_nr, const uint8_t * const block);
+	bool (*on_received)(void *func, const uint8_t relative_block_nr, volatile const uint8_t * const block);
 
 public:	
 	template <
@@ -40,7 +40,7 @@ public:
 	  , on_received(CommandNotifierTrait<T, commandTypeGetBlockCount(_command_type)>::Notifier::onReceived)
 	{}
 	
-	inline bool onReceived(uint8_t relative_block_nr, const uint8_t * const block) const {
+	inline bool onReceived(uint8_t relative_block_nr, volatile const uint8_t * const block) const {
 		return on_received(function, relative_block_nr, block);
 	}
 };

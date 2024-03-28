@@ -32,7 +32,7 @@ struct Isr {
 	volatile State     state;
 	uint8_t            crc;
 	uint8_t            read_byte_count;
-	uint8_t           *read_byte_pos;
+	volatile uint8_t  *read_byte_pos;
 	uint8_t            preamble_count;
 	uint16_t           remaining_payload_length;
 	uint8_t            block_nr;
@@ -222,7 +222,7 @@ PRIVATE INLINE void receiveBroadcastCommand() {
 		reset();
 		return;
 	}
-	if (command.lock != COMMAND_LOCK_NONE) {
+	if (command.lock == COMMAND_LOCK_READ) {
 		receiveSkipRemainingPayload();
 		raiseError(ERROR_BUSY);
 		return;
@@ -250,7 +250,7 @@ PRIVATE INLINE void receiveBlockNr(const uint8_t data_byte) {
 	
 	isr.block_nr = data_byte;
 	
-	if (command.lock != COMMAND_LOCK_NONE) {
+	if (command.lock == COMMAND_LOCK_READ) {
 		receiveSkipRemainingPayload();
 		raiseError(ERROR_BUSY);
 		return;

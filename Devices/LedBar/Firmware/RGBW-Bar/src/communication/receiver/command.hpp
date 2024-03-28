@@ -13,9 +13,9 @@ enum CommandLock {
 };
 
 struct CommandBase{
-	CommandLock lock;
-	uint8_t processed_block_bits;
-	uint8_t __attribute__ ((aligned)) buffer[0];
+	volatile CommandLock lock;
+	volatile uint8_t processed_block_bits;
+	volatile uint8_t __attribute__ ((aligned)) buffer[0];
 } ;
 
 template <

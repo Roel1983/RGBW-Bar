@@ -4,7 +4,7 @@
 template<typename T>
 struct SingleBlockCommandNotifierByRef {
 	typedef bool(*OnReceivedFunc)(const T&);
-	static bool onReceived(void *func, const uint8_t relative_block_nr, const uint8_t * const block) {
+	static bool onReceived(void *func, const uint8_t relative_block_nr, volatile const uint8_t * const block) {
 		return ((OnReceivedFunc)func)(*((T*)block));
 	}
 };
@@ -12,7 +12,7 @@ struct SingleBlockCommandNotifierByRef {
 template<typename T>
 struct SingleBlockCommandNotifierByVal {
 	typedef bool(*OnReceivedFunc)(T);
-	static bool onReceived(void* func, const uint8_t relative_block_nr, const uint8_t * const block) {
+	static bool onReceived(void* func, const uint8_t relative_block_nr, volatile const uint8_t * const block) {
 		return ((OnReceivedFunc)func)(*((T*)block));
 	}
 };
@@ -20,7 +20,7 @@ struct SingleBlockCommandNotifierByVal {
 template<typename T>
 struct MultipleBlockCommandNotifierByRef {
 	typedef bool(*OnReceivedFunc)(const uint8_t relative_block_nr, const T&);
-	static bool onReceived(void* func, const uint8_t relative_block_nr, const uint8_t * const block) {
+	static bool onReceived(void* func, const uint8_t relative_block_nr, volatile const uint8_t * const block) {
 		return ((OnReceivedFunc)func)(relative_block_nr, *((T*)block));
 	}
 };
@@ -28,7 +28,7 @@ struct MultipleBlockCommandNotifierByRef {
 template<typename T>
 struct MultipleBlockCommandNotifierByVal {
 	typedef bool(*OnReceivedFunc)(const uint8_t relative_block_nr, T);
-	static bool onReceived(void* func, const uint8_t relative_block_nr, const uint8_t * const block) {
+	static bool onReceived(void* func, const uint8_t relative_block_nr, volatile const uint8_t * const block) {
 		return ((OnReceivedFunc)func)(relative_block_nr, *((T*)block));
 	}
 };
