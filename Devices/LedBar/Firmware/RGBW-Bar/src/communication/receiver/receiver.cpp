@@ -92,7 +92,6 @@ void loop() {
 			notifyCommandReceived(*command_info);
 		}
 	}
-	timestamp::Timestamp ts = timestamp::getMsTimestamp();
 	
 	cli();
 	timestamp::Timestamp ts = timestamp::getMsTimestamp();
@@ -110,8 +109,7 @@ ISR(USART_RX_vect) {
 	if(has_signal_error) {
 		if (isr.state != STATE_IGNORE) {
 			raiseError(ERROR_SIGNAL);
-			isr.preamble_count = 0;
-			isr.state          = STATE_PREAMBLE;
+			reset();
 		} else {
 			did_ignore_in_comming_data = true;
 		}
@@ -221,17 +219,13 @@ PRIVATE INLINE void receiveBroadcastCommand() {
 	CommandBase& command(isr.command_info->command);
 	
 	if (isr.command_info->block_size != isr.remaining_payload_length) {
-		receiveSkipRemainingPayload();
 		raiseError(ERROR_INVALID_LENGTH);
-		isr.preamble_count = 0;
-		isr.state          = STATE_PREAMBLE;
+		reset();
 		return;
 	}
 	if (command.lock != COMMAND_LOCK_NONE) {
 		receiveSkipRemainingPayload();
 		raiseError(ERROR_BUSY);
-		isr.preamble_count = 0;
-		isr.state          = STATE_PREAMBLE;
 		return;
 	}
 	command.lock = COMMAND_LOCK_WRITE;
@@ -242,6 +236,13 @@ PRIVATE INLINE void receiveBroadcastCommand() {
 }
 
 PRIVATE INLINE void receiveAddressableCommand() {
+	isr.remaining_payload_length -= 1; 
+
+	if ((isr.remaining_payload_length % isr.command_info->block_size) != 0) {
+		raiseError(ERROR_INVALID_LENGTH);
+		reset();
+		return;
+	}
 	isr.state = STATE_BLOCK_NR;
 }
 
@@ -249,25 +250,14 @@ PRIVATE INLINE void receiveBlockNr(const uint8_t data_byte) {
 	CommandBase& command(isr.command_info->command);
 	
 	isr.block_nr = data_byte;
-	isr.remaining_payload_length -= 1; 
 	
-	const uint8_t block_count = isr.remaining_payload_length / isr.command_info->block_size;
-	
-	if (isr.remaining_payload_length != block_count * isr.command_info->block_size) {
-		receiveSkipRemainingPayload();
-		raiseError(ERROR_INVALID_LENGTH);
-		isr.preamble_count = 0;
-		isr.state          = STATE_PREAMBLE;
-		return;
-	}
 	if (command.lock != COMMAND_LOCK_NONE) {
 		receiveSkipRemainingPayload();
 		raiseError(ERROR_BUSY);
-		isr.preamble_count = 0;
-		isr.state          = STATE_PREAMBLE;
 		return;
 	}
 	
+	const uint8_t block_count = isr.remaining_payload_length / isr.command_info->block_size;
 	calculateReceiveBlockData(command, block_count);
 	
 	if (isr.read_byte_count) {
