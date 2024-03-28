@@ -22,6 +22,8 @@ public class Communication implements Closeable{
 	private final Thread receiving_thread;
 	private final BlockingQueue<AbstractCommand> command_queue;
 	private final BlockingQueue<RequestToSendResponseCommand> request_for_higher_requested_length;
+	
+	private volatile boolean is_send_on_command = false;
 		
 	public Communication(final Sender sender, final Receiver receiver) {
 		Objects.nonNull(sender);
@@ -40,6 +42,14 @@ public class Communication implements Closeable{
 		receiving_thread.start();
 	}
 	
+	public void setSendOnRequest(final boolean is_send_on_command) {
+		this.is_send_on_command = is_send_on_command;
+	}
+	
+	public final boolean getSendOnCommand() {
+		return this.is_send_on_command;
+	}
+	 
 	@Override
 	public void close() throws IOException {
 		this.receiver.close();
@@ -71,7 +81,7 @@ public class Communication implements Closeable{
 					if(command_or_null != null) {
 						System.out.println(String.format("-->: %s", command_or_null));
 						Communication.this.sender.send(command_or_null);
-					} else {
+					} else if (Communication.this.is_send_on_command) {
 						RequestToSendResponseCommand request_to_send_response = 
 								request_for_higher_requested_length.poll();
 						if (request_to_send_response != null) {
@@ -90,7 +100,6 @@ public class Communication implements Closeable{
 							Communication.this.sender.flush();
 							Thread.yield();
 						}
-
 						Thread.sleep(2);
 					}
 				} catch (IOException e) {
