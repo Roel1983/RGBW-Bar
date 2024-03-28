@@ -10,6 +10,7 @@
 #include "../../utils.hpp"
 #include "../commands.hpp"
 #include "../communication.hpp"
+#include "../../leds.hpp" // tmp
 #include "command.hpp"
 #include "receiver_errors.hpp"
 
@@ -35,6 +36,7 @@ struct Isr {
 	uint8_t           *read_byte_pos;
 	uint8_t            preamble_count;
 	uint16_t           remaining_payload_length;
+	uint8_t            command_id;
 	uint8_t            block_nr;
 	uint16_t           skip_byte_count;
 	uint16_t           skip_byte_count_after_read;
@@ -82,69 +84,103 @@ void setup() {
 }
 
 void loop() {
+	uint8_t c = 0;
+	uint8_t d = 0;
 	const uint8_t count = getCommandInfoCount();
 	for (uint8_t command_id = 0; command_id < count; command_id++) {
 		const receiver::CommandInfo *command_info = getCommandInfo(command_id);
 		if (!command_info) {
 			continue;
 		}
+		if (command_info->command.lock == COMMAND_LOCK_WRITE) { // tmp
+			c++;
+		}
+		if (command_info->command.lock == COMMAND_LOCK_READ) { // tmp
+			d++;
+		}
 		if (command_info->command.lock == COMMAND_LOCK_READ) {
 			notifyCommandReceived(*command_info);
 		}
 	}
-	timestamp::Timestamp ts = timestamp::getMsTimestamp();
+	leds::set(leds::ORANGE, (c>0)?leds::LED_ON:leds::LED_OFF); // tmp
 	
 	cli();
-	if (isr.state != STATE_PREAMBLE && (ts - start_receving_timestamp) > RECEIVE_TIMEOUT) {
+	timestamp::Timestamp ts = timestamp::getMsTimestamp();
+	if (isr.state != STATE_PREAMBLE && isr.state != STATE_IGNORE
+			&& (ts - start_receving_timestamp) > RECEIVE_TIMEOUT) {
 		raiseError(ERROR_TIMEOUT);
 		reset();
 	}
 	sei();
+	
+	const CommandInfo *ci;
+	if ((ci = getCommandInfo(0)) && ci->block_size != 2) leds::blink(leds::YELLOW, 1);
 }
 
+void dbg(uint8_t v) {
+	for(int i = 0; i < v; i++) {
+		PORTC ^= _BV(1);
+		for (volatile int w = 0; w < 1; w++) asm("nop");
+		PORTC ^= _BV(1);
+		asm("nop");
+		asm("nop");
+		asm("nop");
+		asm("nop");
+	}
+} 
+
 ISR(USART_RX_vect) {
+	PORTC |= _BV(1); // tmp
 	const uint8_t data_byte = UDR0; // Read regardless signal error in order to reset interrupt flag
 	const bool has_signal_error = (UCSR0A & ((1 << FE0) | (1 << DOR0) | (1 << UPE0))) != 0;
 	if(has_signal_error) {
 		if (isr.state != STATE_IGNORE) {
 			raiseError(ERROR_SIGNAL);
-			isr.preamble_count = 0;
-			isr.state          = STATE_PREAMBLE;
+			reset();
 		} else {
 			did_ignore_in_comming_data = true;
 		}
 	} else {
 		processIncommingByte(data_byte);
 	}
+	PORTC &= ~_BV(1); // tmp
 }
 
 PRIVATE INLINE void processIncommingByte(const uint8_t data_byte) {
 	isr.crc += data_byte;
 	
 	if (receiveBlockData(data_byte)) {
+		dbg(6);
 		return;
 	}
 	
 	switch (isr.state) {
 	case STATE_PREAMBLE:
+		dbg(1);
 		receivePreamble(data_byte);
 		return;
 	case STATE_SENDER_UNIQUE_ID:
+		dbg(2);
 		receiveSenderUniqueId(data_byte);
 		return;
 	case STATE_COMMAND_ID:
+		dbg(3);
 		receiveCommandId(data_byte);
 		return;
 	case STATE_PAYLOAD_LENGTH:
+		dbg(4);
 		receivePayloadLength(data_byte);
 		return;
 	case STATE_BLOCK_NR:
+		dbg(5);
 		receiveBlockNr(data_byte);
 		return;
 	case STATE_CRC:
+		dbg(7);
 		receiveCrc(data_byte);
 		return;
 	case STATE_IGNORE:
+		dbg(8);
 		did_ignore_in_comming_data = true;
 		return;
 	}
@@ -172,23 +208,23 @@ PRIVATE INLINE void receivePreamble(const uint8_t data_byte) {
 	if (data_byte != PREAMBLE_BYTE) {
 		raiseError(ERROR_PREAMBLE);
 		isr.preamble_count = 0;
-		isr.state          = STATE_PREAMBLE;
 		return;
 	}
 	if (++isr.preamble_count >= PREAMBLE_COUNT) {
 		isr.crc = 0;
+		start_receving_timestamp = timestamp::getMsTimestamp();
 		isr.state = STATE_SENDER_UNIQUE_ID;
 	}
 }
 
 PRIVATE INLINE void receiveSenderUniqueId(const uint8_t data_byte) {
-	start_receving_timestamp = timestamp::getMsTimestamp();
 	isr.sender_unique_id = data_byte;
 	isr.state = STATE_COMMAND_ID;
 }
 
 PRIVATE INLINE void receiveCommandId(const uint8_t data_byte) {
 	const uint8_t command_id     = data_byte;
+	isr.command_id               = command_id;
 	isr.command_info             = getCommandInfo(command_id);
 	isr.remaining_payload_length = 0;
 	isr.state                    = STATE_PAYLOAD_LENGTH;
@@ -219,17 +255,13 @@ PRIVATE INLINE void receiveBroadcastCommand() {
 	CommandBase& command(isr.command_info->command);
 	
 	if (isr.command_info->block_size != isr.remaining_payload_length) {
-		receiveSkipRemainingPayload();
-		raiseError(ERROR_INVALID_LENGTH);
-		isr.preamble_count = 0;
-		isr.state          = STATE_PREAMBLE;
+		raiseError(ERROR_INVALID_LENGTH_1);
+		reset();
 		return;
 	}
 	if (command.lock != COMMAND_LOCK_NONE) {
 		receiveSkipRemainingPayload();
 		raiseError(ERROR_BUSY);
-		isr.preamble_count = 0;
-		isr.state          = STATE_PREAMBLE;
 		return;
 	}
 	command.lock = COMMAND_LOCK_WRITE;
@@ -240,6 +272,20 @@ PRIVATE INLINE void receiveBroadcastCommand() {
 }
 
 PRIVATE INLINE void receiveAddressableCommand() {
+	isr.remaining_payload_length -= 1; 
+	
+	if ((isr.remaining_payload_length % isr.command_info->block_size) != 0) {
+		
+		//~ delay_us(1);
+		//~ dbg(isr.remaining_payload_length)
+		//~ delay_us(1);
+		//~ dbg(isr.command_info->block_size);
+		//~ delay_us(1);
+		
+		raiseError(ERROR_INVALID_LENGTH_2);
+		reset();
+		return;
+	}
 	isr.state = STATE_BLOCK_NR;
 }
 
@@ -247,25 +293,14 @@ PRIVATE INLINE void receiveBlockNr(const uint8_t data_byte) {
 	CommandBase& command(isr.command_info->command);
 	
 	isr.block_nr = data_byte;
-	isr.remaining_payload_length -= 1; 
 	
-	const uint8_t block_count = isr.remaining_payload_length / isr.command_info->block_size;
-	
-	if (isr.remaining_payload_length != block_count * isr.command_info->block_size) {
-		receiveSkipRemainingPayload();
-		raiseError(ERROR_INVALID_LENGTH);
-		isr.preamble_count = 0;
-		isr.state          = STATE_PREAMBLE;
-		return;
-	}
 	if (command.lock != COMMAND_LOCK_NONE) {
 		receiveSkipRemainingPayload();
 		raiseError(ERROR_BUSY);
-		isr.preamble_count = 0;
-		isr.state          = STATE_PREAMBLE;
 		return;
 	}
 	
+	const uint8_t block_count = isr.remaining_payload_length / isr.command_info->block_size;
 	calculateReceiveBlockData(command, block_count);
 	
 	if (isr.read_byte_count) {

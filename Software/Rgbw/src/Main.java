@@ -39,19 +39,27 @@ public class Main {
 		
 		final Rgbw strip_colors[] = new Rgbw[]{Rgbw.RED, Rgbw.GREEN, Rgbw.BLUE, Rgbw.WHITE};
 		
-		for (int i = 0; i < 40; i++) {
-			List<Rgbw> colors = new ArrayList<>();
+		long next_timestamp = System.currentTimeMillis();
+		for (int i = 0; i < 40000; i++) {
+			List<Rgbw> colors = new ArrayList<>(40);
 			for (int j = 0; j < 40; j++) {
 				colors.add(strip_colors[(i + j) % 4]);
 			}
-			communication.send(new StripColorCommand(0, colors));
+			communication.send(new StripColorCommand(20, colors));
 			communication.send(new ApplyStripColorsCommand());
 			
 			for (int j = 1; j <= 10; j++) {
 				communication.send(new StripTargetFactor(0.1f * j, Duration.ofMillis(100)));
-				Thread.sleep(100);
+				while(true) {
+					long current_timestamp = System.currentTimeMillis();
+					if((current_timestamp - next_timestamp) > 0) {
+						next_timestamp = current_timestamp + 100;
+						break;
+					}
+					Thread.sleep(10);
+				}
 			}
-			communication.send(new StrobeTriggerCommand(Duration.ofMillis(15), Duration.ofMillis(10), 5));
+			//communication.send(new StrobeTriggerCommand(Duration.ofMillis(15), Duration.ofMillis(10), 5));
 		}
 		Thread.sleep(10000);
 		communication.send(new BootloaderCommand(5, 6));

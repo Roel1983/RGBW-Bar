@@ -34,7 +34,7 @@ public class Receiver implements Closeable {
 		this.is = is;
 		this.command_queue = command_queue;
 		
-		thread = new Thread(new MyRunable());
+		thread = new Thread(new MyRunable(), "comm-packet-receiver");
 		thread.start();
 	}
 	
@@ -71,12 +71,56 @@ public class Receiver implements Closeable {
 		private int remaining_payload_length;
 		private ByteBuffer body       = null;
 		
+		enum AnsiColor {
+			RESET(0, 0),
+			BLACK(30, 40),
+			RED(31, 41),
+			GREEN(32, 42),
+			YELLOW(33, 43),
+			BLUE(34, 44),
+			MAGENTA(35, 45),
+			CYAN(36, 46),
+			WHITE(37, 47),
+			BRIGHT_BLACK(90, 100),
+			BRIGHT_RED(91, 101),
+			BRIGHT_GREEN(92, 102),
+			BRIGHT_YELLOW(93, 103),
+			BRIGHT_BLUE(94, 104),
+			BRIGHT_MAGENTA(95, 105),
+			BRIGHT_CYAN(96, 106),
+			BRIGHT_WHITE(97, 107),;
+			
+			public final String forground;
+			public final String background;
+			
+			private AnsiColor(final int fg, final int bg) {
+				this.forground  = String.format("\u001B[%dm", fg);
+				this.background = String.format("\u001B[%dm", bg);
+			}
+		}
+		
 		enum State {
-			PREAMBLE,
-			SENDER_UNIQUE_ID,
-			COMMAND_ID,
-			BODY_LENGTH,
-			CRC,
+			PREAMBLE(AnsiColor.BLACK),
+			SENDER_UNIQUE_ID(AnsiColor.RED),
+			COMMAND_ID(AnsiColor.YELLOW),
+			BODY_LENGTH(AnsiColor.BLUE),
+			CRC(AnsiColor.CYAN, true);
+			
+			private State(final AnsiColor color) {
+				this(color, false);
+			}
+			
+			private State(final AnsiColor color, boolean newline) {
+				this.color = color;
+				if(newline) {
+					this.formater = String.format("%s<%%02X>%s%n", color.forground, AnsiColor.RESET.forground);
+				} else {
+					this.formater = String.format("%s<%%02X>%s", color.forground, AnsiColor.RESET.forground);
+				}
+			}
+			
+			public final AnsiColor color;
+			public final String formater;
 		}
 		
 		public void run() {
@@ -96,9 +140,10 @@ public class Receiver implements Closeable {
 			crc += data_byte;
 			
 			if (receiveBody(data_byte)) {
+				System.out.print(String.format("%s<%02X>%s",AnsiColor.BRIGHT_MAGENTA.forground, data_byte, AnsiColor.RESET.forground));
 				return;
 			}
-			
+			System.out.print(String.format(state.formater, data_byte));
 			switch (state) {
 			case PREAMBLE:
 				receivePreamble(data_byte);
@@ -125,17 +170,22 @@ public class Receiver implements Closeable {
 			body.put(data_byte);
 			return true;
 		}
-
+		
+		static boolean preamble_error_raised = false;
 		private void receivePreamble(byte data_byte) {
 			if (data_byte != PREAMBLE_BYTE) {
-				fireOnError(Error.PREAMBLE);
+				if (!preamble_error_raised) {
+					fireOnError(Error.PREAMBLE);
+					preamble_error_raised = true;
+				}
 				preamble_count = 0;
-				state          = State.PREAMBLE;
 				return;
 			}
 			if (++preamble_count >= PREAMBLE_COUNT) {
-				crc   = 0;
-				state = State.SENDER_UNIQUE_ID;
+				preamble_error_raised = false;
+				crc            = 0;
+				preamble_count = 0;
+				state          = State.SENDER_UNIQUE_ID;
 			}
 		}
 
@@ -177,6 +227,7 @@ public class Receiver implements Closeable {
 			} catch (final InterruptedException e) {
 				Thread.currentThread().interrupt();
 			}
+			this.body = null;
 			state = State.PREAMBLE;
 		}
 	}

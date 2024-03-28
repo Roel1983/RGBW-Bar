@@ -1,5 +1,6 @@
 package nl.rdrost.rgbw.comm.layers.bytes;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Objects;
@@ -29,28 +30,33 @@ public class ByteCommunication {
 		this.serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 1000, 1000);
 		
 		
-//		this.outputStream = new OutputStream() {
-//			private final OutputStream os = serialPort.getOutputStream(); 
-//			@Override
-//			public void write(int b) throws IOException {
-//				System.out.print(ANSI_BLUE);
-//				System.out.format("<%02X>", b & 0xff);
-//				os.write(b);
-//				System.out.print(ANSI_GREEN);
-//			}
-//		};
+		this.outputStream = new OutputStream() {
+			int i = 1;
+			private final OutputStream os = serialPort.getOutputStream(); 
+			@Override
+			public void write(int b) throws IOException {
+//				synchronized (System.out) {
+//					System.out.format("%s<%02X>%s", ANSI_BLUE, b & 0xff, ANSI_RESET);					
+//				}
+				i *= 31;
+				if ((i % 3000) == 9) {
+					b |= 1 << (i % 8);
+				}
+				os.write(b);
+			}
+		};
 //		this.inputStream = new InputStream() {
 //			private final InputStream is = serialPort.getInputStream();
 //			@Override
 //			public int read() throws IOException {
 //				final int b = is.read();
-//				System.out.print(ANSI_GREEN);
-//				System.out.format("<%02X>", b & 0xff);
-//				System.out.print(ANSI_GREEN);
+//				//synchronized (System.out) {
+//					System.out.format("%s<%02X>%s", ANSI_GREEN, b & 0xff, ANSI_RESET);
+//				//}
 //				return b;
 //			}
 //		};
-		this.outputStream = this.serialPort.getOutputStream();
+//		this.outputStream = this.serialPort.getOutputStream();
 		this.inputStream  = this.serialPort.getInputStream();
 	}
 

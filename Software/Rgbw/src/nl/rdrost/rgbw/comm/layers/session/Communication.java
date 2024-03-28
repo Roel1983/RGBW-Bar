@@ -22,7 +22,7 @@ public class Communication implements Closeable{
 	private final Thread receiving_thread;
 	private final BlockingQueue<AbstractCommand> command_queue;
 	private final BlockingQueue<RequestToSendResponseCommand> request_for_higher_requested_length;
-		
+	
 	public Communication(final Sender sender, final Receiver receiver) {
 		Objects.nonNull(sender);
 		Objects.nonNull(receiver);
@@ -33,8 +33,8 @@ public class Communication implements Closeable{
 		this.command_queue    = new LinkedBlockingDeque<>(100);
 		this.request_for_higher_requested_length = new LinkedBlockingDeque<>(10);
 		
-		this.sending_thread   = new Thread(new SendingRunnable());
-		this.receiving_thread = new Thread(new ReceivingRunnable());
+		this.sending_thread   = new Thread(new SendingRunnable(), "comm-session-sender");
+		this.receiving_thread = new Thread(new ReceivingRunnable(), "comm-session-receiver");
 		
 		sending_thread.start();
 		receiving_thread.start();
@@ -70,26 +70,27 @@ public class Communication implements Closeable{
 					Thread.sleep(10); // Why is this needed why is the sleep after 
 					if(command_or_null != null) {
 						System.out.println(String.format("-->: %s", command_or_null));
+						System.out.println(String.format("     %s", command_or_null.getPacketCommand()));
 						Communication.this.sender.send(command_or_null);
 					} else {
-						RequestToSendResponseCommand request_to_send_response = 
-								request_for_higher_requested_length.poll();
-						if (request_to_send_response != null) {
-							final RequestToSendCommand requestToSendCommand = new RequestToSendCommand(
-									request_to_send_response.getSenderUniqueId(),
-									request_to_send_response.getRequestedLength());
-							//System.out.println(String.format("-->: %s", requestToSendCommand));
-							Communication.this.sender.send(requestToSendCommand);
-							Communication.this.sender.flush();
-							Thread.sleep(request_to_send_response.getRequestedLength() / 4);
-						} else {
-							final int unique_id_to_try = nextUniqueIdToTry();
-							Communication.this.sender.send(new RequestToSendCommand(
-									unique_id_to_try,
-									8));
-							Communication.this.sender.flush();
-							Thread.yield();
-						}
+//						RequestToSendResponseCommand request_to_send_response = 
+//								request_for_higher_requested_length.poll();
+//						if (request_to_send_response != null) {
+//							final RequestToSendCommand requestToSendCommand = new RequestToSendCommand(
+//									request_to_send_response.getSenderUniqueId(),
+//									request_to_send_response.getRequestedLength());
+//							//System.out.println(String.format("-->: %s", requestToSendCommand));
+//							Communication.this.sender.send(requestToSendCommand);
+//							Communication.this.sender.flush();
+//							Thread.sleep(request_to_send_response.getRequestedLength() / 4);
+//						} else {
+//							final int unique_id_to_try = nextUniqueIdToTry();
+//							Communication.this.sender.send(new RequestToSendCommand(
+//									unique_id_to_try,
+//									8));
+//							Communication.this.sender.flush();
+//							Thread.yield();
+//						}
 
 						Thread.sleep(2);
 					}
@@ -147,8 +148,10 @@ public class Communication implements Closeable{
 							Communication.this.request_for_higher_requested_length.offer(
 									requestToSendResponseCommand);
 						}
+					} else {
+						System.out.println(String.format("<--: %s", command));
+						System.out.println(String.format("     %s", command.getPacketCommand()));
 					}
-					//System.out.println(String.format("<--: %s", command));
 				} catch (InterruptedException e) {
 					Thread.currentThread().interrupt();
 				}
