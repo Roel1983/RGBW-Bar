@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project Rgbw">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <!--define folder properties-->
+    <property name="dir.buildfile" value="."/>
+    <property name="dir.workspace" value="/home/roel/eclipse-workspaces/RGBW"/>
+    <property name="dir.jarfile" value="${dir.buildfile}/bin"/>
+    <target name="create_run_jar">
+        <jar destfile="${dir.jarfile}/RGBW.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="Main"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <!-- <fileset dir="${dir.jarfile}"/> -->
+            <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/libs/jSerialComm-2.10.4.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.buildfile}/libs/commons-cli-1.6.0/commons-cli-1.6.0.jar"/>
+        </jar>
+    </target>
+</project>
