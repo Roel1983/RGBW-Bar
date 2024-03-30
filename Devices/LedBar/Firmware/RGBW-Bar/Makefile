@@ -4,6 +4,7 @@ all:
 PROJECT_NAME              ?= RGBW-bar
 UPLOAD_PORT               ?= /dev/ttyUSB0
 F_CPU                     ?= 14745600
+RGBW_TOOL                 ?= ../../../../Software/Rgbw/bin/RGBW.jar
 
 # Directories
 SOURCE_DIR                := src
@@ -152,6 +153,15 @@ cleanall: clean
 upload: $(FIRMWARE_HEX_FILE) avrdude
 	avrdude -p m328p $(AVRDUDE_ARGS) -D -U flash:w:$(FIRMWARE_HEX_FILE)
 
+list_devices: 
+	@echo "All devices:" $(shell java -jar $(RGBW_TOOL) --list-devices)
+	
+upload_%: firmware $(RGBW_TOOL)
+	java -jar $(RGBW_TOOL) --bootload $* --bootload-seconds 3
+	sleep 1
+	avrdude -p m328p $(AVRDUDE_ARGS) -D -U flash:w:$(FIRMWARE_HEX_FILE)
+	sleep 1
+
 # Firmware 
 $(FIRMWARE_HEX_FILE): $(FIRMWARE_ELF_FILE) | avr-gcc
 	@$(call mkdir, $(dir $@))
@@ -184,3 +194,7 @@ DEPFILES += $(FIRMWARE_OBJECT_FILES:%.o=%.d)
 $(DEPFILES):
 
 include $(wildcard $(DEPFILES))
+
+$(RGBW_TOOL):
+	cd $(RGBW_TOOL)/../..; ant
+
