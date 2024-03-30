@@ -1,11 +1,12 @@
 package nl.rdrost.rgbw.comm.layers.packet;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
-public class Sender {
+public class Sender implements Closeable {
 	private final OutputStream os;
 	
 	public Sender(final OutputStream os) {
@@ -49,8 +50,14 @@ public class Sender {
 		}	
 		os.write(crc);		
 	}
-
+	
 	public void flush() throws IOException {
 		os.flush();
 	}
+
+	@Override
+	public void close() throws IOException {
+		os.flush();
+		os.close();
+	}	
 }

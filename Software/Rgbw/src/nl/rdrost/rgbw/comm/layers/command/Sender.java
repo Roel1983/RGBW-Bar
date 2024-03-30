@@ -1,12 +1,13 @@
 package nl.rdrost.rgbw.comm.layers.command;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Objects;
 
 import nl.rdrost.rgbw.comm.layers.command.details.AbstractCommand;
 
-public class Sender {
+public class Sender implements Closeable {
 	
 	private final nl.rdrost.rgbw.comm.layers.packet.Sender inner_sender;
 	
@@ -23,8 +24,13 @@ public class Sender {
 		
 		inner_sender.send(command.getPacketCommand());
 	}
-
+	
 	public void flush() throws IOException {
 		inner_sender.flush();
+	}
+
+	@Override
+	public void close() throws IOException {
+		inner_sender.close();
 	}
 }

@@ -13,24 +13,26 @@ import nl.rdrost.rgbw.comm.layers.command.RequestToSendResponseCommand;
 import nl.rdrost.rgbw.comm.layers.command.Sender;
 import nl.rdrost.rgbw.comm.layers.command.details.AbstractCommand;
 
-public class Communication implements Closeable{
+public class Communication implements Closeable {
 	
-	private final Sender   sender;
-	private final Receiver receiver;
+	private final Sender   inner_sender;
+	private final Receiver inner_receiver;
 	
 	private final Thread sending_thread;
 	private final Thread receiving_thread;
 	private final BlockingQueue<AbstractCommand> command_queue;
 	private final BlockingQueue<RequestToSendResponseCommand> request_for_higher_requested_length;
 	
-	private volatile boolean is_send_on_command = false;
+	private volatile boolean is_send_on_command       = false;
+	private volatile boolean is_request_stop_sender   = false;
+	private volatile boolean is_request_stop_receiver = false;
 		
-	public Communication(final Sender sender, final Receiver receiver) {
-		Objects.nonNull(sender);
-		Objects.nonNull(receiver);
+	public Communication(final Sender inner_sender, final Receiver inner_receiver) {
+		Objects.nonNull(inner_sender);
+		Objects.nonNull(inner_receiver);
 		
-		this.sender   = sender;
-		this.receiver = receiver;
+		this.inner_sender   = inner_sender;
+		this.inner_receiver = inner_receiver;
 		
 		this.command_queue    = new LinkedBlockingDeque<>(100);
 		this.request_for_higher_requested_length = new LinkedBlockingDeque<>(10);
@@ -38,26 +40,39 @@ public class Communication implements Closeable{
 		this.sending_thread   = new Thread(new SendingRunnable());
 		this.receiving_thread = new Thread(new ReceivingRunnable());
 		
-		sending_thread.start();
-		receiving_thread.start();
+		this.is_request_stop_sender   = false;
+		this.sending_thread.start();
+		this.is_request_stop_receiver = false;
+		this.receiving_thread.start();		
 	}
 	
 	public void setSendOnRequest(final boolean is_send_on_command) {
 		this.is_send_on_command = is_send_on_command;
 	}
 	
+	@Override
+	public void close() throws IOException {
+		try {
+			this.is_request_stop_sender = true;
+			this.sending_thread.join();
+			this.inner_sender.close();
+		} catch (InterruptedException e) {
+			this.sending_thread.interrupt();				
+			this.receiving_thread.interrupt();
+			Thread.currentThread().interrupt();
+		}
+		this.inner_receiver.close();
+		this.receiving_thread.interrupt();
+	}
+	
 	public final boolean getSendOnCommand() {
 		return this.is_send_on_command;
 	}
 	 
-	@Override
-	public void close() throws IOException {
-		this.receiver.close();
-		this.sending_thread.interrupt();
-		this.receiving_thread.interrupt();
-	}
-	
 	public void send(final AbstractCommand command) {
+		if (is_request_stop_sender) {
+			throw new IllegalStateException();
+		}
 		try {
 			command_queue.put(command);
 		} catch (InterruptedException e) {
@@ -80,8 +95,11 @@ public class Communication implements Closeable{
 					Thread.sleep(10); // Why is this needed why is the sleep after 
 					if(command_or_null != null) {
 						System.out.println(String.format("-->: %s", command_or_null));
-						Communication.this.sender.send(command_or_null);
+						Communication.this.inner_sender.send(command_or_null);
 					} else if (Communication.this.is_send_on_command) {
+						if (Communication.this.is_request_stop_sender && Communication.this.command_queue.isEmpty()) {
+							break;
+						}						
 						RequestToSendResponseCommand request_to_send_response = 
 								request_for_higher_requested_length.poll();
 						if (request_to_send_response != null) {
@@ -89,15 +107,15 @@ public class Communication implements Closeable{
 									request_to_send_response.getSenderUniqueId(),
 									request_to_send_response.getRequestedLength());
 							//System.out.println(String.format("-->: %s", requestToSendCommand));
-							Communication.this.sender.send(requestToSendCommand);
-							Communication.this.sender.flush();
+							Communication.this.inner_sender.send(requestToSendCommand);
+							Communication.this.inner_sender.flush();
 							Thread.sleep(request_to_send_response.getRequestedLength() / 4);
 						} else {
 							final int unique_id_to_try = nextUniqueIdToTry();
-							Communication.this.sender.send(new RequestToSendCommand(
+							Communication.this.inner_sender.send(new RequestToSendCommand(
 									unique_id_to_try,
 									8));
-							Communication.this.sender.flush();
+							Communication.this.inner_sender.flush();
 							Thread.yield();
 						}
 						Thread.sleep(2);
@@ -139,7 +157,7 @@ public class Communication implements Closeable{
 		public void run() {
 			while(!Thread.interrupted()) {
 				try {
-					final AbstractCommand command = Communication.this.receiver.getCommand_queue().take();
+					final AbstractCommand command = Communication.this.inner_receiver.getCommand_queue().take();
 					
 					synchronized (known_ids) {
 						final int unique_id = command.getSenderUniqueId();   
@@ -164,4 +182,6 @@ public class Communication implements Closeable{
 			}
 		}
 	}
+
+
 }
