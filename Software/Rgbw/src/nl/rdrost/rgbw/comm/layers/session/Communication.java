@@ -3,9 +3,15 @@ package nl.rdrost.rgbw.comm.layers.session;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.BitSet;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import nl.rdrost.rgbw.comm.layers.command.Receiver;
 import nl.rdrost.rgbw.comm.layers.command.RequestToSendCommand;
@@ -25,7 +31,8 @@ public class Communication implements Closeable {
 	
 	private volatile boolean is_send_on_command       = false;
 	private volatile boolean is_request_stop_sender   = false;
-	private volatile boolean is_request_stop_receiver = false;
+	private volatile boolean is_scan_complete         = false;
+	private Set<Integer>     device_ids               = Collections.synchronizedSet(new HashSet<>());
 		
 	public Communication(final Sender inner_sender, final Receiver inner_receiver) {
 		Objects.nonNull(inner_sender);
@@ -42,12 +49,32 @@ public class Communication implements Closeable {
 		
 		this.is_request_stop_sender   = false;
 		this.sending_thread.start();
-		this.is_request_stop_receiver = false;
 		this.receiving_thread.start();		
 	}
 	
 	public void setSendOnRequest(final boolean is_send_on_command) {
 		this.is_send_on_command = is_send_on_command;
+	}
+
+	public boolean isScanComplete() {
+		return this.is_scan_complete;
+	}
+	
+	public void waitTillScanComplete() {
+		while(!this.is_scan_complete) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				return;
+			}
+		}
+	}
+	
+	public List<Integer> getDeviceIds() {
+		synchronized (known_ids) {
+			return this.known_ids.stream().boxed().collect(Collectors.toList());
+		}
 	}
 	
 	@Override
@@ -94,10 +121,12 @@ public class Communication implements Closeable {
 				try {
 					Thread.sleep(10); // Why is this needed why is the sleep after 
 					if(command_or_null != null) {
-						System.out.println(String.format("-->: %s", command_or_null));
+						//System.out.println(String.format("-->: %s", command_or_null));
 						Communication.this.inner_sender.send(command_or_null);
 					} else if (Communication.this.is_send_on_command) {
-						if (Communication.this.is_request_stop_sender && Communication.this.command_queue.isEmpty()) {
+						if (Communication.this.is_request_stop_sender 
+								&& Communication.this.command_queue.isEmpty()) 
+						{
 							break;
 						}						
 						RequestToSendResponseCommand request_to_send_response = 
@@ -145,6 +174,14 @@ public class Communication implements Closeable {
 					return next_unknown_id;
 				} else {
 					next_candidate_unknow_id = 0;
+					if (!is_scan_complete) {
+						new Thread(()->{
+							try {
+							    TimeUnit.MILLISECONDS.sleep(100);
+							    is_scan_complete = true;
+							} catch (InterruptedException ie) {}							
+						}).start();
+					};
 					return nextUniqueIdToTry();
 				}							
 			}
@@ -162,7 +199,6 @@ public class Communication implements Closeable {
 					synchronized (known_ids) {
 						final int unique_id = command.getSenderUniqueId();   
 						if (!known_ids.get(unique_id)) {
-							System.out.println(String.format("found: %d", unique_id));
 							known_ids.set(unique_id);
 						}
 					}
@@ -182,6 +218,4 @@ public class Communication implements Closeable {
 			}
 		}
 	}
-
-
 }

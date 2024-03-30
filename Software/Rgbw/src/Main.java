@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import nl.rdrost.rgbw.comm.layers.bytes.ByteCommunication;
@@ -20,19 +21,83 @@ import nl.rdrost.rgbw.comm.layers.session.Communication;
 import nl.rdrost.rgbw.types.LightControlModes;
 import nl.rdrost.rgbw.types.Rgbw;
 
+import org.apache.commons.cli.*;
+
 public class Main {
 	public static final String ANSI_RESET = "\u001B[0m";
 	public static final String ANSI_GREEN = "\u001B[32m";
 	public static final String ANSI_BLUE  = "\u001B[34m";
 
 	
-	public static void main(String[] args) throws IOException, InterruptedException {
-
-		ByteCommunication receiverSender = new ByteCommunication("/dev/ttyUSB0");
+	public static void main(final String[] args) throws IOException, InterruptedException {
+		
+		
+		final Options options = new Options();
+		
+		final Option option_comm_port = new Option("c", "comm-port", true, "Comm-port to be used");
+		options.addOption(option_comm_port);
+		
+		final Option option_list_devices = new Option("l", "list-devices", false, "Lists the devices on the bus");
+		options.addOption(option_list_devices);
+		
+		final Option option_bootload = new Option("b", "bootload", true, "Send command to reset device to be bootloaded");
+		option_bootload.setType(Number.class);
+		options.addOption(option_bootload);
+		
+		final Option option_bootload_seconds = new Option(null, "bootload-seconds", true, "Time to wail till bootload (default = 5)");
+		option_bootload_seconds.setType(Number.class);
+		options.addOption(option_bootload_seconds);
+		
+		final String  comm_port;
+		final boolean must_list_devices;
+		final boolean must_bootload;
+		final int     bootload_device_id;
+		final int     bootload_seconds;
+		try {
+			CommandLineParser parser = new DefaultParser();
+			CommandLine cmd = parser.parse(options, args);
+			
+			comm_port = (cmd.hasOption(option_comm_port))
+					? (String)cmd.getParsedOptionValue(option_comm_port)
+					: "/dev/ttyUSB0";
+			
+			must_list_devices = cmd.hasOption(option_list_devices);
+			
+			must_bootload = cmd.hasOption(option_bootload);
+			bootload_device_id = must_bootload
+					? ((Number)cmd.getParsedOptionValue(option_bootload)).intValue()
+					: -1;
+			bootload_seconds = cmd.hasOption(option_bootload_seconds)
+					? ((Number)cmd.getParsedOptionValue(option_bootload_seconds)).intValue()
+					: 6;
+			
+		} catch (ParseException e) {
+			e.printStackTrace();
+			return;
+		}
+		
+//		
+		ByteCommunication receiverSender = new ByteCommunication(comm_port);
 		Receiver receiver = new Receiver(receiverSender.getInputStream());
 		Sender sender = new Sender(receiverSender.getOutputStream());
 		Communication communication = new Communication(sender, receiver);
 		communication.setSendOnRequest(true);
+		
+		if (must_list_devices) {
+			communication.waitTillScanComplete();
+			communication.close();
+			
+			communication.getDeviceIds().stream().forEach(System.out::println);
+			return;
+		}
+		
+		if (must_bootload) {
+			communication.send(new BootloaderCommand(
+					bootload_device_id, 
+					bootload_seconds));
+			communication.close();
+			return;
+		}
 		
 		communication.send(new LightControlModesCommand(new LightControlModes(LightControlModes.Value.ON, LightControlModes.Value.ON, LightControlModes.Value.NO_CHANGE)));
 		communication.send(new StrobeWeightCommand(5*4, Arrays.asList(0.4f, 1.0f, 0.8f, 0.2f)));
