@@ -14,7 +14,7 @@ namespace communication {
 
 PRIVATE COMMAND_INFO_DECL const receiver::CommandInfo* command_infos[] = {
 	&request_to_send_command_info,
-	nullptr,
+	nullptr, // RequestToSendResponse
 	&lightControl::light_control_command_info,
 	&bootloader::bootloader_command_info, // TODO move one up
 	&lightControl::strip_color_command_info,
@@ -23,9 +23,11 @@ PRIVATE COMMAND_INFO_DECL const receiver::CommandInfo* command_infos[] = {
 	&strobe::strip_color_command_info,
 	&strobe::strip_weight_command_info,
 	&settings::read_command_info,
-	nullptr,
-	&settings::write_command_info,
+	nullptr, // basic settings
+	&settings::write_basic_command_info,
 	&lightControl::apply_target_colors_command_info,
+	&settings::write_expert_command_info,
+	nullptr, // expert settings
 };
 
 const receiver::CommandInfo * const getCommandInfo(const uint8_t command_id) {

@@ -6,10 +6,8 @@
 
 namespace settings {
 
-struct Settings {
+struct BasicSettings {
 	int32_t crc;
-	
-	uint8_t unique_id;
 	
 	uint8_t device_id;
 	uint8_t group_id;
@@ -20,11 +18,20 @@ struct Settings {
 	Color   flut_light_color;
 };
 
+struct ExpertSettings {
+	int32_t crc;
+	
+	uint8_t unique_id;
+};
+
 void setup();
-const Settings& get();
+const BasicSettings& getBasic();
+const BasicSettings& getExpert();
 
 extern communication::receiver::CommandInfo read_command_info;
-extern communication::receiver::CommandInfo write_command_info;
+
+extern communication::receiver::CommandInfo write_basic_command_info;
+extern communication::receiver::CommandInfo write_expert_command_info;
 
 }
 
