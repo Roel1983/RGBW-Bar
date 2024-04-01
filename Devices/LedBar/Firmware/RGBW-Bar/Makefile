@@ -154,10 +154,10 @@ upload: $(FIRMWARE_HEX_FILE) avrdude
 	avrdude -p m328p $(AVRDUDE_ARGS) -D -U flash:w:$(FIRMWARE_HEX_FILE)
 
 list_devices: 
-	@echo "All devices:" $(shell java -jar $(RGBW_TOOL) --list-devices)
+	@echo "All devices:" $(shell java -jar $(RGBW_TOOL) --comm-port $(UPLOAD_PORT) --list-devices)
 	
 upload_%: firmware $(RGBW_TOOL)
-	java -jar $(RGBW_TOOL) --bootload $* --bootload-seconds 3
+	java -jar $(RGBW_TOOL) --comm-port $(UPLOAD_PORT) --bootload $* --bootload-seconds 3
 	sleep 1
 	avrdude -p m328p $(AVRDUDE_ARGS) -D -U flash:w:$(FIRMWARE_HEX_FILE)
 	sleep 1
