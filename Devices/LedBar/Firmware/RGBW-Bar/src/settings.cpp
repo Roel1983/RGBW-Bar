@@ -79,7 +79,9 @@ PRIVATE void loadDefaultBasicSettings() {
 	basic_settings.device_id = expert_settings.unique_id;
 	basic_settings.group_id  = 0;
 	basic_settings.sun_id    = basic_settings.device_id;
-	basic_settings.strip_id  = basic_settings.device_id * 4;	
+	basic_settings.strip_id  = basic_settings.device_id * 4;
+	
+	basic_settings.strip_reverse = false;
 }
 
 PRIVATE void applyExpertSettings() {

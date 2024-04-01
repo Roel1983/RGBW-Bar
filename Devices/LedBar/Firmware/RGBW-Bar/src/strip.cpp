@@ -3,6 +3,7 @@
 #include "color.hpp"
 #include "i2c.hpp"
 #include "pins.hpp"
+#include "settings.hpp"
 
 #include "strip.hpp"
 
@@ -84,10 +85,12 @@ static void pcaReady() {
 }
 
 void loop() {
-	
 	static uint8_t buffer[1 + 16 * 4] = {0x06, 0x00, 0x00, 0x00, 0x00};
+	const bool strip_reverse = settings::getBasic().strip_reverse;
+	
 	for (uint8_t strip_index = 0; strip_index < 4; strip_index++) {
-		const uint8_t strip_offset =  + strip_index * 16;
+		const uint8_t strip_offset = strip_reverse
+			? (3 - strip_index) * 16 : strip_index * 16;
 		buffer[3 + 0 * 4 + strip_offset] = colors[strip_index][0] & 0xFF ;
 		buffer[4 + 0 * 4 + strip_offset] = colors[strip_index][0] >> 8;
 		buffer[3 + 1 * 4 + strip_offset] = colors[strip_index][1] & 0xFF ;

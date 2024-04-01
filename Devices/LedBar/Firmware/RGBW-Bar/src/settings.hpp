@@ -13,9 +13,13 @@ struct BasicSettings {
 	uint8_t group_id;
 	uint8_t sun_id;
 	uint8_t strip_id;
-
+	
 	Color   work_light_color;
 	Color   flut_light_color;
+	
+	struct {
+		bool    strip_reverse : 1;
+	};
 };
 
 struct ExpertSettings {
