@@ -23,11 +23,10 @@ PRIVATE COMMAND_INFO_DECL const receiver::CommandInfo* command_infos[] = {
 	&strobe::strip_color_command_info,
 	&strobe::strip_weight_command_info,
 	&settings::read_command_info,
-	nullptr, // basic settings
+	nullptr, // settingsResponse
 	&settings::write_basic_command_info,
 	&lightControl::apply_target_colors_command_info,
 	&settings::write_expert_command_info,
-	nullptr, // expert settings
 };
 
 const receiver::CommandInfo * const getCommandInfo(const uint8_t command_id) {

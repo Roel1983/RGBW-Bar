@@ -48,11 +48,16 @@ public class Main {
 		option_bootload_seconds.setType(Number.class);
 		options.addOption(option_bootload_seconds);
 		
+		final Option option_read_settings = new Option(null, "read-settings", true, "Reads the settings of a device");
+		option_read_settings.setType(Number.class);
+		options.addOption(option_read_settings);
+		
 		final String  comm_port;
 		final boolean must_list_devices;
 		final boolean must_bootload;
 		final int     bootload_device_id;
 		final int     bootload_seconds;
+		final List<Integer> read_settings_id = new ArrayList<Integer>();
 		try {
 			CommandLineParser parser = new DefaultParser();
 			CommandLine cmd = parser.parse(options, args);
@@ -70,6 +75,10 @@ public class Main {
 			bootload_seconds = cmd.hasOption(option_bootload_seconds)
 					? ((Number)cmd.getParsedOptionValue(option_bootload_seconds)).intValue()
 					: 6;
+			
+			if (cmd.hasOption(option_read_settings)) {
+				read_settings_id.add(((Number)cmd.getParsedOptionValue(option_read_settings)).intValue());
+			}
 			
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -89,6 +98,10 @@ public class Main {
 			
 			communication.getDeviceIds().stream().forEach(System.out::println);
 			return;
+		}
+		
+		for (int unique_id : read_settings_id) {
+			communication.send(new SettingsReadCommand(unique_id));
 		}
 		
 		if (must_bootload) {

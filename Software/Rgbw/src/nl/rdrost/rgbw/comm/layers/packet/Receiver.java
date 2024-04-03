@@ -9,13 +9,62 @@ import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import nl.rdrost.rgbw.util.AnsiColor;
+
 
 public class Receiver implements Closeable {
 	
-	enum Error {PREAMBLE, CRC};
+	enum State {
+		PREAMBLE(AnsiColor.BLACK),
+		SENDER_UNIQUE_ID(AnsiColor.RED),
+		COMMAND_ID(AnsiColor.YELLOW),
+		BODY_LENGTH(AnsiColor.BLUE),
+		BODY(AnsiColor.BRIGHT_MAGENTA),
+		CRC(AnsiColor.CYAN, true);
+		
+		private State(final AnsiColor color) {
+			this(color, false);
+		}
+		
+		private State(final AnsiColor color, boolean newline) {
+			this.color = color;
+			if(newline) {
+				this.formater         = String.format("[%%02X]%n");
+				this.formater_colored = String.format("%s[%%02X]%s%n", color.forground, AnsiColor.RESET.forground);
+			} else {
+				this.formater         = "[%02X]";
+				this.formater_colored = String.format("%s[%%02X]%s", color.forground, AnsiColor.RESET.forground);
+			}
+		}
+		
+		public final AnsiColor color;
+		public final String formater;
+		public final String formater_colored;
+	}
+	
+	enum Error      {PREAMBLE, CRC};
+	enum DebugPrint {
+		OFF {
+			@Override
+			void print(State state, byte data_byte) {
+			}
+		}, ON {
+			@Override void print(State state, byte data_byte) {
+				System.out.print(String.format(state.formater, data_byte));
+			}
+		}, ON_COLORED {
+			@Override void print(State state, byte data_byte) {
+				System.out.print(String.format(state.formater_colored, data_byte));
+			}
+		} ;
+
+		abstract void print(State state, byte data_byte);
+		
+	};
 	
 	private final InputStream is;
 	private final BlockingQueue<Command> command_queue;
+	private volatile DebugPrint debug_print = DebugPrint.OFF;
 	
 	private Thread thread;
 	
@@ -45,7 +94,15 @@ public class Receiver implements Closeable {
 	public final BlockingQueue<Command> getCommandQueue() {
 		return this.command_queue;
 	}
-
+	
+	public final void setDebugPrint(final DebugPrint value) {
+		this.debug_print = value;
+	}
+	
+	public final DebugPrint getDebugPrint() {
+		return this.debug_print;
+	}
+	
 	@Override
 	public void close() throws IOException {
 		this.thread.interrupt();
@@ -71,14 +128,6 @@ public class Receiver implements Closeable {
 		private int remaining_payload_length;
 		private ByteBuffer body       = null;
 		
-		enum State {
-			PREAMBLE,
-			SENDER_UNIQUE_ID,
-			COMMAND_ID,
-			BODY_LENGTH,
-			CRC,
-		}
-		
 		public void run() {
 			while (!Thread.interrupted()) {
 				try {
@@ -95,10 +144,7 @@ public class Receiver implements Closeable {
 		private void processIncommingByte(final byte data_byte) {
 			crc += data_byte;
 			
-			if (receiveBody(data_byte)) {
-				return;
-			}
-			
+			debug_print.print(state, data_byte);
 			switch (state) {
 			case PREAMBLE:
 				receivePreamble(data_byte);
@@ -112,18 +158,20 @@ public class Receiver implements Closeable {
 			case BODY_LENGTH:
 				receiveBodyLength(data_byte);
 				return;
+			case BODY:
+				receiveBody(data_byte);
+				return;
 			case CRC:
 				receiveCrc(data_byte);
 				return;
 			}			
 		}
 		
-		private boolean receiveBody(byte data_byte) {
-			if (body == null || body.remaining() == 0) {
-				return false;
-			}
+		private void receiveBody(byte data_byte) {
 			body.put(data_byte);
-			return true;
+			if (body.remaining() == 0) {
+				state = State.CRC;
+			}
 		}
 
 		private void receivePreamble(byte data_byte) {
@@ -159,12 +207,13 @@ public class Receiver implements Closeable {
 				remaining_payload_length |= data_byte;
 			}
 			body = ByteBuffer.allocate(remaining_payload_length).order(ByteOrder.LITTLE_ENDIAN);
-			state = State.CRC;
+			state = State.BODY;
 		}
 		
 		private void receiveCrc(byte data_byte) {
 			if (this.crc != 0x00) {
 				fireOnError(Error.CRC);
+				preamble_count = 0;
 				state = State.PREAMBLE;
 				return;
 			}
@@ -177,6 +226,7 @@ public class Receiver implements Closeable {
 			} catch (final InterruptedException e) {
 				Thread.currentThread().interrupt();
 			}
+			preamble_count = 0;
 			state = State.PREAMBLE;
 		}
 	}

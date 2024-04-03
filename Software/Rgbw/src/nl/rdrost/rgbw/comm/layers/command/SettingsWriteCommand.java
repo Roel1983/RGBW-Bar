@@ -9,7 +9,7 @@ import java.util.Objects;
 
 import nl.rdrost.rgbw.comm.layers.command.details.AbstractCommand;
 import nl.rdrost.rgbw.comm.layers.command.details.UniqueIdCommand;
-import nl.rdrost.rgbw.types.Settings;
+import nl.rdrost.rgbw.ledbar.Settings;
 
 public class SettingsWriteCommand extends UniqueIdCommand {
 	public static final CommandId COMMAND_ID = CommandId.SETTINGS_WRITE;
@@ -66,7 +66,7 @@ public class SettingsWriteCommand extends UniqueIdCommand {
 			final int settings_count = payload.remaining() / Settings.PAYLOAD_SIZE;
 			final List<Settings> settings_list = new ArrayList<>(settings_count);
 			for (int i = 0; i < settings_count; i++) {
-				final Settings settings = Settings.from(payload);
+				final Settings settings = Settings.getFrom(payload);
 				settings_list.add(settings);
 			}
 			return new SettingsWriteCommand(unique_id, settings_list);

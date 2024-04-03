@@ -41,7 +41,7 @@ public class Rgbw {
 		return builder.toString();
 	}
 
-	public static Rgbw from(final ByteBuffer payload) {
+	public static Rgbw getFrom(final ByteBuffer payload) {
 		final short[] channels = new short[CHANNEL_COUNT];
 		for (int i = 0; i < CHANNEL_COUNT; i++) {
 			channels[i] = payload.getShort();

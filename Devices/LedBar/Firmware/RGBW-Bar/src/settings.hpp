@@ -30,7 +30,7 @@ struct ExpertSettings {
 
 void setup();
 const BasicSettings& getBasic();
-const BasicSettings& getExpert();
+const ExpertSettings& getExpert();
 
 extern communication::receiver::CommandInfo read_command_info;
 

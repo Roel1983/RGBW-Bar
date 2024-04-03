@@ -120,13 +120,13 @@ PRIVATE bool checkCrc(const ExpertSettings& settings) {
 PRIVATE int32_t calculateCrc(const BasicSettings& settings) {
 	return calculateCrc(
 		reinterpret_cast<const uint8_t*>(&settings) + sizeof(settings.crc),
-		sizeof(settings) - sizeof(settings.crc));
+		sizeof(BasicSettings) - sizeof(settings.crc));
 }
 
 PRIVATE int32_t calculateCrc(const ExpertSettings& settings) {
 	return calculateCrc(
 		reinterpret_cast<const uint8_t*>(&settings) + sizeof(settings.crc),
-		sizeof(settings) - sizeof(settings.crc));
+		sizeof(ExpertSettings) - sizeof(settings.crc));
 }
 
 PRIVATE int32_t calculateCrc(const uint8_t *buffer, uint8_t size) {
@@ -143,8 +143,8 @@ const BasicSettings& getBasic() {
 	return basic_settings;
 }
 
-const BasicSettings& getExpert() {	
-	return basic_settings;
+const ExpertSettings& getExpert() {	
+	return expert_settings;
 }
 
 struct ReadCommand {
@@ -152,12 +152,9 @@ struct ReadCommand {
 };
 static_assert(sizeof(ReadCommand) == 1, "");
 
-struct ReadBasicResponse {
-	BasicSettings settings;
-};
-
-struct ReadExpertResponse {
-	ExpertSettings settings;
+struct ReadResponse {
+	ExpertSettings expert_settings;
+	BasicSettings  basic_settings;
 };
 
 PRIVATE communication::receiver::Command<communication::COMMAND_TYPE_UNIQUE_ID, ReadCommand> read_command;
@@ -167,31 +164,18 @@ communication::receiver::CommandInfo read_command_info(
 	onReadCommand);
 
 bool onReadCommand(const ReadCommand& command) {
-	switch (command.settings_type) {
-	case 0: // Basic
-		return communication::sendBroadcast(
-			10,
-			sizeof(ReadBasicResponse),
-			[](bool is_timeout, uint8_t& payload_size, uint8_t *payload_buffer) {
-				if(!is_timeout) {
-					memcpy(payload_buffer, &getBasic(), payload_size);
-				}
-				return true;
-			});
-	case 1: // Expert
-		return communication::sendBroadcast(
-			14, 
-			sizeof(ReadExpertResponse),
-			[](bool is_timeout, uint8_t& payload_size, uint8_t *payload_buffer) {
-				if(!is_timeout) {
-					memcpy(payload_buffer, &getExpert(), payload_size);
-				}
-				return true;
-			});
-	default:
-		// Invalid settings_type
-		return true;
-	}
+	return communication::sendBroadcast(
+		10,
+		sizeof(ReadResponse),
+		[](bool is_timeout, uint8_t& payload_size, uint8_t *payload_buffer) {
+			if(!is_timeout) {
+				ReadResponse *response = (ReadResponse*)payload_buffer;
+				memcpy(&(response->expert_settings), &getExpert(), sizeof(ExpertSettings));
+				memcpy(&(response->basic_settings),  &getBasic(), sizeof(BasicSettings));
+			}
+			return true;
+		}
+	);
 }
 
 struct WriteBasicCommand {

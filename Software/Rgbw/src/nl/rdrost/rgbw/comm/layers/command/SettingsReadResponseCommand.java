@@ -5,7 +5,7 @@ import java.util.Objects;
 
 import nl.rdrost.rgbw.comm.layers.command.details.AbstractCommand;
 import nl.rdrost.rgbw.comm.layers.command.details.BroadcastCommand;
-import nl.rdrost.rgbw.types.Settings;
+import nl.rdrost.rgbw.ledbar.Settings;
 
 public class SettingsReadResponseCommand extends BroadcastCommand {
 	
@@ -51,7 +51,7 @@ public class SettingsReadResponseCommand extends BroadcastCommand {
 		@Override
 		protected AbstractCommand commandFrom(final ByteBuffer payload) {
 			return new SettingsReadResponseCommand(
-					Settings.from(payload));
+					Settings.getFrom(payload));
 		}
 	};
 }
