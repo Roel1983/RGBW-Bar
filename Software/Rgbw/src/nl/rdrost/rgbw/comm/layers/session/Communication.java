@@ -3,11 +3,8 @@ package nl.rdrost.rgbw.comm.layers.session;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.BitSet;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
@@ -21,6 +18,12 @@ import nl.rdrost.rgbw.comm.layers.command.details.AbstractCommand;
 
 public class Communication implements Closeable {
 	
+	public enum DebugPrint {
+		OFF,
+		ON,
+		ON_ALL
+	};
+	
 	private final Sender   inner_sender;
 	private final Receiver inner_receiver;
 	
@@ -32,7 +35,9 @@ public class Communication implements Closeable {
 	private volatile boolean is_send_on_command       = false;
 	private volatile boolean is_request_stop_sender   = false;
 	private volatile boolean is_scan_complete         = false;
-	private Set<Integer>     device_ids               = Collections.synchronizedSet(new HashSet<>());
+	
+	private volatile DebugPrint debug_print_sender   = DebugPrint.OFF;
+	private volatile DebugPrint debug_print_receiver = DebugPrint.OFF;
 		
 	public Communication(final Sender inner_sender, final Receiver inner_receiver) {
 		Objects.nonNull(inner_sender);
@@ -95,7 +100,17 @@ public class Communication implements Closeable {
 	public final boolean getSendOnCommand() {
 		return this.is_send_on_command;
 	}
-	 
+	
+	public void setDebugPrintReceiver(DebugPrint debug_print_receiver) {
+		Objects.nonNull(debug_print_receiver);
+		this.debug_print_receiver = debug_print_receiver;
+	}
+	
+	public void setDebugPrintSender(DebugPrint debug_print_sender) {
+		Objects.nonNull(debug_print_sender);
+		this.debug_print_sender = debug_print_sender;
+	}
+	
 	public void send(final AbstractCommand command) {
 		if (is_request_stop_sender) {
 			throw new IllegalStateException();
@@ -121,7 +136,9 @@ public class Communication implements Closeable {
 				try {
 					Thread.sleep(10); // Why is this needed why is the sleep after 
 					if(command_or_null != null) {
-						//System.out.println(String.format("-->: %s", command_or_null));
+						if (debug_print_sender != DebugPrint.OFF) {
+							System.out.println(String.format("-->: %s", command_or_null));
+						}
 						Communication.this.inner_sender.send(command_or_null);
 					} else if (Communication.this.is_send_on_command) {
 						if (Communication.this.is_request_stop_sender 
@@ -135,15 +152,22 @@ public class Communication implements Closeable {
 							final RequestToSendCommand requestToSendCommand = new RequestToSendCommand(
 									request_to_send_response.getSenderUniqueId(),
 									request_to_send_response.getRequestedLength());
-							//System.out.println(String.format("-->: %s", requestToSendCommand));
+							if (debug_print_sender == DebugPrint.ON_ALL) {
+								System.out.println(String.format("-->: %s", requestToSendCommand));
+							}
 							Communication.this.inner_sender.send(requestToSendCommand);
 							Communication.this.inner_sender.flush();
 							Thread.sleep(request_to_send_response.getRequestedLength() / 4);
 						} else {
 							final int unique_id_to_try = nextUniqueIdToTry();
-							Communication.this.inner_sender.send(new RequestToSendCommand(
-									unique_id_to_try,
-									8));
+							final RequestToSendCommand requestToSendCommand = 
+									new RequestToSendCommand(
+										unique_id_to_try,
+										8); 
+							if (debug_print_sender == DebugPrint.ON_ALL) {
+								System.out.println(String.format("-->: %s", requestToSendCommand));
+							}
+							Communication.this.inner_sender.send(requestToSendCommand);
 							Communication.this.inner_sender.flush();
 							Thread.yield();
 						}
@@ -204,14 +228,20 @@ public class Communication implements Closeable {
 					}
 					
 					if (command instanceof RequestToSendResponseCommand) {
+						if (debug_print_receiver == DebugPrint.ON_ALL) {
+							System.out.println(String.format("<--: %s", command));
+						}
 						RequestToSendResponseCommand requestToSendResponseCommand = 
 								(RequestToSendResponseCommand)command;
 						if (requestToSendResponseCommand.getRequestedLength() > 0) {
 							Communication.this.request_for_higher_requested_length.offer(
 									requestToSendResponseCommand);
 						}
+					} else {
+						if (debug_print_receiver != DebugPrint.OFF) {
+							System.out.println(String.format("<--: %s", command));
+						}
 					}
-					//System.out.println(String.format("<--: %s", command));
 				} catch (InterruptedException e) {
 					Thread.currentThread().interrupt();
 				}

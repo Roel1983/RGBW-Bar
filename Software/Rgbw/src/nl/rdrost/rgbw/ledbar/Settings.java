@@ -26,6 +26,14 @@ public class Settings {
 		return this.basic_settings;
 	}
 	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Settings [expert_settings=").append(expert_settings).append(", basic_settings=")
+				.append(basic_settings).append("]");
+		return builder.toString();
+	}
+
 	public final void putTo(final ByteBuffer byte_buffer) {
 		this.expert_settings.putTo(byte_buffer);
 		this.basic_settings.putTo(byte_buffer);

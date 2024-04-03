@@ -8,6 +8,9 @@ import nl.rdrost.rgbw.types.Rgbw;
 public class BasicSettings extends AbstractSettings<BasicSettings> {
 	public static final int PAYLOAD_SIZE = 25;
 	
+	public static final Rgbw DEFAULT_WORK_LIGHT_COLOR = new Rgbw(new short[] {1500, 1500, 1500, 3000});
+	public static final Rgbw DEFAULT_FLUT_LIGHT_COLOR = new Rgbw(new short[] {4094, 4094, 4094, 4094});
+	
 	public static class Builder {
 		private static final int UNSET_ID = -1;
 		
@@ -16,8 +19,8 @@ public class BasicSettings extends AbstractSettings<BasicSettings> {
 		private int sun_id    = UNSET_ID;
 		private int strip_id  = UNSET_ID;
 		
-		private Rgbw work_light_color = Rgbw.WHITE;
-		private Rgbw flut_light_color = Rgbw.WHITE;
+		private Rgbw work_light_color = DEFAULT_WORK_LIGHT_COLOR;
+		private Rgbw flut_light_color = DEFAULT_FLUT_LIGHT_COLOR;
 		
 		private boolean strip_reverse = false;
 		

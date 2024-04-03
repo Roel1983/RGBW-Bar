@@ -12,12 +12,14 @@ import nl.rdrost.rgbw.comm.layers.command.LightControlModesCommand;
 import nl.rdrost.rgbw.comm.layers.command.Receiver;
 import nl.rdrost.rgbw.comm.layers.command.Sender;
 import nl.rdrost.rgbw.comm.layers.command.SettingsReadCommand;
+import nl.rdrost.rgbw.comm.layers.command.SettingsWriteBasicCommand;
 import nl.rdrost.rgbw.comm.layers.command.StripColorCommand;
 import nl.rdrost.rgbw.comm.layers.command.StripTargetFactor;
 import nl.rdrost.rgbw.comm.layers.command.StrobeColorCommand;
 import nl.rdrost.rgbw.comm.layers.command.StrobeTriggerCommand;
 import nl.rdrost.rgbw.comm.layers.command.StrobeWeightCommand;
 import nl.rdrost.rgbw.comm.layers.session.Communication;
+import nl.rdrost.rgbw.ledbar.BasicSettings;
 import nl.rdrost.rgbw.types.LightControlModes;
 import nl.rdrost.rgbw.types.Rgbw;
 
@@ -118,7 +120,24 @@ public class Main {
 		
 		final Rgbw strip_colors[] = new Rgbw[]{Rgbw.RED, Rgbw.GREEN, Rgbw.BLUE, Rgbw.WHITE};
 		
-		for (int i = 0; i < 40000; i++) {
+		
+		// Test
+//		communication.setDebugPrintSender(Communication.DebugPrint.ON);
+//		communication.setDebugPrintReceiver(Communication.DebugPrint.ON);
+//		
+//		communication.send(new SettingsReadCommand(7));
+//		Thread.sleep(500);
+//		communication.send(new SettingsWriteBasicCommand(7,
+//				new BasicSettings.Builder()
+//					.setStripId(0)
+//					.setStripReverse(true)
+//					.build()));
+//		Thread.sleep(500);
+//		communication.send(new SettingsReadCommand(7));
+		
+		// End test
+		
+		for (int i = 0; i < 0*40000; i++) {
 			List<Rgbw> colors = new ArrayList<>();
 			for (int j = 0; j < 40; j++) {
 				colors.add(strip_colors[(i + j) % 4]);
