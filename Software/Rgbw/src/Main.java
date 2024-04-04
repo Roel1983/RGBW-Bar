@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -24,6 +25,8 @@ import nl.rdrost.rgbw.types.LightControlModes;
 import nl.rdrost.rgbw.types.Rgbw;
 
 import org.apache.commons.cli.*;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Main {
 	public static final String ANSI_RESET = "\u001B[0m";
@@ -54,12 +57,17 @@ public class Main {
 		option_read_settings.setType(Number.class);
 		options.addOption(option_read_settings);
 		
+		final Option option_write_settings_file = new Option(null, "write-settings_file", true, "writes settings");
+		option_write_settings_file.setType(String.class);
+		options.addOption(option_write_settings_file);
+		
 		final String  comm_port;
 		final boolean must_list_devices;
 		final boolean must_bootload;
 		final int     bootload_device_id;
 		final int     bootload_seconds;
 		final List<Integer> read_settings_id = new ArrayList<Integer>();
+		final String  settings_file;
 		try {
 			CommandLineParser parser = new DefaultParser();
 			CommandLine cmd = parser.parse(options, args);
@@ -82,6 +90,10 @@ public class Main {
 				read_settings_id.add(((Number)cmd.getParsedOptionValue(option_read_settings)).intValue());
 			}
 			
+			settings_file = (cmd.hasOption(option_write_settings_file))
+					? (String)cmd.getParsedOptionValue(option_write_settings_file)
+				    : "";
+			
 		} catch (ParseException e) {
 			e.printStackTrace();
 			return;
@@ -100,6 +112,64 @@ public class Main {
 			
 			communication.getDeviceIds().stream().forEach(System.out::println);
 			return;
+		}
+		
+		if (!settings_file.isEmpty()) {
+			communication.send(new SettingsWriteBasicCommand(
+					6,
+					new BasicSettings.Builder()
+						.setDeviceId(0)
+						.setGroupId(0)
+						.setSunId(0)
+						.setStripId(0)
+						.setStripReverse(false)
+						.build()));
+			communication.send(new SettingsWriteBasicCommand(
+					5,
+					new BasicSettings.Builder()
+						.setDeviceId(1)
+						.setGroupId(0)
+						.setSunId(1)
+						.setStripId(4)
+						.setStripReverse(false)
+						.build()));
+			communication.send(new SettingsWriteBasicCommand(
+					4,
+					new BasicSettings.Builder()
+						.setDeviceId(2)
+						.setGroupId(0)
+						.setSunId(2)
+						.setStripId(7)
+						.setStripReverse(false)
+						.build()));
+			communication.send(new SettingsWriteBasicCommand(
+					3,
+					new BasicSettings.Builder()
+						.setDeviceId(3)
+						.setGroupId(0)
+						.setSunId(3)
+						.setStripId(11)
+						.setStripReverse(false)
+						.build()));
+			communication.send(new SettingsWriteBasicCommand(
+					2,
+					new BasicSettings.Builder()
+						.setDeviceId(4)
+						.setGroupId(0)
+						.setSunId(4)
+						.setStripId(15)
+						.setStripReverse(false)
+						.build()));
+			communication.send(new SettingsWriteBasicCommand(
+					1,
+					new BasicSettings.Builder()
+						.setDeviceId(5)
+						.setGroupId(0)
+						.setSunId(5)
+						.setStripId(19)
+						.setStripReverse(false)
+						.build()));
+		    
 		}
 		
 		for (int unique_id : read_settings_id) {
