@@ -1,10 +1,15 @@
-import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 import nl.rdrost.rgbw.comm.layers.bytes.ByteCommunication;
 import nl.rdrost.rgbw.comm.layers.command.ApplyStripColorsCommand;
@@ -17,16 +22,12 @@ import nl.rdrost.rgbw.comm.layers.command.SettingsWriteBasicCommand;
 import nl.rdrost.rgbw.comm.layers.command.StripColorCommand;
 import nl.rdrost.rgbw.comm.layers.command.StripTargetFactor;
 import nl.rdrost.rgbw.comm.layers.command.StrobeColorCommand;
-import nl.rdrost.rgbw.comm.layers.command.StrobeTriggerCommand;
 import nl.rdrost.rgbw.comm.layers.command.StrobeWeightCommand;
 import nl.rdrost.rgbw.comm.layers.session.Communication;
+import nl.rdrost.rgbw.comm.layers.session.Communication.DebugPrint;
 import nl.rdrost.rgbw.ledbar.BasicSettings;
 import nl.rdrost.rgbw.types.LightControlModes;
 import nl.rdrost.rgbw.types.Rgbw;
-
-import org.apache.commons.cli.*;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Main {
 	public static final String ANSI_RESET = "\u001B[0m";
@@ -207,7 +208,7 @@ public class Main {
 		
 		// End test
 		
-		for (int i = 0; i < 0*40000; i++) {
+		for (int i = 0; i < 40000; i++) {
 			List<Rgbw> colors = new ArrayList<>();
 			for (int j = 0; j < 40; j++) {
 				colors.add(strip_colors[(i + j) % 4]);

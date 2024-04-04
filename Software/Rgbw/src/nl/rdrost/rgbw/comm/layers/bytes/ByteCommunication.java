@@ -25,7 +25,7 @@ public class ByteCommunication {
 		
 		this.serialPort = serialPort;
 		this.serialPort.openPort();
-		this.serialPort.setBaudRate(115200);
+		this.serialPort.setBaudRate(57600);
 		this.serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 1000, 1000);
 		
 		

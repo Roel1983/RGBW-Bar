@@ -134,7 +134,7 @@ public class Communication implements Closeable {
 				AbstractCommand command_or_null = Communication.this.command_queue.poll();
 				
 				try {
-					Thread.sleep(10); // Why is this needed why is the sleep after 
+					Thread.sleep(20); // Why is this needed why is the sleep after 
 					if(command_or_null != null) {
 						if (debug_print_sender != DebugPrint.OFF) {
 							System.out.println(String.format("-->: %s", command_or_null));
@@ -171,7 +171,7 @@ public class Communication implements Closeable {
 							Communication.this.inner_sender.flush();
 							Thread.yield();
 						}
-						Thread.sleep(2);
+						Thread.sleep(4);
 					}
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
