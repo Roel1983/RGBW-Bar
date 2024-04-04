@@ -19,6 +19,19 @@ public class Rgbw {
 	
 	final short[] channels;
 	
+	public Rgbw(float r, float g, float b, float w) {
+		assert(r >= 0.0f && r <= 1.0d);
+		assert(g >= 0.0f && g <= 1.0f);
+		assert(b >= 0.0f && b <= 1.0f);
+		assert(w >= 0.0f && w <= 1.0f);
+		this.channels = new short[] {
+			(short)(r * CHANNEL_MAX),
+			(short)(g * CHANNEL_MAX),
+			(short)(b * CHANNEL_MAX),
+			(short)(w * CHANNEL_MAX)
+		};
+	}
+	
 	public Rgbw(final short[] channels) {
 		Objects.nonNull(channels);
 		assert(channels.length == CHANNEL_COUNT);
@@ -26,6 +39,15 @@ public class Rgbw {
 			assert(s >= 0 && s <= CHANNEL_MAX);
 		}
 		this.channels = Arrays.copyOf(channels, CHANNEL_COUNT);
+	}
+	
+	public static Rgbw blend (Rgbw c1, Rgbw c2, float f) {
+		float fi = 1.0f - f;
+		short[] channels = new short[4];
+		for (int i = 0; i < 4; i++) {
+			channels[i] = (short)(c1.channels[i] * fi + c2.channels[i] * f);
+		}
+		return new Rgbw(channels);
 	}
 
 	public void putTo(final ByteBuffer payload) {

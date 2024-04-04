@@ -211,24 +211,28 @@ public class Main {
 		
 		final Rgbw strip_colors[] = new Rgbw[]{Rgbw.RED, Rgbw.GREEN, Rgbw.BLUE, Rgbw.WHITE};
 		
-		for (int i = 0; i < 40000; i++) {
+		while(true)
+		for (int i = 0; i < 100; i++) {
 			List<Rgbw> colors = new ArrayList<>();
 			for (int j = 0; j < 10; j++) {
 				//colors.add(strip_colors[(i + j) % 4]);
-				colors.add(((i % 20) == j) ? strip_colors[(i / 20) % 4] : Rgbw.BLACK);
+				//colors.add(((i % 20) == j) ? strip_colors[(i / 20) % 4] : Rgbw.BLACK);
+				colors.add(pickColor((float)(i % 100) / 100, j));
 			}
 			communication.send(new StripColorCommand(7, colors));
 			
 			colors = new ArrayList<>();
 			for (int j = 10; j < 20; j++) {
 				//colors.add(strip_colors[(i + j) % 4]);
-				colors.add(((i % 20) == j) ? strip_colors[(i / 20) % 4] : Rgbw.BLACK);
+				//colors.add(((i % 20) == j) ? strip_colors[(i / 20) % 4] : Rgbw.BLACK);
+				colors.add(pickColor((float)(i % 100) / 100, j));
 			}
 			communication.send(new StripColorCommand(17, colors));
 			
 			
 			communication.send(new ApplyStripColorsCommand());
-			communication.send(new StripTargetFactor(1.0f, Duration.ofMillis(100)));
+			communication.send(new StripTargetFactor(1.0f, Duration.ofMillis(3000)));
+			Thread.sleep(3000);
 //			for (int j = 1; j <= 5; j++) {
 //				communication.send(new StripTargetFactor(0.2f * j, Duration.ofMillis(20)));
 //				Thread.sleep(20);
@@ -237,10 +241,54 @@ public class Main {
 				communication.send(new StrobeTriggerCommand(Duration.ofMillis(15), Duration.ofMillis(10), 5));
 			}
 		}
-		Thread.sleep(10000);
-		communication.send(new BootloaderCommand(2, 6));
-		Thread.sleep(1000);
-		communication.close();
+//		Thread.sleep(10000);
+//		communication.send(new BootloaderCommand(2, 6));
+//		Thread.sleep(1000);
+//		communication.close();
 	}
+	
+	
+	static class E {
+		final float time;
+		final Rgbw  color;
+		public E(float time, Rgbw color) {
+			this.time = time;
+			this.color = color;
+		}
+	}
+	private static E gradient[] = new E[] {
+			new E(0.00f, new Rgbw(0.0f, 0.0f, 1.0f, 0.0f)),
+			new E(0.15f, new Rgbw(1.0f, 0.0f, 0.0f, 0.0f)),
+			new E(0.20f, new Rgbw(1.0f, 1.0f, 0.0f, 0.0f)),
+			new E(0.25f, new Rgbw(1.0f, 1.0f, 1.0f, 0.0f)),
+			new E(0.35f, new Rgbw(1.0f, 1.0f, 0.0f, 1.0f)),
+			new E(0.45f, new Rgbw(1.0f, 1.0f, 1.0f, 0.0f)),
+			new E(0.50f, new Rgbw(1.0f, 1.0f, 0.0f, 0.0f)),
+			new E(0.55f, new Rgbw(1.0f, 0.0f, 0.0f, 0.0f)),
+			new E(0.70f, new Rgbw(0.0f, 0.0f, 1.0f, 0.0f)),
+	};
+	
+	private static Rgbw pickColor(float time, int strip_id) {
+		
+		time = time - ((float)strip_id / 200);
+		while (time < 0.0) time += 1.0;
+		
+		int i2;
+		for(i2 = 0; i2 < gradient.length; i2++) {
+			if (gradient[i2].time >= time) break;
+		}
+		i2 = i2 % gradient.length;
+		int i1 = (i2 + gradient.length - 1) % gradient.length;
+		
+		float time1 = gradient[i1].time;
+		float time2 = gradient[i2].time;
+		if (time2 < time1) time2 += 1.0;
+		
+		float f = (time - time1) / (time2 - time1);
+		
+		return Rgbw.blend(gradient[i1].color, gradient[i2].color, f);
+	}
+	
+	
 }
 
