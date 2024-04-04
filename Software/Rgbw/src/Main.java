@@ -22,6 +22,7 @@ import nl.rdrost.rgbw.comm.layers.command.SettingsWriteBasicCommand;
 import nl.rdrost.rgbw.comm.layers.command.StripColorCommand;
 import nl.rdrost.rgbw.comm.layers.command.StripTargetFactor;
 import nl.rdrost.rgbw.comm.layers.command.StrobeColorCommand;
+import nl.rdrost.rgbw.comm.layers.command.StrobeTriggerCommand;
 import nl.rdrost.rgbw.comm.layers.command.StrobeWeightCommand;
 import nl.rdrost.rgbw.comm.layers.session.Communication;
 import nl.rdrost.rgbw.comm.layers.session.Communication.DebugPrint;
@@ -105,7 +106,9 @@ public class Main {
 		Receiver receiver = new Receiver(receiverSender.getInputStream());
 		Sender sender = new Sender(receiverSender.getOutputStream());
 		Communication communication = new Communication(sender, receiver);
-		communication.setSendOnRequest(true);
+		communication.setDebugPrintSender(DebugPrint.ON_ALL);
+		communication.setDebugPrintReceiver(DebugPrint.ON_ALL);
+		//communication.setSendOnRequest(true);
 		
 		if (must_list_devices) {
 			communication.waitTillScanComplete();
@@ -117,12 +120,21 @@ public class Main {
 		
 		if (!settings_file.isEmpty()) {
 			communication.send(new SettingsWriteBasicCommand(
+					7,
+					new BasicSettings.Builder()
+						.setDeviceId(4)
+						.setGroupId(0)
+						.setSunId(4)
+						.setStripId(15)
+						.setStripReverse(false)
+						.build()));
+			communication.send(new SettingsWriteBasicCommand(
 					6,
 					new BasicSettings.Builder()
 						.setDeviceId(0)
 						.setGroupId(0)
 						.setSunId(0)
-						.setStripId(0)
+						.setStripId(7)
 						.setStripReverse(false)
 						.build()));
 			communication.send(new SettingsWriteBasicCommand(
@@ -170,11 +182,19 @@ public class Main {
 						.setStripId(19)
 						.setStripReverse(false)
 						.build()));
-		    
+			Thread.sleep(1000);
+			communication.close();
+			return;
 		}
 		
-		for (int unique_id : read_settings_id) {
-			communication.send(new SettingsReadCommand(unique_id));
+		if (!read_settings_id.isEmpty()) {
+			communication.setDebugPrintReceiver(DebugPrint.ON);
+			for (int unique_id : read_settings_id) {
+				communication.send(new SettingsReadCommand(unique_id));
+			}
+			communication.waitTillScanComplete();
+			communication.close();
+			return;
 		}
 		
 		if (must_bootload) {
@@ -191,41 +211,36 @@ public class Main {
 		
 		final Rgbw strip_colors[] = new Rgbw[]{Rgbw.RED, Rgbw.GREEN, Rgbw.BLUE, Rgbw.WHITE};
 		
-		
-		// Test
-//		communication.setDebugPrintSender(Communication.DebugPrint.ON);
-//		communication.setDebugPrintReceiver(Communication.DebugPrint.ON);
-//		
-//		communication.send(new SettingsReadCommand(7));
-//		Thread.sleep(500);
-//		communication.send(new SettingsWriteBasicCommand(7,
-//				new BasicSettings.Builder()
-//					.setStripId(0)
-//					.setStripReverse(true)
-//					.build()));
-//		Thread.sleep(500);
-//		communication.send(new SettingsReadCommand(7));
-		
-		// End test
-		
 		for (int i = 0; i < 40000; i++) {
 			List<Rgbw> colors = new ArrayList<>();
-			for (int j = 0; j < 40; j++) {
-				colors.add(strip_colors[(i + j) % 4]);
+			for (int j = 0; j < 10; j++) {
+				//colors.add(strip_colors[(i + j) % 4]);
+				colors.add(((i % 20) == j) ? strip_colors[(i / 20) % 4] : Rgbw.BLACK);
 			}
-			communication.send(new StripColorCommand(0, colors));
+			communication.send(new StripColorCommand(7, colors));
+			
+			colors = new ArrayList<>();
+			for (int j = 10; j < 20; j++) {
+				//colors.add(strip_colors[(i + j) % 4]);
+				colors.add(((i % 20) == j) ? strip_colors[(i / 20) % 4] : Rgbw.BLACK);
+			}
+			communication.send(new StripColorCommand(17, colors));
+			
+			
 			communication.send(new ApplyStripColorsCommand());
-			for (int j = 1; j <= 10; j++) {
-				communication.send(new StripTargetFactor(0.1f * j, Duration.ofMillis(100)));
-				Thread.sleep(100);
-			}
-//			if((i % 4) ==  0) {
-//				communication.send(new StrobeTriggerCommand(Duration.ofMillis(15), Duration.ofMillis(10), 5));
+			communication.send(new StripTargetFactor(1.0f, Duration.ofMillis(100)));
+//			for (int j = 1; j <= 5; j++) {
+//				communication.send(new StripTargetFactor(0.2f * j, Duration.ofMillis(20)));
+//				Thread.sleep(20);
 //			}
+			if((i % 100) ==  0) {
+				communication.send(new StrobeTriggerCommand(Duration.ofMillis(15), Duration.ofMillis(10), 5));
+			}
 		}
 		Thread.sleep(10000);
 		communication.send(new BootloaderCommand(2, 6));
 		Thread.sleep(1000);
 		communication.close();
-	}	
+	}
 }
+

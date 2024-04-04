@@ -11,6 +11,7 @@ public class Rgbw {
 	public static final int CHANNEL_MAX   = 4085;
 	public static final int PAYLOAD_SIZE  = CHANNEL_COUNT * 2;
 	
+	public static final Rgbw BLACK = new Rgbw(new short[] {0, 0, 0, 0});
 	public static final Rgbw RED   = new Rgbw(new short[] {CHANNEL_MAX, 0, 0, 0});
 	public static final Rgbw GREEN = new Rgbw(new short[] {0, CHANNEL_MAX, 0, 0});
 	public static final Rgbw BLUE  = new Rgbw(new short[] {0, 0, CHANNEL_MAX, 0});
