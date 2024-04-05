@@ -1,4 +1,4 @@
-package nl.rdrost.rgbw.valuepicker;
+package nl.rdrost.rgbw.drivers;
 
 import java.util.Objects;
 

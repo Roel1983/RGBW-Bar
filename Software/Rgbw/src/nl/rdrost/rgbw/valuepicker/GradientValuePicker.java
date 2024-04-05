@@ -5,7 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import nl.rdrost.rgbw.valuepicker.Drivers.DriverType;
+import nl.rdrost.rgbw.drivers.Drivers;
+import nl.rdrost.rgbw.drivers.Drivers.DriverType;
 import nl.rdrost.rgbw.valuepicker.gradient.Gradient;
 
 public class GradientValuePicker<T> implements ValuePicker<T> {
