@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.time.Duration;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,6 +30,13 @@ import nl.rdrost.rgbw.comm.layers.session.Communication.DebugPrint;
 import nl.rdrost.rgbw.ledbar.BasicSettings;
 import nl.rdrost.rgbw.types.LightControlModes;
 import nl.rdrost.rgbw.types.Rgbw;
+import nl.rdrost.rgbw.valuepicker.Drivers;
+import nl.rdrost.rgbw.valuepicker.Drivers.DriverType;
+import nl.rdrost.rgbw.valuepicker.GradientValuePicker;
+import nl.rdrost.rgbw.valuepicker.ValuePicker;
+import nl.rdrost.rgbw.valuepicker.gradient.Gradient;
+import nl.rdrost.rgbw.valuepicker.gradient.GradientFactory;
+import nl.rdrost.rgbw.valuepicker.gradient.LinearGradient;
 
 public class Main {
 	public static final String ANSI_RESET = "\u001B[0m";
@@ -209,37 +217,45 @@ public class Main {
 		communication.send(new StrobeWeightCommand(5*4, Arrays.asList(0.4f, 1.0f, 0.8f, 0.2f)));
 		communication.send(new StrobeColorCommand(5*4, Arrays.asList(Rgbw.RED, Rgbw.GREEN, Rgbw.GREEN, Rgbw.RED)));
 		
-		final Rgbw strip_colors[] = new Rgbw[]{Rgbw.RED, Rgbw.GREEN, Rgbw.BLUE, Rgbw.WHITE};
+		// TODO from JSON
+		final GradientFactory<Rgbw> gradient_factory = new GradientFactory<>(Rgbw.class);
+		gradient_factory.put(0.00f, new Rgbw(0.0f, 0.0f, 0.5f, 0.0f)); // Dark blue 
+		gradient_factory.put(0.15f, new Rgbw(0.0f, 0.0f, 1.0f, 0.0f)); // Deep blue
+		gradient_factory.put(0.24f, new Rgbw(0.3f, 0.3f, 0.3f, 0.0f)); // Gray
+		gradient_factory.put(0.25f, new Rgbw(1.0f, 0.0f, 0.0f, 0.0f)); // Deep red
+		gradient_factory.put(0.30f, new Rgbw(1.0f, 0.8f, 0.0f, 0.0f)); // Orange
+		gradient_factory.put(0.45f, new Rgbw(1.0f, 1.0f, 0.8f, 1.0f)); // bright warm white
+		gradient_factory.put(0.55f, new Rgbw(1.0f, 1.0f, 0.8f, 1.0f)); // bright warm white
+		gradient_factory.put(0.70f, new Rgbw(1.0f, 0.8f, 0.0f, 0.0f)); // Orange
+		gradient_factory.put(0.75f, new Rgbw(1.0f, 0.0f, 0.0f, 0.0f)); // Deep red
+		gradient_factory.put(0.76f, new Rgbw(0.3f, 0.3f, 0.3f, 0.0f)); // Gray
+		gradient_factory.put(0.85f, new Rgbw(0.0f, 0.0f, 1.0f, 0.0f)); // Deep blue
+		LinearGradient<Rgbw> gradient = gradient_factory.create();
+		ValuePicker<Rgbw> rgbw_picker = GradientValuePicker.createFirstOrder(Arrays.asList(DriverType.TIME), gradient);
 		
-		while(true)
-		for (int i = 0; i < 100; i++) {
+		Drivers drivers = new Drivers();
+		drivers.setDriver(DriverType.WEATHER,    1.0f);
+		drivers.setDriver(DriverType.CLOUDINESS, 0.75f);
+		long period = 1000 * 60 * 1;
+		
+		while(true)	for (int i = 0; i < 100; i++) {
+			drivers.setDriver(DriverType.TIME, (float)(System.currentTimeMillis() % period) / period);
 			List<Rgbw> colors = new ArrayList<>();
 			for (int j = 0; j < 10; j++) {
-				//colors.add(strip_colors[(i + j) % 4]);
-				//colors.add(((i % 20) == j) ? strip_colors[(i / 20) % 4] : Rgbw.BLACK);
-				colors.add(pickColor((float)(i % 100) / 100, j));
+				colors.add(rgbw_picker.get(drivers));
 			}
 			communication.send(new StripColorCommand(7, colors));
 			
 			colors = new ArrayList<>();
 			for (int j = 10; j < 20; j++) {
-				//colors.add(strip_colors[(i + j) % 4]);
-				//colors.add(((i % 20) == j) ? strip_colors[(i / 20) % 4] : Rgbw.BLACK);
-				colors.add(pickColor((float)(i % 100) / 100, j));
+				colors.add(rgbw_picker.get(drivers));
 			}
 			communication.send(new StripColorCommand(17, colors));
 			
 			
 			communication.send(new ApplyStripColorsCommand());
-			communication.send(new StripTargetFactor(1.0f, Duration.ofMillis(3000)));
-			Thread.sleep(3000);
-//			for (int j = 1; j <= 5; j++) {
-//				communication.send(new StripTargetFactor(0.2f * j, Duration.ofMillis(20)));
-//				Thread.sleep(20);
-//			}
-			if((i % 100) ==  0) {
-				communication.send(new StrobeTriggerCommand(Duration.ofMillis(15), Duration.ofMillis(10), 5));
-			}
+			communication.send(new StripTargetFactor(1.0f, Duration.ofMillis(500)));
+			Thread.sleep(500);
 		}
 //		Thread.sleep(10000);
 //		communication.send(new BootloaderCommand(2, 6));
@@ -256,38 +272,38 @@ public class Main {
 			this.color = color;
 		}
 	}
-	private static E gradient[] = new E[] {
-			new E(0.00f, new Rgbw(0.0f, 0.0f, 1.0f, 0.0f)),
-			new E(0.15f, new Rgbw(1.0f, 0.0f, 0.0f, 0.0f)),
-			new E(0.20f, new Rgbw(1.0f, 1.0f, 0.0f, 0.0f)),
-			new E(0.25f, new Rgbw(1.0f, 1.0f, 1.0f, 0.0f)),
-			new E(0.35f, new Rgbw(1.0f, 1.0f, 0.0f, 1.0f)),
-			new E(0.45f, new Rgbw(1.0f, 1.0f, 1.0f, 0.0f)),
-			new E(0.50f, new Rgbw(1.0f, 1.0f, 0.0f, 0.0f)),
-			new E(0.55f, new Rgbw(1.0f, 0.0f, 0.0f, 0.0f)),
-			new E(0.70f, new Rgbw(0.0f, 0.0f, 1.0f, 0.0f)),
-	};
+//	private static E gradient[] = new E[] {
+//			new E(0.00f, new Rgbw(0.0f, 0.0f, 1.0f, 0.0f)),
+//			new E(0.15f, new Rgbw(1.0f, 0.0f, 0.0f, 0.0f)),
+//			new E(0.20f, new Rgbw(1.0f, 1.0f, 0.0f, 0.0f)),
+//			new E(0.25f, new Rgbw(1.0f, 1.0f, 1.0f, 0.0f)),
+//			new E(0.35f, new Rgbw(1.0f, 1.0f, 0.0f, 1.0f)),
+//			new E(0.45f, new Rgbw(1.0f, 1.0f, 1.0f, 0.0f)),
+//			new E(0.50f, new Rgbw(1.0f, 1.0f, 0.0f, 0.0f)),
+//			new E(0.55f, new Rgbw(1.0f, 0.0f, 0.0f, 0.0f)),
+//			new E(0.70f, new Rgbw(0.0f, 0.0f, 1.0f, 0.0f)),
+//	};
 	
-	private static Rgbw pickColor(float time, int strip_id) {
-		
-		time = time - ((float)strip_id / 200);
-		while (time < 0.0) time += 1.0;
-		
-		int i2;
-		for(i2 = 0; i2 < gradient.length; i2++) {
-			if (gradient[i2].time >= time) break;
-		}
-		i2 = i2 % gradient.length;
-		int i1 = (i2 + gradient.length - 1) % gradient.length;
-		
-		float time1 = gradient[i1].time;
-		float time2 = gradient[i2].time;
-		if (time2 < time1) time2 += 1.0;
-		
-		float f = (time - time1) / (time2 - time1);
-		
-		return Rgbw.blend(gradient[i1].color, gradient[i2].color, f);
-	}
+//	private static Rgbw pickColor(float time, int strip_id) {
+//		
+//		time = time - ((float)strip_id / 200);
+//		while (time < 0.0) time += 1.0;
+//		
+//		int i2;
+//		for(i2 = 0; i2 < gradient.length; i2++) {
+//			if (gradient[i2].time >= time) break;
+//		}
+//		i2 = i2 % gradient.length;
+//		int i1 = (i2 + gradient.length - 1) % gradient.length;
+//		
+//		float time1 = gradient[i1].time;
+//		float time2 = gradient[i2].time;
+//		if (time2 < time1) time2 += 1.0;
+//		
+//		float f = (time - time1) / (time2 - time1);
+//		
+//		return Rgbw.blend(gradient[i1].color, gradient[i2].color, f);
+//	}
 	
 	
 }
