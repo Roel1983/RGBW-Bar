@@ -1,9 +1,26 @@
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.Duration;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -11,7 +28,6 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-
 import nl.rdrost.rgbw.comm.layers.bytes.ByteCommunication;
 import nl.rdrost.rgbw.comm.layers.command.ApplyStripColorsCommand;
 import nl.rdrost.rgbw.comm.layers.command.BootloaderCommand;
@@ -218,93 +234,191 @@ public class Main {
 		communication.send(new StrobeColorCommand(5*4, Arrays.asList(Rgbw.RED, Rgbw.GREEN, Rgbw.GREEN, Rgbw.RED)));
 		
 		// TODO from JSON
-		final GradientFactory<Rgbw> gradient_factory = new GradientFactory<>(Rgbw.class);
-		gradient_factory.put(0.00f, new Rgbw(0.0f, 0.0f, 0.5f, 0.0f)); // Dark blue 
-		gradient_factory.put(0.15f, new Rgbw(0.0f, 0.0f, 1.0f, 0.0f)); // Deep blue
-		gradient_factory.put(0.24f, new Rgbw(0.3f, 0.3f, 0.3f, 0.0f)); // Gray
-		gradient_factory.put(0.25f, new Rgbw(1.0f, 0.0f, 0.0f, 0.0f)); // Deep red
-		gradient_factory.put(0.30f, new Rgbw(1.0f, 0.8f, 0.0f, 0.0f)); // Orange
-		gradient_factory.put(0.45f, new Rgbw(1.0f, 1.0f, 0.8f, 1.0f)); // bright warm white
-		gradient_factory.put(0.55f, new Rgbw(1.0f, 1.0f, 0.8f, 1.0f)); // bright warm white
-		gradient_factory.put(0.70f, new Rgbw(1.0f, 0.8f, 0.0f, 0.0f)); // Orange
-		gradient_factory.put(0.75f, new Rgbw(1.0f, 0.0f, 0.0f, 0.0f)); // Deep red
-		gradient_factory.put(0.76f, new Rgbw(0.3f, 0.3f, 0.3f, 0.0f)); // Gray
-		gradient_factory.put(0.85f, new Rgbw(0.0f, 0.0f, 1.0f, 0.0f)); // Deep blue
-		LinearGradient<Rgbw> gradient = gradient_factory.create();
+		LinearGradient<Rgbw> gradient = new GradientFactory<>(Rgbw.class)
+				.put(0.00f, new Rgbw(0.0f, 0.0f, 0.5f, 0.0f)) // Dark blue 
+				.put(0.15f, new Rgbw(0.0f, 0.0f, 1.0f, 0.0f)) // Deep blue
+				.put(0.24f, new Rgbw(0.3f, 0.3f, 0.3f, 0.0f)) // Gray
+				.put(0.25f, new Rgbw(1.0f, 0.0f, 0.0f, 0.0f)) // Deep red
+				.put(0.30f, new Rgbw(1.0f, 0.8f, 0.0f, 0.0f)) // Orange
+				.put(0.45f, new Rgbw(1.0f, 1.0f, 0.8f, 1.0f)) // bright warm white
+				.put(0.55f, new Rgbw(1.0f, 1.0f, 0.8f, 1.0f)) // bright warm white
+				.put(0.70f, new Rgbw(1.0f, 0.8f, 0.0f, 0.0f)) // Orange
+				.put(0.75f, new Rgbw(1.0f, 0.0f, 0.0f, 0.0f)) // Deep red
+				.put(0.76f, new Rgbw(0.3f, 0.3f, 0.3f, 0.0f)) // Gray
+				.put(0.85f, new Rgbw(0.0f, 0.0f, 1.0f, 0.0f)) // Deep blue
+				.create();
 		ValuePicker<Rgbw> rgbw_picker = GradientValuePicker.createFirstOrder(Arrays.asList(DriverType.TIME), gradient);
+		
+		
+		File audioFile = new File("/media/roel/e1a79f3c-83dd-421f-91e3-d0d95d706cc7/roel/Projects/day and night/dag-nacht-opendag/tmp/haan1.wav");
+		Clip audioClip1 = null;
+		try {
+			AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
+			AudioFormat format = audioStream.getFormat();
+			DataLine.Info info = new DataLine.Info(Clip.class, format);
+			audioClip1 = (Clip) AudioSystem.getLine(info);
+			audioClip1.open(audioStream);
+		} catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		final Clip audioClip = audioClip1;
+		
+		DriverEvent driverEvent = new DriverEvent.Builder().setCondition(DriverType.TIME, DriverEvent.Event.BECOME_GREATER, 0.25f).build(()->{
+			if (audioClip != null) {
+				audioClip.setFramePosition(0);
+				audioClip.start();
+			}
+		});
 		
 		Drivers drivers = new Drivers();
 		drivers.setDriver(DriverType.WEATHER,    1.0f);
 		drivers.setDriver(DriverType.CLOUDINESS, 0.75f);
 		long period = 1000 * 60 * 1;
 		
-		while(true)	for (int i = 0; i < 100; i++) {
+		while(true) {
+			// Determine the drivers for this frame
 			drivers.setDriver(DriverType.TIME, (float)(System.currentTimeMillis() % period) / period);
+			
+			// Pick the colors for each strip and send it
 			List<Rgbw> colors = new ArrayList<>();
 			for (int j = 0; j < 10; j++) {
 				colors.add(rgbw_picker.get(drivers));
 			}
 			communication.send(new StripColorCommand(7, colors));
-			
 			colors = new ArrayList<>();
 			for (int j = 10; j < 20; j++) {
 				colors.add(rgbw_picker.get(drivers));
 			}
 			communication.send(new StripColorCommand(17, colors));
 			
-			
+			// Apply and fade the colors			
 			communication.send(new ApplyStripColorsCommand());
-			communication.send(new StripTargetFactor(1.0f, Duration.ofMillis(500)));
-			Thread.sleep(500);
+			communication.send(new StripTargetFactor(1.0f, Duration.ofMillis(1000)));
+			Thread.sleep(1000);
+			driverEvent.loop(drivers);
 		}
-//		Thread.sleep(10000);
-//		communication.send(new BootloaderCommand(2, 6));
-//		Thread.sleep(1000);
 //		communication.close();
+//		audioClip.close();
+//		audioStream.close();
+
 	}
-	
-	
-	static class E {
-		final float time;
-		final Rgbw  color;
-		public E(float time, Rgbw color) {
-			this.time = time;
-			this.color = color;
-		}
-	}
-//	private static E gradient[] = new E[] {
-//			new E(0.00f, new Rgbw(0.0f, 0.0f, 1.0f, 0.0f)),
-//			new E(0.15f, new Rgbw(1.0f, 0.0f, 0.0f, 0.0f)),
-//			new E(0.20f, new Rgbw(1.0f, 1.0f, 0.0f, 0.0f)),
-//			new E(0.25f, new Rgbw(1.0f, 1.0f, 1.0f, 0.0f)),
-//			new E(0.35f, new Rgbw(1.0f, 1.0f, 0.0f, 1.0f)),
-//			new E(0.45f, new Rgbw(1.0f, 1.0f, 1.0f, 0.0f)),
-//			new E(0.50f, new Rgbw(1.0f, 1.0f, 0.0f, 0.0f)),
-//			new E(0.55f, new Rgbw(1.0f, 0.0f, 0.0f, 0.0f)),
-//			new E(0.70f, new Rgbw(0.0f, 0.0f, 1.0f, 0.0f)),
-//	};
-	
-//	private static Rgbw pickColor(float time, int strip_id) {
-//		
-//		time = time - ((float)strip_id / 200);
-//		while (time < 0.0) time += 1.0;
-//		
-//		int i2;
-//		for(i2 = 0; i2 < gradient.length; i2++) {
-//			if (gradient[i2].time >= time) break;
-//		}
-//		i2 = i2 % gradient.length;
-//		int i1 = (i2 + gradient.length - 1) % gradient.length;
-//		
-//		float time1 = gradient[i1].time;
-//		float time2 = gradient[i2].time;
-//		if (time2 < time1) time2 += 1.0;
-//		
-//		float f = (time - time1) / (time2 - time1);
-//		
-//		return Rgbw.blend(gradient[i1].color, gradient[i2].color, f);
-//	}
-	
 	
 }
 
+class DriverEvent {
+	
+	public static enum Event {
+		ALWAYS {
+			@Override
+			boolean updateIsActive(DriverEvent.Condition condition, float driver) {
+				return condition.is_active = true;
+			}
+		},
+		GREATER_THAN {
+			@Override
+			boolean updateIsActive(DriverEvent.Condition condition, float driver) {
+				final float effective_threshold = condition.threshold 
+						                        + condition.hysteresis * (condition.is_active ? -.5f : .5f);
+				return condition.is_active = (1.0f + driver - effective_threshold) % 1.0f < 0.5f;
+			}
+		},
+		SMALLER_THAN {
+			@Override
+			boolean updateIsActive(DriverEvent.Condition condition, float driver) {
+				final float effective_threshold = condition.threshold 
+                        + condition.hysteresis * (condition.is_active ? .5f : -.5f);
+				return condition.is_active = (1.0f + driver - effective_threshold) % 1.0f > 0.5f;
+			}
+		},
+		BECOME_GREATER {
+			@Override
+			boolean updateIsActive(DriverEvent.Condition condition, float driver) {
+				final boolean old_is_active = condition.is_active;
+				final float effective_threshold = condition.threshold 
+                        + condition.hysteresis * (condition.is_active ? -.5f : .5f);
+				condition.is_active = condition.is_active = (1.0f + driver - effective_threshold) % 1.0f < 0.5f;
+				return !old_is_active && condition.is_active;
+			}
+		},
+		BECOME_SMALLER {
+			@Override
+			boolean updateIsActive(DriverEvent.Condition condition, float driver) {
+				final boolean old_is_active = condition.is_active;
+				final float effective_threshold = condition.threshold 
+                        + condition.hysteresis * (condition.is_active ? .5f : -.5f);
+				condition.is_active = (1.0f + driver - effective_threshold) % 1.0f > 0.5f;
+				return !old_is_active && condition.is_active;
+			}
+		},
+		NEVER {
+			@Override
+			boolean updateIsActive(DriverEvent.Condition condition, float driver) {
+				return condition.is_active = false;
+			}
+		};
+
+		abstract boolean updateIsActive(DriverEvent.Condition condition, float driver);
+	}
+	
+	public static class Builder {
+		public final static float DEFAULT_HYSTERESIS = 0.0f;
+		
+		private final Map<DriverType, Condition> conditions = new EnumMap<>(DriverType.class);
+		
+		Builder setCondition(final DriverType driver_type, final Event event, final float threshold) {
+			return setCondition(driver_type, event, threshold, DEFAULT_HYSTERESIS);
+		}
+		
+		Builder setCondition(final DriverType driver_type, final Event event, final float threshold, final float hysteresis) {
+			conditions.put(driver_type, new Condition(event, threshold, hysteresis));
+			return this;
+		}
+		
+		public DriverEvent build(Runnable action) {
+			// TODO sanity check:
+			return new DriverEvent(this.conditions, action);
+		}
+	}
+	
+	private static class Condition {
+		public final float  threshold;    
+		public final float  hysteresis; 
+		public final Event  event;
+		
+		public boolean      is_active;
+		
+		public Condition(DriverEvent.Event event, float threshold, float  hysteresis) {
+			super();
+			Objects.nonNull(event);
+			this.threshold  = threshold;
+			this.hysteresis = hysteresis;
+			this.event      = event;
+		}
+	}
+	
+	private final Map<DriverType, Condition> conditions;
+	private final Runnable action;
+	private boolean is_active = true;
+	
+	private DriverEvent(final Map<DriverType, DriverEvent.Condition> conditions, Runnable action) {
+		this.conditions = conditions;
+		this.action     = action;
+	}
+	
+	public void loop(final Drivers drivers) {
+		boolean new_is_active = true;
+		for (Map.Entry<DriverType, DriverEvent.Condition> pair : conditions.entrySet()) {
+			final DriverType driver_type = pair.getKey();
+			final Condition  condition   = pair.getValue();
+			
+			if(!condition.event.updateIsActive(condition, drivers.getDriver(driver_type))) {
+				new_is_active = false;
+			};
+		}
+		if (!is_active && new_is_active) {
+			this.action.run();
+		}
+		is_active = new_is_active;
+	}
+}
