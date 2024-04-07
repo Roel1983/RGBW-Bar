@@ -17,6 +17,7 @@ public class DefaultBlenderFactory implements BlenderFactory {
 	static {
 		DefaultBlenderFactory.register(Rgbw.class,  RgbwBlender.INSTANCE);
 		DefaultBlenderFactory.register(Short.class, ShortBlender.INSTANCE);
+		DefaultBlenderFactory.register(Float.class, FloatBlender.INSTANCE);
 	}
 	
 	private DefaultBlenderFactory() {}

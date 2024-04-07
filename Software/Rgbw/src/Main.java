@@ -1,17 +1,13 @@
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.Duration;
-import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
+import java.util.Random;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -19,7 +15,6 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.apache.commons.cli.CommandLine;
@@ -28,6 +23,7 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+
 import nl.rdrost.rgbw.comm.layers.bytes.ByteCommunication;
 import nl.rdrost.rgbw.comm.layers.command.ApplyStripColorsCommand;
 import nl.rdrost.rgbw.comm.layers.command.BootloaderCommand;
@@ -50,7 +46,6 @@ import nl.rdrost.rgbw.types.LightControlModes;
 import nl.rdrost.rgbw.types.Rgbw;
 import nl.rdrost.rgbw.valuepicker.GradientValuePicker;
 import nl.rdrost.rgbw.valuepicker.ValuePicker;
-import nl.rdrost.rgbw.valuepicker.gradient.Gradient;
 import nl.rdrost.rgbw.valuepicker.gradient.GradientFactory;
 import nl.rdrost.rgbw.valuepicker.gradient.LinearGradient;
 
@@ -59,6 +54,8 @@ public class Main {
 	public static final String ANSI_GREEN = "\u001B[32m";
 	public static final String ANSI_BLUE  = "\u001B[34m";
 
+	private static SoundClips rooster_clips;
+	private static SoundClips thunder_clips;
 	
 	public static void main(final String[] args) throws IOException, InterruptedException {
 		
@@ -234,7 +231,7 @@ public class Main {
 		communication.send(new StrobeColorCommand(5*4, Arrays.asList(Rgbw.RED, Rgbw.GREEN, Rgbw.GREEN, Rgbw.RED)));
 		
 		// TODO from JSON
-		LinearGradient<Rgbw> gradient = new GradientFactory<>(Rgbw.class)
+		LinearGradient<Rgbw> rgbw_gradient = new GradientFactory<>(Rgbw.class)
 				.put(0.00f, new Rgbw(0.0f, 0.0f, 0.5f, 0.0f)) // Dark blue 
 				.put(0.15f, new Rgbw(0.0f, 0.0f, 1.0f, 0.0f)) // Deep blue
 				.put(0.24f, new Rgbw(0.3f, 0.3f, 0.3f, 0.0f)) // Gray
@@ -247,27 +244,31 @@ public class Main {
 				.put(0.76f, new Rgbw(0.3f, 0.3f, 0.3f, 0.0f)) // Gray
 				.put(0.85f, new Rgbw(0.0f, 0.0f, 1.0f, 0.0f)) // Deep blue
 				.create();
-		ValuePicker<Rgbw> rgbw_picker = GradientValuePicker.createFirstOrder(Arrays.asList(DriverType.TIME), gradient);
+		ValuePicker<Rgbw> rgbw_picker = GradientValuePicker.createFirstOrder(Arrays.asList(DriverType.TIME), rgbw_gradient);
+		LinearGradient<Float> lightning_gradient = new GradientFactory<>(Float.class)
+				.put(0.80f,  0.0f)
+				.put(0.00f, 30.0f)
+				.put(0.20f,  0.0f)
+				.create();
+		ValuePicker<Float> lightning_picker = GradientValuePicker.createFirstOrder(Arrays.asList(DriverType.TIME), lightning_gradient);
 		
-		
-		File audioFile = new File("/media/roel/e1a79f3c-83dd-421f-91e3-d0d95d706cc7/roel/Projects/day and night/dag-nacht-opendag/tmp/haan1.wav");
-		Clip audioClip1 = null;
-		try {
-			AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
-			AudioFormat format = audioStream.getFormat();
-			DataLine.Info info = new DataLine.Info(Clip.class, format);
-			audioClip1 = (Clip) AudioSystem.getLine(info);
-			audioClip1.open(audioStream);
-		} catch (UnsupportedAudioFileException | LineUnavailableException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		final Clip audioClip = audioClip1;
+		rooster_clips = new SoundClips.Builder()
+				.load(new File("data/sound/haan1.wav"))
+				.load(new File("data/sound/haan2.wav"))
+				.build();
+		thunder_clips = new SoundClips.Builder()
+				.load(new File("data/sound/thunder1.wav"))
+				.load(new File("data/sound/thunder2.wav"))
+				.load(new File("data/sound/thunder3.wav"))
+				.load(new File("data/sound/thunder4.wav"))
+				.load(new File("data/sound/thunder5.wav"))
+				.load(new File("data/sound/thunder6.wav"))
+				.load(new File("data/sound/thunder7.wav"))
+				.build();
 		
 		DriverEvent driverEvent = new DriverEvent.Builder().setCondition(DriverType.TIME, DriverEvent.Event.BECOME_GREATER, 0.25f).build(()->{
-			if (audioClip != null) {
-				audioClip.setFramePosition(0);
-				audioClip.start();
+			if (rooster_clips != null) {
+				rooster_clips.play();
 			}
 		});
 		
@@ -276,6 +277,7 @@ public class Main {
 		drivers.setDriver(DriverType.CLOUDINESS, 0.75f);
 		long period = 1000 * 60 * 1;
 		
+		Random rand = new Random();
 		while(true) {
 			// Determine the drivers for this frame
 			drivers.setDriver(DriverType.TIME, (float)(System.currentTimeMillis() % period) / period);
@@ -294,14 +296,39 @@ public class Main {
 			
 			// Apply and fade the colors			
 			communication.send(new ApplyStripColorsCommand());
-			communication.send(new StripTargetFactor(1.0f, Duration.ofMillis(1000)));
-			Thread.sleep(1000);
+			
+			long delay = 500;
+			communication.send(new StripTargetFactor(1.0f, Duration.ofMillis(delay)));
+			Thread.sleep(delay);
 			driverEvent.loop(drivers);
+			
+			for (int strip_index = 7; strip_index < 23; strip_index++) {
+				float c = lightning_picker.get(drivers) * delay / (60 * 1000) / 16;
+				float r = rand.nextFloat();
+				if (r < c) {
+					lightning(communication, strip_index);
+				}
+			}
 		}
 //		communication.close();
 //		audioClip.close();
 //		audioStream.close();
 
+	}
+
+
+	private static void lightning(Communication communication, int strip) {
+		List<Float> weights = new ArrayList<>(40);
+		for (int i = 0; i < 40; i++) {
+			int d = strip - i;
+			weights.add((float)Math.pow(1.5, -.5 * d * d));
+		}
+		communication.send(new StrobeWeightCommand(0, weights));
+		
+		communication.send(new StrobeTriggerCommand(Duration.ofMillis(15), Duration.ofMillis(10), 7));
+		if (thunder_clips != null) {
+			thunder_clips.play();
+		}
 	}
 	
 }
@@ -420,5 +447,57 @@ class DriverEvent {
 			this.action.run();
 		}
 		is_active = new_is_active;
+	}
+}
+
+class SoundClips {
+
+	static class Builder {
+		List<SoundClip> clips = new ArrayList<>();
+		
+		Builder load(File file) {
+			this.clips.add(new SoundClip(file));
+			return this;
+		}
+		
+		SoundClips build() {
+			if (clips.isEmpty()) throw new IllegalStateException();
+			return new SoundClips(clips);
+		}
+	}
+
+	private List<SoundClip> clips;
+	private int             index = 0;
+	
+	private SoundClips(final List<SoundClip> clips) {
+		this.clips = new ArrayList<>(clips);
+	}
+	
+	public void play() {
+		if(index >= clips.size()) index = 0;
+		this.clips.get(index++).play();
+	}
+}
+
+class SoundClip {
+	final Clip clip;
+	
+	public SoundClip(File file) {
+		AudioInputStream audioStream;
+		try {
+			audioStream = AudioSystem.getAudioInputStream(file);
+			final AudioFormat format = audioStream.getFormat();
+			final DataLine.Info info = new DataLine.Info(Clip.class, format);
+			clip = (Clip) AudioSystem.getLine(info);
+			clip.open(audioStream);
+		} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+			e.printStackTrace();
+			throw new IllegalArgumentException(e);
+		}		
+	}
+	
+	public void play() {
+		clip.setFramePosition(0);
+		clip.start();
 	}
 }
