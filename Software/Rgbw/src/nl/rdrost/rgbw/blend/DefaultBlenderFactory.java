@@ -36,7 +36,7 @@ public class DefaultBlenderFactory implements BlenderFactory {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> Blender<T> create(final Class<T> type) {
+	public <T> Blender<T> create(final int order, final Class<T> type) {
 		lock.readLock().lock();
 		try {
 			final Blender<T> blender = (Blender<T>)blenders.get(type);

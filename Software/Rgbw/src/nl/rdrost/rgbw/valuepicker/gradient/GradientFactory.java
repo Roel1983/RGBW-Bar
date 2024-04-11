@@ -17,7 +17,7 @@ public class GradientFactory<T> {
 			@Override
 			<T> LinearGradient<T> create(GradientFactory<T> factory) {
 				final PointMap<T> map     = factory.point_map_factory.create(factory.points);
-				final Blender<T>  blender = factory.blender_factory.create(factory.class_type);
+				final Blender<T>  blender = factory.blender_factory.create(factory.order, factory.class_type);
 				LinearGradient<T> result = new LinearGradient<T>(factory.class_type, map, blender);
 				return result;
 			}
@@ -30,17 +30,25 @@ public class GradientFactory<T> {
 	
 	private Class<T>        class_type;
 	private Type            type              = DEFAULT_TYPE;
+	private int             order;
 	
 	private PointMapFactory point_map_factory = DefaultPointMapFactory.INSTANCE;
 	private BlenderFactory  blender_factory   = DefaultBlenderFactory.INSTANCE;
 	
-	private Set<PointMap.Point<T>> points     = new HashSet<>(); 
+	private Set<PointMap.Point<T>> points     = new HashSet<>();
+	 
 	
 	public GradientFactory(final Class<T> type) {
-		Objects.nonNull(type);
-		this.class_type = type;
+		this(1, type);
 	}
 	
+	public GradientFactory(int order, Class<T> type) {
+		Objects.requireNonNull(type);
+		assert(order >= 1);
+		this.class_type = type;
+		this.order      = order;
+	}
+
 	public GradientFactory<T> setPointMapFactory(final PointMapFactory factory) {
 		Objects.nonNull(factory);
 		this.point_map_factory = factory;

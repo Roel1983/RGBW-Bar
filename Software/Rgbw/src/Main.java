@@ -46,6 +46,7 @@ import nl.rdrost.rgbw.types.LightControlModes;
 import nl.rdrost.rgbw.types.Rgbw;
 import nl.rdrost.rgbw.valuepicker.GradientValuePicker;
 import nl.rdrost.rgbw.valuepicker.ValuePicker;
+import nl.rdrost.rgbw.valuepicker.gradient.Gradient;
 import nl.rdrost.rgbw.valuepicker.gradient.GradientFactory;
 import nl.rdrost.rgbw.valuepicker.gradient.LinearGradient;
 
@@ -231,7 +232,7 @@ public class Main {
 		communication.send(new StrobeColorCommand(5*4, Arrays.asList(Rgbw.RED, Rgbw.GREEN, Rgbw.GREEN, Rgbw.RED)));
 		
 		// TODO from JSON
-		LinearGradient<Rgbw> rgbw_gradient = new GradientFactory<>(Rgbw.class)
+		Gradient<Rgbw> rgbw_gradient_weater_good = new GradientFactory<>(Rgbw.class)
 				.put(0.00f, new Rgbw(0.0f, 0.0f, 0.5f, 0.0f)) // Dark blue 
 				.put(0.15f, new Rgbw(0.0f, 0.0f, 1.0f, 0.0f)) // Deep blue
 				.put(0.24f, new Rgbw(0.3f, 0.3f, 0.3f, 0.0f)) // Gray
@@ -244,13 +245,49 @@ public class Main {
 				.put(0.76f, new Rgbw(0.3f, 0.3f, 0.3f, 0.0f)) // Gray
 				.put(0.85f, new Rgbw(0.0f, 0.0f, 1.0f, 0.0f)) // Deep blue
 				.create();
-		ValuePicker<Rgbw> rgbw_picker = GradientValuePicker.createFirstOrder(Arrays.asList(DriverType.TIME), rgbw_gradient);
-		LinearGradient<Float> lightning_gradient = new GradientFactory<>(Float.class)
-				.put(0.80f,  0.0f)
-				.put(0.00f, 30.0f)
-				.put(0.20f,  0.0f)
+		Gradient<Rgbw> rgbw_gradient_weater_gray = new GradientFactory<>(Rgbw.class)
+				.put(0.00f, new Rgbw(0.0f, 0.0f, 0.2f, 0.0f)) // Dark 
+				.put(0.24f, new Rgbw(0.1f, 0.1f, 0.1f, 0.0f)) // Gray
+				.put(0.25f, new Rgbw(0.5f, 0.5f, 0.5f, 0.0f)) // Lighter gray
+				.put(0.45f, new Rgbw(0.8f, 0.8f, 0.8f, 0.8f)) // white
+				.put(0.55f, new Rgbw(0.8f, 0.8f, 0.8f, 0.8f)) // white
+				.put(0.75f, new Rgbw(0.5f, 0.5f, 0.5f, 0.0f)) // Lighter gray
+				.put(0.76f, new Rgbw(0.1f, 0.1f, 0.1f, 0.0f)) // Gray
 				.create();
-		ValuePicker<Float> lightning_picker = GradientValuePicker.createFirstOrder(Arrays.asList(DriverType.TIME), lightning_gradient);
+		Gradient<Rgbw> rgbw_gradient_weater_bad = new GradientFactory<>(Rgbw.class)
+				.put(0.00f, new Rgbw(0.0f, 0.1f, 0.0f, 0.0f)) // Dark 
+				.put(0.24f, new Rgbw(0.05f, 0.1f, 0.05f, 0.0f)) // Gray
+				.put(0.25f, new Rgbw(0.3f, 0.5f, 0.3f, 0.0f)) // Lighter gray
+				.put(0.45f, new Rgbw(0.4f, 0.8f, 0.4f, 0.4f)) // white
+				.put(0.55f, new Rgbw(0.4f, 0.8f, 0.4f, 0.4f)) // white
+				.put(0.75f, new Rgbw(0.3f, 0.5f, 0.3f, 0.0f)) // Lighter gray
+				.put(0.76f, new Rgbw(0.1f, 0.2f, 0.1f, 0.0f)) // Gray
+				.create();
+		Gradient<Gradient<Rgbw>> rgbw_gradient = new GradientFactory<Gradient<Rgbw>>(Gradient.getClazz())
+				.put(1.0f, rgbw_gradient_weater_good)
+				.put(0.5f, rgbw_gradient_weater_gray)
+				.put(0.0f, rgbw_gradient_weater_bad)
+				.create();		
+		ValuePicker<Rgbw> rgbw_picker = GradientValuePicker.createSecondOrder(
+				Arrays.asList(DriverType.TIME, DriverType.WEATHER), rgbw_gradient);
+		
+		LinearGradient<Float> lightning_gradient_no = new GradientFactory<>(Float.class)
+				.put(0.0f, 0.0f)
+				.put(0.0f, 0.0f)
+				.put(1.0f, 0.0f)
+				.create();
+		LinearGradient<Float> lightning_gradient_bad = new GradientFactory<>(Float.class)
+				.put(0.2f,  0.0f)
+				.put(0.0f, 30.0f)
+				.put(0.8f,  0.0f)
+				.create();
+		Gradient<Gradient<Float>> lightning_gradient = new GradientFactory<Gradient<Float>>(Gradient.getClazz())
+				.put(1.0f, lightning_gradient_no)
+				.put(0.5f, lightning_gradient_no)
+				.put(0.0f, lightning_gradient_bad)
+				.create();
+		ValuePicker<Float> lightning_picker = GradientValuePicker.createSecondOrder(
+				Arrays.asList(DriverType.TIME, DriverType.WEATHER), lightning_gradient);
 		
 		rooster_clips = new SoundClips.Builder()
 				.load(new File("data/sound/haan1.wav"))
