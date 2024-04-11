@@ -14,6 +14,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
+import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
@@ -55,7 +56,9 @@ public class Main {
 	public static final String ANSI_BLUE  = "\u001B[34m";
 
 	private static SoundClips rooster_clips;
-	private static SoundClips thunder_clips;
+	private static SoundClips thunder_clips_left;
+	private static SoundClips thunder_clips_center;
+	private static SoundClips thunder_clips_right;
 	
 	public static void main(final String[] args) throws IOException, InterruptedException {
 		
@@ -231,32 +234,41 @@ public class Main {
 		communication.send(new StrobeColorCommand(5*4, Arrays.asList(Rgbw.RED, Rgbw.GREEN, Rgbw.GREEN, Rgbw.RED)));
 		
 		// TODO from JSON
+		float sunset_offset = 0.1f; 
 		LinearGradient<Rgbw> rgbw_gradient = new GradientFactory<>(Rgbw.class)
-				.put(0.00f, new Rgbw(0.0f, 0.0f, 0.5f, 0.0f)) // Dark blue 
-				.put(0.15f, new Rgbw(0.0f, 0.0f, 1.0f, 0.0f)) // Deep blue
-				.put(0.24f, new Rgbw(0.3f, 0.3f, 0.3f, 0.0f)) // Gray
-				.put(0.25f, new Rgbw(1.0f, 0.0f, 0.0f, 0.0f)) // Deep red
-				.put(0.30f, new Rgbw(1.0f, 0.8f, 0.0f, 0.0f)) // Orange
-				.put(0.45f, new Rgbw(1.0f, 1.0f, 0.8f, 1.0f)) // bright warm white
-				.put(0.55f, new Rgbw(1.0f, 1.0f, 0.8f, 1.0f)) // bright warm white
-				.put(0.70f, new Rgbw(1.0f, 0.8f, 0.0f, 0.0f)) // Orange
-				.put(0.75f, new Rgbw(1.0f, 0.0f, 0.0f, 0.0f)) // Deep red
-				.put(0.76f, new Rgbw(0.3f, 0.3f, 0.3f, 0.0f)) // Gray
-				.put(0.85f, new Rgbw(0.0f, 0.0f, 1.0f, 0.0f)) // Deep blue
+				.put(0.00f,                 new Rgbw(0.0f, 0.0f, 0.5f, 0.0f)) // Dark blue 
+				.put((0.25f - sunset_offset)/2, new Rgbw(0.0f, 0.0f, 1.0f, 0.0f)) // Deep blue
+				.put(0.24f - sunset_offset, new Rgbw(0.3f, 0.3f, 0.3f, 0.0f)) // Gray
+				.put(0.25f - sunset_offset, new Rgbw(1.0f, 0.0f, 0.0f, 0.0f)) // Deep red
+				.put(0.27f - sunset_offset, new Rgbw(1.0f, 0.8f, 0.0f, 0.0f)) // Orange
+				.put(0.30f - sunset_offset, new Rgbw(0.8f, 0.8f, 0.6f, 0.0f)) // dull white
+				.put(0.45f,                 new Rgbw(1.0f, 1.0f, 0.8f, 1.0f)) // bright warm white
+				.put(0.55f,                 new Rgbw(1.0f, 1.0f, 0.8f, 1.0f)) // bright warm white
+				.put(0.60f + sunset_offset, new Rgbw(0.6f, 1.0f, 0.6f, 0.0f)) // greenish
+				.put(0.74f + sunset_offset, new Rgbw(0.5f, 0.8f, 0.5f, 0.0f)) // greenish
+				.put(0.75f + sunset_offset, new Rgbw(0.0f, 0.1f, 0.0f, 0.0f)) // dark green
+				.put(0.85f + sunset_offset, new Rgbw(0.0f, 0.1f, 0.0f, 0.0f)) // dark green
 				.create();
 		ValuePicker<Rgbw> rgbw_picker = GradientValuePicker.createFirstOrder(Arrays.asList(DriverType.TIME), rgbw_gradient);
 		LinearGradient<Float> lightning_gradient = new GradientFactory<>(Float.class)
-				.put(0.80f,  0.0f)
-				.put(0.00f, 30.0f)
-				.put(0.20f,  0.0f)
+				.put(0.55f,  0.0f)
+				.put(0.60f, 10.0f)
+				.put(0.80f, 20.0f)
+				.put(0.00f,  0.0f)
 				.create();
 		ValuePicker<Float> lightning_picker = GradientValuePicker.createFirstOrder(Arrays.asList(DriverType.TIME), lightning_gradient);
 		
+		long period = 1000 * 60 * 12;
+		
 		rooster_clips = new SoundClips.Builder()
-				.load(new File("data/sound/haan1.wav"))
 				.load(new File("data/sound/haan2.wav"))
 				.build();
-		thunder_clips = new SoundClips.Builder()
+		thunder_clips_left = new SoundClips.Builder()
+				.load(new File("data/sound/thunder_left_1.wav"))
+				.load(new File("data/sound/thunder_left_2.wav"))
+				.load(new File("data/sound/thunder_left_3.wav"))
+				.build();
+		thunder_clips_center = new SoundClips.Builder()
 				.load(new File("data/sound/thunder1.wav"))
 				.load(new File("data/sound/thunder2.wav"))
 				.load(new File("data/sound/thunder3.wav"))
@@ -265,8 +277,15 @@ public class Main {
 				.load(new File("data/sound/thunder6.wav"))
 				.load(new File("data/sound/thunder7.wav"))
 				.build();
+		thunder_clips_right = new SoundClips.Builder()
+				.load(new File("data/sound/thunder_right_1.wav"))
+				.load(new File("data/sound/thunder_right_2.wav"))
+				.load(new File("data/sound/thunder_right_3.wav"))
+				.build();
 		
-		DriverEvent driverEvent = new DriverEvent.Builder().setCondition(DriverType.TIME, DriverEvent.Event.BECOME_GREATER, 0.25f).build(()->{
+		DriverEvent driverEvent = new DriverEvent.Builder()
+				.setCondition(DriverType.TIME, DriverEvent.Event.BECOME_GREATER, 0.241f - sunset_offset)
+				.build(()->{
 			if (rooster_clips != null) {
 				rooster_clips.play();
 			}
@@ -275,7 +294,7 @@ public class Main {
 		Drivers drivers = new Drivers();
 		drivers.setDriver(DriverType.WEATHER,    1.0f);
 		drivers.setDriver(DriverType.CLOUDINESS, 0.75f);
-		long period = 1000 * 60 * 1;
+		
 		
 		Random rand = new Random();
 		while(true) {
@@ -321,11 +340,20 @@ public class Main {
 		List<Float> weights = new ArrayList<>(40);
 		for (int i = 0; i < 40; i++) {
 			int d = strip - i;
-			weights.add((float)Math.pow(1.5, -.5 * d * d));
+			weights.add((float)Math.pow(1.3, -.5 * d * d));
 		}
 		communication.send(new StrobeWeightCommand(0, weights));
 		
 		communication.send(new StrobeTriggerCommand(Duration.ofMillis(15), Duration.ofMillis(10), 7));
+		
+		final SoundClips thunder_clips;
+		if (strip < 7 + 6) {
+			thunder_clips = thunder_clips_left;
+		} else if (strip < 23 - 6) {
+			thunder_clips = thunder_clips_right;
+		} else {
+			thunder_clips = thunder_clips_center;
+		}		
 		if (thunder_clips != null) {
 			thunder_clips.play();
 		}
@@ -474,8 +502,13 @@ class SoundClips {
 	}
 	
 	public void play() {
+		play(0.0f);
+	}
+	
+	public void play(float balance) {
 		if(index >= clips.size()) index = 0;
-		this.clips.get(index++).play();
+		final SoundClip soundClip = this.clips.get(index++);
+		soundClip.play(balance);
 	}
 }
 
@@ -496,8 +529,12 @@ class SoundClip {
 		}		
 	}
 	
-	public void play() {
+	public void play(float balance) {
 		clip.setFramePosition(0);
+		try {
+			FloatControl balanceControl = (FloatControl)clip.getControl(FloatControl.Type.BALANCE);
+			balanceControl.setValue(balance);
+		} catch (IllegalArgumentException e) {}
 		clip.start();
 	}
 }
