@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,7 +16,9 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.Line;
 import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.apache.commons.cli.CommandLine;
@@ -291,6 +294,10 @@ public class Main {
 			}
 		});
 		
+		BackgroundSound rain = new BackgroundSound(new File("data/sound/rain1.wav")); 
+		
+		rain.start();
+		
 		Drivers drivers = new Drivers();
 		drivers.setDriver(DriverType.WEATHER,    1.0f);
 		drivers.setDriver(DriverType.CLOUDINESS, 0.75f);
@@ -330,10 +337,12 @@ public class Main {
 					lightning(communication, strip_index);
 				}
 			}
+			rain.setvolume(Math.min(1.0f, lightning_picker.get(drivers) / 10.0f));
 		}
 //		communication.close();
 //		audioClip.close();
 //		audioStream.close();
+//		rain.stop();
 
 	}
 
@@ -539,4 +548,67 @@ class SoundClip {
 		} catch (IllegalArgumentException e) {}
 		clip.start();
 	}
+}
+
+class BackgroundSound {
+	
+	AudioInputStream audioStream;
+	final SourceDataLine audioLine;
+	final FloatControl balanceControl;
+	final Thread thread;
+	
+	volatile float volume = 0.0f;
+		
+	public BackgroundSound(File file) {
+		try {
+			audioStream = AudioSystem.getAudioInputStream(file);
+			AudioFormat format = audioStream.getFormat();
+			 
+			DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);		 
+			audioLine = (SourceDataLine) AudioSystem.getLine(info);		
+			audioLine.open(format);
+		} catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+			e.printStackTrace();
+			throw new Error(e);
+		}
+		balanceControl = (FloatControl)audioLine.getControl(FloatControl.Type.MASTER_GAIN);
+		
+		thread = new Thread(() -> {
+			byte[] bufferBytes = new byte[1024];
+			int readBytes = -1;
+			
+			float cur_volume = 0.0f;
+			
+			try {
+				audioLine.start();
+				while(!Thread.interrupted()) {
+					while (!Thread.interrupted() && (readBytes = audioStream.read(bufferBytes)) != -1) {
+						audioLine.write(bufferBytes, 0, readBytes);
+						cur_volume += (volume - cur_volume) / 100;
+						
+						balanceControl.setValue((cur_volume - 1.0f) * 80);
+					}
+					audioStream = AudioSystem.getAudioInputStream(file);
+				}
+			} catch (IOException | UnsupportedAudioFileException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
+		
+	}
+	
+	
+	void start() {
+		this.thread.start();
+	}
+	
+	void stop() {
+		this.thread.interrupt();
+	}
+	
+	void setvolume(float volume) {
+		this.volume = volume;
+	}
+	
 }
