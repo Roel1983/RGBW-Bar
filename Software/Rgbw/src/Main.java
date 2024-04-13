@@ -294,21 +294,22 @@ public class Main {
 		Drivers drivers = new Drivers();
 		drivers.setDriver(DriverType.WEATHER,    1.0f);
 		drivers.setDriver(DriverType.CLOUDINESS, 0.75f);
-		
+		float timeshift_per_strip = 0.001f;		
 		
 		Random rand = new Random();
 		while(true) {
-			// Determine the drivers for this frame
-			drivers.setDriver(DriverType.TIME, (float)(System.currentTimeMillis() % period) / period);
+			final float non_local_time_driver = (float)(System.currentTimeMillis() % period) / period;
 			
 			// Pick the colors for each strip and send it
 			List<Rgbw> colors = new ArrayList<>();
 			for (int j = 0; j < 10; j++) {
+				drivers.setDriver(DriverType.TIME, (non_local_time_driver + j * timeshift_per_strip) % 1.0f);
 				colors.add(rgbw_picker.get(drivers));
 			}
 			communication.send(new StripColorCommand(7, colors));
 			colors = new ArrayList<>();
 			for (int j = 10; j < 20; j++) {
+				drivers.setDriver(DriverType.TIME, (non_local_time_driver + j * timeshift_per_strip) % 1.0f);
 				colors.add(rgbw_picker.get(drivers));
 			}
 			communication.send(new StripColorCommand(17, colors));
@@ -322,6 +323,7 @@ public class Main {
 			driverEvent.loop(drivers);
 			
 			for (int strip_index = 7; strip_index < 23; strip_index++) {
+				drivers.setDriver(DriverType.TIME, (non_local_time_driver + strip_index * timeshift_per_strip) % 1.0f);
 				float c = lightning_picker.get(drivers) * delay / (60 * 1000) / 16;
 				float r = rand.nextFloat();
 				if (r < c) {
