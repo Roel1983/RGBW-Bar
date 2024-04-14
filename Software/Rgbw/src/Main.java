@@ -1,6 +1,5 @@
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,7 +15,6 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.FloatControl;
-import javax.sound.sampled.Line;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -244,18 +242,18 @@ public class Main {
 				.put(0.24f - sunset_offset, new Rgbw(0.3f, 0.3f, 0.3f, 0.0f)) // Gray
 				.put(0.25f - sunset_offset, new Rgbw(1.0f, 0.0f, 0.0f, 0.0f)) // Deep red
 				.put(0.27f - sunset_offset, new Rgbw(1.0f, 0.8f, 0.0f, 0.0f)) // Orange
-				.put(0.30f - sunset_offset, new Rgbw(0.8f, 0.8f, 0.6f, 0.0f)) // dull white
+				.put(0.30f - sunset_offset, new Rgbw(1.0f, 1.0f, 0.8f, 0.0f)) // dull white
 				.put(0.45f,                 new Rgbw(1.0f, 1.0f, 0.8f, 1.0f)) // bright warm white
-				.put(0.55f,                 new Rgbw(1.0f, 1.0f, 0.8f, 1.0f)) // bright warm white
-				.put(0.60f + sunset_offset, new Rgbw(0.6f, 1.0f, 0.6f, 0.0f)) // greenish
-				.put(0.74f + sunset_offset, new Rgbw(0.5f, 0.8f, 0.5f, 0.0f)) // greenish
+				.put(0.65f,                 new Rgbw(1.0f, 1.0f, 0.8f, 1.0f)) // bright warm white
+				.put(0.67f + sunset_offset, new Rgbw(0.5f, 1.0f, 0.5f, 0.0f)) // greenish
+				.put(0.74f + sunset_offset, new Rgbw(0.4f, 0.8f, 0.4f, 0.0f)) // greenish
 				.put(0.75f + sunset_offset, new Rgbw(0.0f, 0.1f, 0.0f, 0.0f)) // dark green
 				.put(0.85f + sunset_offset, new Rgbw(0.0f, 0.1f, 0.0f, 0.0f)) // dark green
 				.create();
 		ValuePicker<Rgbw> rgbw_picker = GradientValuePicker.createFirstOrder(Arrays.asList(DriverType.TIME), rgbw_gradient);
 		LinearGradient<Float> lightning_gradient = new GradientFactory<>(Float.class)
-				.put(0.55f,  0.0f)
-				.put(0.60f, 10.0f)
+				.put(0.67f,  0.0f)
+				.put(0.75f, 10.0f)
 				.put(0.80f, 20.0f)
 				.put(0.00f,  0.0f)
 				.create();
@@ -287,7 +285,7 @@ public class Main {
 				.build();
 		
 		DriverEvent driverEvent = new DriverEvent.Builder()
-				.setCondition(DriverType.TIME, DriverEvent.Event.BECOME_GREATER, 0.241f - sunset_offset)
+				.setCondition(DriverType.TIME, DriverEvent.Event.BECOME_GREATER, 0.245f - sunset_offset)
 				.build(()->{
 			if (rooster_clips != null) {
 				rooster_clips.play();
@@ -301,7 +299,7 @@ public class Main {
 		Drivers drivers = new Drivers();
 		drivers.setDriver(DriverType.WEATHER,    1.0f);
 		drivers.setDriver(DriverType.CLOUDINESS, 0.75f);
-		float timeshift_per_strip = 0.001f;		
+		float timeshift_per_strip = 0.002f;		
 		
 		Random rand = new Random();
 		while(true) {
@@ -310,13 +308,13 @@ public class Main {
 			// Pick the colors for each strip and send it
 			List<Rgbw> colors = new ArrayList<>();
 			for (int j = 0; j < 10; j++) {
-				drivers.setDriver(DriverType.TIME, (non_local_time_driver + j * timeshift_per_strip) % 1.0f);
+				drivers.setDriver(DriverType.TIME, (non_local_time_driver + j * (20 - timeshift_per_strip)) % 1.0f);
 				colors.add(rgbw_picker.get(drivers));
 			}
 			communication.send(new StripColorCommand(7, colors));
 			colors = new ArrayList<>();
 			for (int j = 10; j < 20; j++) {
-				drivers.setDriver(DriverType.TIME, (non_local_time_driver + j * timeshift_per_strip) % 1.0f);
+				drivers.setDriver(DriverType.TIME, (non_local_time_driver + j * (20 - timeshift_per_strip)) % 1.0f);
 				colors.add(rgbw_picker.get(drivers));
 			}
 			communication.send(new StripColorCommand(17, colors));
@@ -330,7 +328,7 @@ public class Main {
 			driverEvent.loop(drivers);
 			
 			for (int strip_index = 7; strip_index < 23; strip_index++) {
-				drivers.setDriver(DriverType.TIME, (non_local_time_driver + strip_index * timeshift_per_strip) % 1.0f);
+				drivers.setDriver(DriverType.TIME, (non_local_time_driver + strip_index * (20 - timeshift_per_strip)) % 1.0f);
 				float c = lightning_picker.get(drivers) * delay / (60 * 1000) / 16;
 				float r = rand.nextFloat();
 				if (r < c) {
