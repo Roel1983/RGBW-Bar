@@ -33,11 +33,12 @@ module MiddleSupport() {
          * Main board and the rest relative to that */
         MiddleSupportHolePos() ScrewHole();
         MiddleSupportConnectorCenterPos() {
-            linear_extrude(5.5)square([2.7, 11.1], true);
-            linear_extrude(1, center=true)square([2.7 + 1, 11.1 + 1], true);
+            linear_extrude(5.5)square([2.7+.8, 11.1], true);
+            linear_extrude(6.5)square([2.7   , 10.0], true);
+            linear_extrude(1, center=true)square([2.7 +.8 + 1, 11.1 + 1], true);
             rotate(-90, VEC_X) linear_extrude(10, center=true) {
                 difference() {
-                    translate([0, -19/2-5.4])square([12, 19], true);
+                    translate([0, -18.2/2-.8-5.4])square([12, 18.2], true);
                     translate([0, -20]) hull() {mirror_copy(VEC_X) translate([-1.5,0]) circle(d=3);}
                     translate([0, -15]) hull() {mirror_copy(VEC_X) translate([-1,0]) circle(d=2);}
                 }
