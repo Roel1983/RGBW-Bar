@@ -27,7 +27,7 @@ with open(args.inputfile, 'r') as pcb_file:
 			if re.match("^[ ]*[(]general", line):
 				is_general_section = True
 		else:
-			m = re.match("^[ ]*[(]thickness (\d+(?:.\d+)?)[)].*$", line)
+			m = re.match("^[ ]*[(]thickness (\\d+(?:.\\d+)?)[)].*$", line)
 			if m:
 				pcb_thickness = float(m.group(1))
 			if re.match("^[ ]*[)].*$", line):
@@ -40,7 +40,7 @@ with open(args.inputfile, 'r') as pcb_file:
 				"foot_print": m.group(1),
 				"side"      : m.group(2)})
 
-		m = re.match("^[ ]*[(]at (\d+(?:.\d+)?) (\d+(?:.\d+)?)(?: (\d+(?:.\d+)?))?.*", line)
+		m = re.match("^[ ]*[(]at (\\d+(?:.\\d+)?) (\\d+(?:.\\d+)?)(?: (\\d+(?:.\\d+)?))?.*", line)
 		if m:
 			components[-1]["at"] = (
 				float(m.group(1)),
@@ -51,12 +51,12 @@ with open(args.inputfile, 'r') as pcb_file:
 		if m:
 			components[-1]["reference"] = m.group(1)
 
-		m = re.match("^[ ]*[(]aux_axis_origin (\d+(?:.\d+)?) (\d+(?:.\d+)?)[)].*$", line)
+		m = re.match("^[ ]*[(]aux_axis_origin (\\d+(?:.\\d+)?) (\\d+(?:.\\d+)?)[)].*$", line)
 		if m:
 			aux_axis_origin = [float(m.group(1)), float(m.group(2))]
 
 		# Bounding box
-		m = re.match("^[ ]*[(]gr_line [(]start (\d+(?:.\d+)?) (\d+(?:.\d+)?)[)] [(]end (\d+(?:.\d+)?) (\d+(?:.\d+)?)[)] [(]layer Edge.Cuts[)].*[)]$", line)
+		m = re.match("^[ ]*[(]gr_line [(]start (\\d+(?:.\\d+)?) (\\d+(?:.\\d+)?)[)] [(]end (\\d+(?:.\\d+)?) (\\d+(?:.\\d+)?)[)] [(]layer Edge.Cuts[)].*[)]$", line)
 		if m:
 			start_x = float(m.group(1))
 			start_y = float(m.group(2))
@@ -107,8 +107,8 @@ with open(args.outputfile, 'w') as scad_file:
 	for component in components:
 		scad_file.write('{} = [\n'.format(component_var_name_prefix + component["reference"]))
 		scad_file.write('\t["{}", {}],\n'.format(
-			re.match("(.*?)(\d+)", component["reference"]).group(1),
-			re.match("(.*?)(\d+)", component["reference"]).group(2)))
+			re.match("(.*?)(\\d+)", component["reference"]).group(1),
+			re.match("(.*?)(\\d+)", component["reference"]).group(2)))
 		scad_file.write('\t["{}", [{}, {}], {}],\n'.format(
 			component["side"],
 			component["at"][0] - aux_axis_origin[0],
