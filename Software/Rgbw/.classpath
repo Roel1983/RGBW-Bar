@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="libs/jSerialComm-2.10.4.jar"/>
 	<classpathentry kind="lib" path="libs/commons-cli-1.6.0/commons-cli-1.6.0.jar"/>
 	<classpathentry kind="lib" path="libs/jackson-databind-2.11.1.jar"/>
+	<classpathentry kind="lib" path="libs/jssc/jssc-2.9.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

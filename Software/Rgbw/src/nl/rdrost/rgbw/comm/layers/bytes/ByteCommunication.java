@@ -1,10 +1,13 @@
 package nl.rdrost.rgbw.comm.layers.bytes;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Objects;
 
-import com.fazecast.jSerialComm.SerialPort;
+//import com.fazecast.jSerialComm.SerialPort;
+import jssc.SerialPort;
+import jssc.SerialPortException;
 
 public class ByteCommunication {
 	
@@ -17,46 +20,61 @@ public class ByteCommunication {
 	private final OutputStream outputStream;
 	
 	public ByteCommunication(final String comPort) {
-		this(findCommPort(comPort));
+		this(new SerialPort(comPort));
 	}
 	
 	public ByteCommunication(final SerialPort serialPort) {
 		Objects.nonNull(serialPort);
 		
 		this.serialPort = serialPort;
-		this.serialPort.openPort();
-		this.serialPort.setBaudRate(57600);
-		this.serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 1000, 1000);
+		try {
+			this.serialPort.openPort();//Open serial port
+			this.serialPort.setParams(SerialPort.BAUDRATE_57600, 
+			                     SerialPort.DATABITS_8,
+			                     SerialPort.STOPBITS_1,
+			                     SerialPort.PARITY_NONE);
+		} catch (SerialPortException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		
-//		this.outputStream = new OutputStream() {
-//			private final OutputStream os = serialPort.getOutputStream(); 
-//			@Override
-//			public void write(int b) throws IOException {
-//				System.out.print(ANSI_BLUE);
-//				System.out.format("<%02X>", b & 0xff);
-//				os.write(b);
-//				System.out.print(ANSI_GREEN);
-//			}
-//		};
-//		this.inputStream = new InputStream() {
-//			private final InputStream is = serialPort.getInputStream();
-//			@Override
-//			public int read() throws IOException {
-//				final int b = is.read();
-//				System.out.print(ANSI_GREEN);
-//				System.out.format("<%02X>", b & 0xff);
-//				System.out.print(ANSI_GREEN);
-//				return b;
-//			}
-//		};
-		this.outputStream = this.serialPort.getOutputStream();
-		this.inputStream  = this.serialPort.getInputStream();
+		
+		//Set params. Also you can set params by this string: serialPort.setParams(9600, 8, 1, 0);
+//        serialPort.writeBytes("This is a test string".getBytes());//Write data to port
+//        serialPort.closePort();//Close serial port
+//		
+//		this.serialPort = serialPort;
+//		this.serialPort.openPort();
+//		this.serialPort.setBaudRate(57600);
+//		this.serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 1000, 1000);
+		
+		
+		this.outputStream = new OutputStream() {
+			@Override
+			public void write(int b) throws IOException {
+				try {
+					serialPort.writeByte((byte)b);
+				} catch (SerialPortException e) {
+					throw new IOException(e);
+				}
+			}
+		};
+		this.inputStream = new InputStream() {
+			@Override
+			public int read() throws IOException {
+				try {
+					return serialPort.readBytes(1)[0];
+				} catch (SerialPortException e) {
+					throw new IOException(e);
+				}
+			}
+		};
 	}
 
-	private static SerialPort findCommPort(final String serialPort) {
-		return SerialPort.getCommPort(serialPort);
-	}
+//	private static SerialPort findCommPort(final String serialPort) {
+//		return SerialPort.getCommPort(serialPort);
+//	}
 	
 	public final InputStream getInputStream() {
 		return this.inputStream;
