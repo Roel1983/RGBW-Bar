@@ -40,7 +40,8 @@ module MiddleSupport() {
                 difference() {
                     translate([0, -18.2/2-.8-5.4])square([12, 18.2], true);
                     translate([0, -20]) hull() {mirror_copy(VEC_X) translate([-1.5,0]) circle(d=3);}
-                    translate([0, -15]) hull() {mirror_copy(VEC_X) translate([-1,0]) circle(d=2);}
+                    translate([3, -15]) hull() {mirror_copy(VEC_X) translate([-1,0]) circle(d=2);}
+                    translate([-3, -15]) hull() {mirror_copy(VEC_X) translate([-1,0]) circle(d=2);}
                 }
             }
         }
